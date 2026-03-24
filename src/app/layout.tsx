@@ -1,0 +1,40 @@
+import type { Metadata } from 'next'
+import { Providers } from '@/components/providers'
+import './globals.css'
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Crypto Opportunities Database',
+    template: '%s | Crypto Opportunities',
+  },
+  description: 'Track hackathons, grants, fellowships, and bounties in the crypto ecosystem. Manage your opportunity pipeline with a Notion-like table interface.',
+  openGraph: {
+    title: 'Crypto Opportunities Database',
+    description: 'Track hackathons, grants, fellowships, and bounties in the crypto ecosystem.',
+    type: 'website',
+    siteName: 'Crypto Opportunities Database',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Crypto Opportunities Database',
+    description: 'Track hackathons, grants, fellowships, and bounties in the crypto ecosystem.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <body className="antialiased bg-gray-50">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}

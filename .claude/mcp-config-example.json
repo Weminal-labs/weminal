@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "crypto-opportunities": {
+      "command": "npx",
+      "args": ["tsx", "src/mcp/server.ts"],
+      "cwd": "/path/to/crypto-opportunities-db",
+      "env": {
+        "SUPABASE_URL": "https://your-project-id.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "your-service-role-key-here"
+      }
+    }
+  }
+}
