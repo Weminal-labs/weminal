@@ -24,7 +24,7 @@ export function MonthView({ currentDate, blocks, milestones, onDayClick, selecte
   const today = new Date()
 
   return (
-    <div className="rounded-xl border border-gray-200/80 overflow-hidden bg-white shadow-sm flex flex-col h-full">
+    <div className="rounded-xl border border-gray-200/80 overflow-hidden bg-white shadow-sm">
       {/* Day headers */}
       <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50/80">
         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
@@ -33,7 +33,7 @@ export function MonthView({ currentDate, blocks, milestones, onDayClick, selecte
       </div>
 
       {/* Day grid */}
-      <div className="flex-1 grid grid-cols-7 auto-rows-fr">
+      <div className="grid grid-cols-7">
         {days.map(day => {
           const dateStr = format(day, 'yyyy-MM-dd')
           const dayBlocks = blocks.filter(b => b.date === dateStr)
@@ -48,7 +48,7 @@ export function MonthView({ currentDate, blocks, milestones, onDayClick, selecte
               type="button"
               onClick={() => onDayClick(day)}
               className={cn(
-                'relative border-r border-b border-gray-100 p-1.5 text-left transition-colors min-h-[100px] flex flex-col focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none focus-visible:z-10',
+                'relative border-r border-b border-gray-100 p-1.5 text-left transition-colors h-24 flex flex-col overflow-hidden focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none focus-visible:z-10',
                 !isCurrentMonth ? 'bg-gray-50/50' : 'bg-white hover:bg-blue-50/20',
                 isSelected && 'bg-blue-50/40 ring-2 ring-blue-400 ring-inset z-10',
               )}

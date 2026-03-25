@@ -135,8 +135,8 @@ function CalendarPage() {
         <OpportunitySidebar onDragStart={opp => { dragOppRef.current = opp }} />
 
         {/* Calendar */}
-        <div className="flex-1 flex flex-col overflow-auto">
-          <div className="flex-1 p-4">
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          <div className="p-4 overflow-auto flex-1">
             {blocksLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-10 w-full" />
