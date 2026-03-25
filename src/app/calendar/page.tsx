@@ -78,15 +78,15 @@ function CalendarPage() {
   return (
     <div className="min-h-dvh flex flex-col">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white px-4 py-3">
+      <header className="border-b border-gray-200/80 bg-white/95 backdrop-blur-sm px-4 py-2.5 sticky top-0 z-20">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             {/* Nav tabs */}
-            <nav className="flex items-center gap-1" aria-label="Main navigation">
-              <Link href="/hack" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 transition-colors">
+            <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
+              <Link href="/hack" className="inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
                 <Table2 className="size-4" aria-hidden="true" /> Table
               </Link>
-              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900" aria-current="page">
+              <span className="inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
                 <Calendar className="size-4" aria-hidden="true" /> Calendar
               </span>
             </nav>
@@ -110,18 +110,18 @@ function CalendarPage() {
           </div>
 
           {/* View toggle */}
-          <div className="flex items-center gap-1 rounded-md border border-gray-200 p-0.5">
+          <div className="flex items-center rounded-lg bg-gray-100/80 p-0.5">
             <button
               type="button"
               onClick={() => setView('week')}
-              className={`rounded px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${view === 'week' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${view === 'week' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Week
             </button>
             <button
               type="button"
               onClick={() => setView('month')}
-              className={`rounded px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${view === 'month' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${view === 'month' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Month
             </button>

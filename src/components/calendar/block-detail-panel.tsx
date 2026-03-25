@@ -70,8 +70,8 @@ export function BlockDetailPanel({ block, onClose }: Props) {
   return (
     <div className="w-80 shrink-0 border-l border-gray-200 bg-white overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
-        <h2 className="text-sm font-bold text-gray-900 text-balance">Block Details</h2>
+      <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
+        <h2 className="text-sm font-bold text-gray-900 tracking-tight text-balance">Block Details: {block.title}</h2>
         <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close detail panel">
           <X className="size-4" aria-hidden="true" />
         </Button>
