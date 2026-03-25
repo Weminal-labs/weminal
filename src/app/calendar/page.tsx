@@ -28,7 +28,7 @@ function CalendarPage() {
   const weekStart = format(startOfWeek(currentDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
   const weekEnd = format(endOfWeek(currentDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
   const monthStart = format(startOfMonth(currentDate), 'yyyy-MM-dd')
-  const monthEnd = format(endOfMonth(addM(currentDate, 3)), 'yyyy-MM-dd')
+  const monthEnd = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
   const dateFrom = view === 'week' ? weekStart : monthStart
   const dateTo = view === 'week' ? weekEnd : monthEnd
@@ -158,7 +158,16 @@ function CalendarPage() {
                 currentDate={currentDate}
                 blocks={blocks}
                 milestones={milestones}
-                onDayClick={(date) => { setCurrentDate(date); setView('week') }}
+                selectedDate={selectedBlock?.date}
+                onDayClick={(date) => {
+                  const dateStr = format(date, 'yyyy-MM-dd')
+                  const dayBlocks = blocks.filter(b => b.date === dateStr)
+                  if (dayBlocks.length > 0) {
+                    setSelectedBlock(dayBlocks[0])
+                  } else {
+                    setSelectedBlock(null)
+                  }
+                }}
               />
             )}
           </div>
