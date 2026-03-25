@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import type { CalendarBlock } from '@/hooks/use-calendar'
-import { useUpdateBlock, useDeleteBlock, useOpportunityMilestones, useProposal, useUpsertProposal } from '@/hooks/use-calendar'
+import { useUpdateBlock, useDeleteBlock, useOpportunityMilestones, useProposal } from '@/hooks/use-calendar'
+import { ProposalEditor } from './proposal-editor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { TypeBadge } from '@/components/table/type-badge'
@@ -34,7 +35,6 @@ export function BlockDetailPanel({ block, onClose }: Props) {
   const oppId = block.opportunity_id
   const { data: milestonesData } = useOpportunityMilestones(oppId ?? '')
   const { data: proposalData } = useProposal(oppId ?? '')
-  const upsertProposal = useUpsertProposal()
 
   const oppType = block.opportunities?.type as OpportunityType | undefined
   const milestones = milestonesData?.data ?? []
@@ -190,29 +190,9 @@ export function BlockDetailPanel({ block, onClose }: Props) {
           </div>
         )}
 
-        {/* Proposal */}
+        {/* Proposal Editor */}
         {oppId && (
-          <div className="pt-3 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Proposal</h3>
-              {proposal && (
-                <span className={cn(
-                  'text-[10px] font-medium rounded-full px-2 py-0.5',
-                  proposal.status === 'draft' ? 'bg-gray-100 text-gray-600' :
-                  proposal.status === 'submitted' ? 'bg-blue-100 text-blue-700' :
-                  proposal.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' :
-                  'bg-red-100 text-red-700'
-                )}>
-                  {proposal.status}
-                </span>
-              )}
-            </div>
-            {proposal?.content ? (
-              <p className="text-xs text-gray-600 line-clamp-3 text-pretty">{proposal.content}</p>
-            ) : (
-              <p className="text-xs text-gray-400 text-pretty">No proposal yet</p>
-            )}
-          </div>
+          <ProposalEditor opportunityId={oppId} proposal={proposal} />
         )}
       </div>
     </div>
