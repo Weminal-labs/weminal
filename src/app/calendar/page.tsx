@@ -8,6 +8,7 @@ import { MonthView } from '@/components/calendar/month-view'
 import { OpportunitySidebar } from '@/components/calendar/opportunity-sidebar'
 import { MilestoneTimeline } from '@/components/calendar/milestone-timeline'
 import { BlockDetailPanel } from '@/components/calendar/block-detail-panel'
+import { MonthlySummary } from '@/components/calendar/monthly-summary'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Opportunity } from '@/lib/types'
@@ -174,6 +175,15 @@ function CalendarPage() {
 
           {/* Milestone timeline */}
           <MilestoneTimeline milestones={milestones} />
+
+          {/* Monthly summary */}
+          {view === 'month' && (
+            <MonthlySummary
+              blocks={blocks}
+              milestones={milestones}
+              monthLabel={format(currentDate, 'MMMM yyyy')}
+            />
+          )}
         </div>
 
         {/* Block detail panel */}
