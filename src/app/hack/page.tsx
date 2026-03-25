@@ -11,6 +11,7 @@ import { CreateOpportunityDialog } from '@/components/forms/create-opportunity-d
 import { DeleteConfirmDialog } from '@/components/forms/delete-confirm-dialog'
 import { OpportunityDetail } from '@/components/detail/opportunity-detail'
 import { Skeleton } from '@/components/ui/skeleton'
+import { McpUsageDialog } from '@/components/mcp-usage-dialog'
 import type { Opportunity } from '@/lib/types'
 import { Calendar, Table2 } from 'lucide-react'
 import Link from 'next/link'
@@ -92,7 +93,10 @@ function OpportunitiesPage() {
               <p className="text-sm text-gray-500 text-pretty">Hackathons, grants, fellowships, and bounties</p>
             </div>
           </div>
-          <CreateOpportunityDialog />
+          <div className="flex items-center gap-2">
+            <McpUsageDialog />
+            <CreateOpportunityDialog />
+          </div>
         </div>
 
         {/* Filters */}

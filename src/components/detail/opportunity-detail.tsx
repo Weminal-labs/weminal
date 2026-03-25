@@ -15,7 +15,18 @@ type Props = {
 
 export function OpportunityDetail({ opportunity: opp, onClose, onDelete }: Props) {
   return (
-    <div className="fixed inset-y-0 right-0 z-40 w-full max-w-md bg-white shadow-xl border-l border-gray-200 overflow-y-auto">
+    <>
+      {/* Backdrop (mobile only) */}
+      <div
+        className="fixed inset-0 z-30 bg-black/40 md:hidden"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+    <div className="fixed inset-x-0 bottom-0 z-40 max-h-[90dvh] overflow-y-auto rounded-t-2xl bg-white shadow-xl md:inset-y-0 md:inset-x-auto md:right-0 md:w-full md:max-w-md md:max-h-none md:rounded-none md:border-l md:border-gray-200">
+      {/* Drag handle — mobile only */}
+      <div className="flex justify-center pt-2.5 pb-0 md:hidden" aria-hidden="true">
+        <div className="h-1 w-10 rounded-full bg-gray-300" />
+      </div>
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TypeBadge type={opp.type as OpportunityType} />
@@ -124,5 +135,6 @@ export function OpportunityDetail({ opportunity: opp, onClose, onDelete }: Props
         </div>
       </div>
     </div>
+    </>
   )
 }

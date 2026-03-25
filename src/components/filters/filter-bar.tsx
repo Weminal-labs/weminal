@@ -31,45 +31,51 @@ export function FilterBar({ filters, onFilterChange, onClearAll }: Props) {
   const hasFilters = Object.values(filters).some((v) => v && v !== '')
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <TypeFilter
-        value={filters.type}
-        onChange={(v) => onFilterChange('type', v)}
-      />
-      <SelectFilter
-        label="Status"
-        value={filters.status}
-        options={statusData?.data ?? []}
-        onChange={(v) => onFilterChange('status', v)}
-        formatLabel={(s) => s.replace('_', ' ')}
-      />
-      <SelectFilter
-        label="Organization"
-        value={filters.organization}
-        options={orgData?.data ?? []}
-        onChange={(v) => onFilterChange('organization', v)}
-      />
-      <SelectFilter
-        label="Chain"
-        value={filters.blockchain}
-        options={chainData?.data ?? []}
-        onChange={(v) => onFilterChange('blockchain', v)}
-      />
-      <SelectFilter
-        label="Tag"
-        value={filters.tag}
-        options={tagData?.data ?? []}
-        onChange={(v) => onFilterChange('tag', v)}
-      />
-      <SearchInput
-        value={filters.search ?? ''}
-        onChange={(v) => onFilterChange('search', v || undefined)}
-      />
-      {hasFilters && (
-        <Button variant="ghost" size="sm" onClick={onClearAll} className="text-gray-500" aria-label="Clear all filters">
-          <X className="size-3 mr-1" aria-hidden="true" /> Clear
-        </Button>
-      )}
-    </div>
+    <>
+      {/* Desktop: single horizontal row */}
+      <div className="hidden md:flex md:flex-wrap md:items-center md:gap-2">
+        <TypeFilter value={filters.type} onChange={(v) => onFilterChange('type', v)} />
+        <SelectFilter label="Status" value={filters.status} options={statusData?.data ?? []} onChange={(v) => onFilterChange('status', v)} formatLabel={(s) => s.replace('_', ' ')} />
+        <SelectFilter label="Organization" value={filters.organization} options={orgData?.data ?? []} onChange={(v) => onFilterChange('organization', v)} />
+        <SelectFilter label="Chain" value={filters.blockchain} options={chainData?.data ?? []} onChange={(v) => onFilterChange('blockchain', v)} />
+        <SelectFilter label="Tag" value={filters.tag} options={tagData?.data ?? []} onChange={(v) => onFilterChange('tag', v)} />
+        <SearchInput value={filters.search ?? ''} onChange={(v) => onFilterChange('search', v || undefined)} />
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={onClearAll} className="text-gray-500" aria-label="Clear all filters">
+            <X className="size-3 mr-1" aria-hidden="true" /> Clear
+          </Button>
+        )}
+      </div>
+
+      {/* Mobile: structured rows */}
+      <div className="md:hidden space-y-2">
+        {/* Row 1: type pills + status */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-0.5 no-scrollbar">
+          <TypeFilter value={filters.type} onChange={(v) => onFilterChange('type', v)} />
+          <div className="shrink-0">
+            <SelectFilter label="Status" value={filters.status} options={statusData?.data ?? []} onChange={(v) => onFilterChange('status', v)} formatLabel={(s) => s.replace('_', ' ')} />
+          </div>
+        </div>
+
+        {/* Row 2: secondary filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          <SelectFilter label="Organization" value={filters.organization} options={orgData?.data ?? []} onChange={(v) => onFilterChange('organization', v)} />
+          <SelectFilter label="Chain" value={filters.blockchain} options={chainData?.data ?? []} onChange={(v) => onFilterChange('blockchain', v)} />
+          <SelectFilter label="Tag" value={filters.tag} options={tagData?.data ?? []} onChange={(v) => onFilterChange('tag', v)} />
+        </div>
+
+        {/* Row 3: search + clear */}
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SearchInput value={filters.search ?? ''} onChange={(v) => onFilterChange('search', v || undefined)} />
+          </div>
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={onClearAll} className="text-gray-500 shrink-0" aria-label="Clear all filters">
+              <X className="size-3 mr-1" aria-hidden="true" /> Clear
+            </Button>
+          )}
+        </div>
+      </div>
+    </>
   )
 }
