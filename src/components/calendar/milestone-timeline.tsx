@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { typeColors } from '@/lib/type-colors'
 import type { OpportunityType } from '@/lib/types'
-import { Clock, Flag, Megaphone, CheckCircle2 } from 'lucide-react'
+import { Flag, Clock, Megaphone, CheckCircle2 } from 'lucide-react'
 
 type Props = {
   milestones: Milestone[]
@@ -19,32 +19,46 @@ const typeIcons = {
   other: Flag,
 }
 
+const typeBg = {
+  deadline: 'bg-red-50 text-red-700 border-red-200',
+  office_hour: 'bg-teal-50 text-teal-700 border-teal-200',
+  announcement: 'bg-amber-50 text-amber-700 border-amber-200',
+  checkpoint: 'bg-blue-50 text-blue-700 border-blue-200',
+  other: 'bg-gray-50 text-gray-600 border-gray-200',
+}
+
 export function MilestoneTimeline({ milestones }: Props) {
   if (milestones.length === 0) return null
 
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-3">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Upcoming Milestones</h3>
-      <div className="space-y-1.5">
-        {milestones.slice(0, 8).map(m => {
+      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5 text-balance">Milestone Timeline</h3>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {milestones.slice(0, 12).map(m => {
           const Icon = typeIcons[m.type]
           const oppType = m.opportunities?.type as OpportunityType | undefined
-          const color = oppType ? typeColors[oppType] : null
+          const oppName = m.opportunities?.name ?? ''
 
           return (
-            <div key={m.id} className="flex items-center gap-2 text-xs">
-              <span className="text-gray-400 tabular-nums shrink-0 w-20">{format(new Date(m.date), 'MMM d')}</span>
-              <Icon className={cn('size-3 shrink-0', m.type === 'deadline' ? 'text-red-500' : 'text-gray-400')} aria-hidden="true" />
-              <span className={cn('truncate', m.completed && 'line-through text-gray-400')}>
-                {m.title}
-              </span>
-              {m.opportunities && (
-                <span className={cn('text-[10px] shrink-0', color ? color.text : 'text-gray-400')}>
-                  {m.opportunities.name}
-                </span>
+            <div
+              key={m.id}
+              className={cn(
+                'shrink-0 rounded-lg border px-3 py-2 text-xs min-w-[180px] max-w-[240px]',
+                typeBg[m.type],
+                m.completed && 'opacity-50'
               )}
-              {m.time && (
-                <span className="text-gray-400 tabular-nums shrink-0">{m.time}</span>
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <Icon className="size-3 shrink-0" aria-hidden="true" />
+                <span className="font-semibold tabular-nums">{format(new Date(m.date), 'MMM d')}</span>
+                {m.time && <span className="text-[10px] opacity-70 tabular-nums">{m.time}</span>}
+              </div>
+              <p className={cn('font-medium truncate', m.completed && 'line-through')}>{m.title}</p>
+              {oppName && (
+                <p className="text-[10px] opacity-60 truncate mt-0.5">
+                  {oppType && <span className="capitalize">{oppType}: </span>}
+                  {oppName}
+                </p>
               )}
             </div>
           )

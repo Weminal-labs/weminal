@@ -79,24 +79,31 @@ export function OpportunitySidebar({ onDragStart }: Props) {
         </div>
       </div>
 
-      <div className="p-2 space-y-1">
+      <div className="p-2 space-y-1.5">
         {opportunities.length === 0 ? (
-          <p className="text-xs text-gray-400 text-center py-4 text-pretty">No opportunities found</p>
+          <p className="text-xs text-gray-400 text-center py-8 text-pretty">No opportunities found</p>
         ) : (
-          opportunities.map(opp => (
+          opportunities.map(opp => {
+            const oppType = opp.type as OpportunityType
+            const colors = typeColors[oppType]
+            return (
             <div
               key={opp.id}
               draggable
               onDragStart={e => handleDragStart(e, opp)}
-              className="flex items-start gap-1.5 rounded-md p-2 hover:bg-gray-50 cursor-grab active:cursor-grabbing transition-colors"
+              className={cn(
+                'rounded-lg p-2.5 cursor-grab active:cursor-grabbing transition-colors border-l-3',
+                `border-l-4 ${colors.bg} hover:shadow-sm`
+              )}
             >
-              <GripVertical className="size-3.5 text-gray-300 mt-0.5 shrink-0" aria-hidden="true" />
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-gray-900 truncate">{opp.name}</p>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <TypeBadge type={opp.type as OpportunityType} />
-                  {opp.organization && (
-                    <span className="text-[10px] text-gray-500 truncate">{opp.organization}</span>
+              <div className="flex items-start gap-1.5">
+                <GripVertical className="size-3.5 text-gray-400 mt-0.5 shrink-0 opacity-50" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-gray-900 truncate">{opp.name}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <TypeBadge type={oppType} />
+                    {opp.organization && (
+                      <span className="text-[10px] text-gray-500 truncate">{opp.organization}</span>
                   )}
                 </div>
                 {(opp.start_date || opp.end_date) && (
@@ -104,9 +111,11 @@ export function OpportunitySidebar({ onDragStart }: Props) {
                     {opp.start_date ?? '?'} → {opp.end_date ?? '?'}
                   </p>
                 )}
+                </div>
               </div>
             </div>
-          ))
+            )
+          })
         )}
       </div>
     </div>

@@ -5,6 +5,7 @@ import type { CalendarBlock, Milestone } from '@/hooks/use-calendar'
 import { typeColors } from '@/lib/type-colors'
 import type { OpportunityType } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Flag, Clock } from 'lucide-react'
 
 type Props = {
   currentDate: Date
@@ -22,61 +23,99 @@ function MiniMonth({ month, blocks, milestones, onDayClick }: { month: Date; blo
   const today = new Date()
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-      <h3 className="text-sm font-bold text-gray-900 mb-3 text-balance">{format(month, 'MMMM yyyy')}</h3>
-      <div className="grid grid-cols-7 gap-1 text-center">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
-          <div key={d} className="text-[10px] font-medium text-gray-400 uppercase tracking-wider pb-2">{d}</div>
-        ))}
-        {days.map(day => {
-          const dateStr = format(day, 'yyyy-MM-dd')
-          const dayBlocks = blocks.filter(b => b.date === dateStr)
-          const dayMilestones = milestones.filter(m => m.date === dateStr)
-          const isCurrentMonth = isSameMonth(day, month)
-          const isToday = isSameDay(day, today)
-          const hasContent = (dayBlocks.length > 0 || dayMilestones.length > 0) && isCurrentMonth
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      {/* Month header */}
+      <div className="bg-gray-900 px-4 py-2.5">
+        <h3 className="text-sm font-bold text-white text-balance">{format(month, 'MMMM yyyy')}</h3>
+      </div>
 
-          return (
-            <button
-              key={dateStr}
-              type="button"
-              onClick={() => onDayClick(day)}
-              className={cn(
-                'relative flex flex-col items-center justify-center rounded-lg text-xs tabular-nums transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none',
-                'h-10 w-full',
-                !isCurrentMonth && 'text-gray-300',
-                isCurrentMonth && !isToday && !hasContent && 'text-gray-600 hover:bg-gray-100',
-                isCurrentMonth && !isToday && hasContent && 'text-gray-900 font-medium hover:bg-gray-100',
-                isToday && 'bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-sm',
-              )}
-              aria-label={format(day, 'MMMM d, yyyy')}
-            >
-              <span>{format(day, 'd')}</span>
-              {hasContent && (
-                <div className="absolute -bottom-0.5 flex gap-0.5">
-                  {dayBlocks.slice(0, 3).map(b => {
-                    const t = b.opportunities?.type as OpportunityType | undefined
-                    return (
-                      <div key={b.id} className={cn('size-1.5 rounded-full', t ? typeColors[t].dot : 'bg-slate-400')} />
-                    )
-                  })}
-                  {dayMilestones.map(m => (
-                    <div
-                      key={m.id}
-                      className={cn(
-                        'size-1.5 rounded-full',
-                        m.type === 'deadline' ? 'bg-red-500' :
-                        m.type === 'office_hour' ? 'bg-teal-500' :
-                        m.type === 'announcement' ? 'bg-amber-500' :
-                        'bg-gray-400'
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
-            </button>
-          )
-        })}
+      <div className="p-3">
+        {/* Day headers */}
+        <div className="grid grid-cols-7 mb-1">
+          {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d) => (
+            <div key={d} className="text-[10px] font-semibold text-gray-400 text-center py-1">{d}</div>
+          ))}
+        </div>
+
+        {/* Day grid */}
+        <div className="grid grid-cols-7 gap-px bg-gray-100 rounded-lg overflow-hidden">
+          {days.map(day => {
+            const dateStr = format(day, 'yyyy-MM-dd')
+            const dayBlocks = blocks.filter(b => b.date === dateStr)
+            const dayMilestones = milestones.filter(m => m.date === dateStr)
+            const isCurrentMonth = isSameMonth(day, month)
+            const isToday = isSameDay(day, today)
+            const hasBlocks = dayBlocks.length > 0 && isCurrentMonth
+            const hasMilestones = dayMilestones.length > 0 && isCurrentMonth
+            const hasContent = hasBlocks || hasMilestones
+
+            return (
+              <button
+                key={dateStr}
+                type="button"
+                onClick={() => onDayClick(day)}
+                className={cn(
+                  'relative flex flex-col items-stretch p-1 min-h-[52px] text-left transition-colors focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none focus-visible:z-10',
+                  !isCurrentMonth ? 'bg-gray-50 text-gray-300' : 'bg-white hover:bg-blue-50',
+                  isToday && 'bg-blue-50',
+                )}
+                aria-label={`${format(day, 'MMMM d, yyyy')}${hasContent ? `, ${dayBlocks.length} blocks, ${dayMilestones.length} milestones` : ''}`}
+              >
+                {/* Date number */}
+                <span className={cn(
+                  'text-[11px] tabular-nums leading-none mb-0.5',
+                  !isCurrentMonth && 'text-gray-300',
+                  isCurrentMonth && !isToday && 'text-gray-500',
+                  isToday && 'text-white font-bold bg-blue-600 rounded-full size-5 flex items-center justify-center',
+                  hasContent && !isToday && 'text-gray-900 font-semibold',
+                )}>
+                  {format(day, 'd')}
+                </span>
+
+                {/* Event pills — show actual names, not dots */}
+                {isCurrentMonth && (
+                  <div className="flex flex-col gap-px mt-auto">
+                    {dayBlocks.slice(0, 2).map(b => {
+                      const t = b.opportunities?.type as OpportunityType | undefined
+                      const colors = t ? typeColors[t] : null
+                      return (
+                        <div
+                          key={b.id}
+                          className={cn(
+                            'rounded-sm px-1 py-px text-[8px] font-medium leading-tight truncate',
+                            colors ? `${colors.bg} ${colors.text}` : 'bg-slate-100 text-slate-500'
+                          )}
+                        >
+                          {b.title.length > 12 ? b.title.slice(0, 12) + '…' : b.title}
+                        </div>
+                      )
+                    })}
+                    {dayBlocks.length > 2 && (
+                      <div className="text-[8px] text-gray-400 px-1">+{dayBlocks.length - 2} more</div>
+                    )}
+                    {dayMilestones.slice(0, 1).map(m => (
+                      <div
+                        key={m.id}
+                        className={cn(
+                          'flex items-center gap-0.5 rounded-sm px-1 py-px text-[8px] font-medium leading-tight truncate',
+                          m.type === 'deadline' ? 'bg-red-50 text-red-600' :
+                          m.type === 'office_hour' ? 'bg-teal-50 text-teal-600' :
+                          'bg-gray-100 text-gray-500'
+                        )}
+                      >
+                        {m.type === 'deadline' ? <Flag className="size-2 shrink-0" aria-hidden="true" /> : m.type === 'office_hour' ? <Clock className="size-2 shrink-0" aria-hidden="true" /> : null}
+                        {m.title.length > 10 ? m.title.slice(0, 10) + '…' : m.title}
+                      </div>
+                    ))}
+                    {dayMilestones.length > 1 && (
+                      <div className="text-[8px] text-gray-400 px-1">+{dayMilestones.length - 1}</div>
+                    )}
+                  </div>
+                )}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
@@ -86,7 +125,7 @@ export function MonthView({ currentDate, blocks, milestones, onDayClick }: Props
   const months = Array.from({ length: 4 }, (_, i) => addMonths(startOfMonth(currentDate), i))
 
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-2 gap-5">
       {months.map(month => (
         <MiniMonth
           key={month.toISOString()}

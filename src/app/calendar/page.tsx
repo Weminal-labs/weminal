@@ -7,6 +7,7 @@ import { WeekView } from '@/components/calendar/week-view'
 import { MonthView } from '@/components/calendar/month-view'
 import { OpportunitySidebar } from '@/components/calendar/opportunity-sidebar'
 import { MilestoneTimeline } from '@/components/calendar/milestone-timeline'
+import { BlockDetailPanel } from '@/components/calendar/block-detail-panel'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Opportunity } from '@/lib/types'
@@ -165,6 +166,14 @@ function CalendarPage() {
           {/* Milestone timeline */}
           <MilestoneTimeline milestones={milestones} />
         </div>
+
+        {/* Block detail panel */}
+        {selectedBlock && (
+          <BlockDetailPanel
+            block={selectedBlock}
+            onClose={() => setSelectedBlock(null)}
+          />
+        )}
       </div>
     </div>
   )
