@@ -153,6 +153,194 @@ server.tool(
   }
 )
 
+// --- Calendar Block Tools ---
+
+server.tool(
+  'block_list',
+  'List calendar blocks (scheduled work sessions) for crypto opportunities. Filter by date range or opportunity.',
+  {
+    date_from: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+    date_to: z.string().optional().describe('End date (YYYY-MM-DD)'),
+    opportunity_id: z.string().uuid().optional().describe('Filter by opportunity'),
+    status: z.enum(['planned', 'in_progress', 'done', 'skipped']).optional(),
+  },
+  async (params) => {
+    const client = getSupabase()
+    let query = client.from('calendar_blocks').select('*, opportunities(id, name, type, organization)').order('date', { ascending: true })
+    if (params.date_from) query = query.gte('date', params.date_from)
+    if (params.date_to) query = query.lte('date', params.date_to)
+    if (params.opportunity_id) query = query.eq('opportunity_id', params.opportunity_id)
+    if (params.status) query = query.eq('status', params.status)
+    const { data, error } = await query
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    const summary = `Found ${data?.length ?? 0} calendar blocks\n\n`
+    const text = summary + JSON.stringify(data, null, 2)
+    return { content: [{ type: 'text' as const, text: truncateResponse(text, MAX_RESPONSE_SIZE) }] }
+  }
+)
+
+server.tool(
+  'block_create',
+  'Create a calendar block (scheduled work session). Link to an opportunity or create a custom event.',
+  {
+    title: z.string().describe('Block title'),
+    date: z.string().describe('Date (YYYY-MM-DD)'),
+    slot: z.enum(['AM', 'PM', 'ALL_DAY']).optional().default('AM').describe('Time slot'),
+    hours: z.number().optional().default(4).describe('Hours planned (0.5-12)'),
+    opportunity_id: z.string().uuid().optional().describe('Link to opportunity (omit for custom event)'),
+    notes: z.string().optional().describe('Notes for this session'),
+    status: z.enum(['planned', 'in_progress', 'done', 'skipped']).optional().default('planned'),
+  },
+  async (params) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('calendar_blocks').insert(params).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Created block: "${params.title}" on ${params.date} (${params.slot}, ${params.hours}h)\n\n${JSON.stringify(data, null, 2)}` }] }
+  }
+)
+
+server.tool(
+  'block_update',
+  'Update a calendar block. Change date, slot, hours, notes, or status.',
+  {
+    id: z.string().uuid().describe('Block ID'),
+    title: z.string().optional(),
+    date: z.string().optional(),
+    slot: z.enum(['AM', 'PM', 'ALL_DAY']).optional(),
+    hours: z.number().optional(),
+    notes: z.string().optional(),
+    status: z.enum(['planned', 'in_progress', 'done', 'skipped']).optional(),
+  },
+  async ({ id, ...updates }) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('calendar_blocks').update(updates).eq('id', id).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Updated block "${data.title}"\n\n${JSON.stringify(data, null, 2)}` }] }
+  }
+)
+
+server.tool(
+  'block_delete',
+  'Delete a calendar block by ID.',
+  { id: z.string().uuid().describe('Block ID') },
+  async ({ id }) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('calendar_blocks').delete().eq('id', id).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Deleted block: "${data.title}" (${id})` }] }
+  }
+)
+
+// --- Milestone Tools ---
+
+server.tool(
+  'milestone_list',
+  'List milestones and deadlines for crypto opportunities. Filter by opportunity, date range, or type (deadline, office_hour, announcement, checkpoint).',
+  {
+    opportunity_id: z.string().uuid().optional().describe('Filter by opportunity'),
+    date_from: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+    date_to: z.string().optional().describe('End date (YYYY-MM-DD)'),
+    type: z.enum(['deadline', 'office_hour', 'announcement', 'checkpoint', 'other']).optional(),
+  },
+  async (params) => {
+    const client = getSupabase()
+    let query = client.from('milestones').select('*, opportunities(id, name, type)').order('date', { ascending: true })
+    if (params.opportunity_id) query = query.eq('opportunity_id', params.opportunity_id)
+    if (params.date_from) query = query.gte('date', params.date_from)
+    if (params.date_to) query = query.lte('date', params.date_to)
+    if (params.type) query = query.eq('type', params.type)
+    const { data, error } = await query
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    const summary = `Found ${data?.length ?? 0} milestones\n\n`
+    const text = summary + JSON.stringify(data, null, 2)
+    return { content: [{ type: 'text' as const, text: truncateResponse(text, MAX_RESPONSE_SIZE) }] }
+  }
+)
+
+server.tool(
+  'milestone_create',
+  'Add a milestone to an opportunity. Use for deadlines, office hours, registration dates, result announcements.',
+  {
+    opportunity_id: z.string().uuid().describe('Opportunity ID'),
+    title: z.string().describe('Milestone title'),
+    date: z.string().describe('Date (YYYY-MM-DD)'),
+    time: z.string().optional().describe('Time (HH:MM) for office hours'),
+    type: z.enum(['deadline', 'office_hour', 'announcement', 'checkpoint', 'other']).describe('Milestone type'),
+    notes: z.string().optional(),
+  },
+  async (params) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('milestones').insert(params).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Created milestone: "${params.title}" (${params.type}) on ${params.date}\n\n${JSON.stringify(data, null, 2)}` }] }
+  }
+)
+
+server.tool(
+  'milestone_update',
+  'Update a milestone. Change title, date, type, or mark as completed.',
+  {
+    id: z.string().uuid().describe('Milestone ID'),
+    title: z.string().optional(),
+    date: z.string().optional(),
+    time: z.string().optional(),
+    type: z.enum(['deadline', 'office_hour', 'announcement', 'checkpoint', 'other']).optional(),
+    completed: z.boolean().optional().describe('Mark as completed'),
+    notes: z.string().optional(),
+  },
+  async ({ id, ...updates }) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('milestones').update(updates).eq('id', id).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Updated milestone "${data.title}"\n\n${JSON.stringify(data, null, 2)}` }] }
+  }
+)
+
+server.tool(
+  'milestone_delete',
+  'Delete a milestone by ID.',
+  { id: z.string().uuid().describe('Milestone ID') },
+  async ({ id }) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('milestones').delete().eq('id', id).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Deleted milestone: "${data.title}" (${id})` }] }
+  }
+)
+
+// --- Proposal Tools ---
+
+server.tool(
+  'proposal_get',
+  'Get the proposal draft for an opportunity. Returns content, status, and submission links.',
+  { opportunity_id: z.string().uuid().describe('Opportunity ID') },
+  async ({ opportunity_id }) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('proposals').select('*').eq('opportunity_id', opportunity_id).maybeSingle()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    if (!data) return { content: [{ type: 'text' as const, text: `No proposal found for opportunity ${opportunity_id}` }] }
+    return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] }
+  }
+)
+
+server.tool(
+  'proposal_update',
+  'Create or update a proposal for an opportunity. Supports markdown content, status tracking (draft/submitted/accepted/rejected), and submission links.',
+  {
+    opportunity_id: z.string().uuid().describe('Opportunity ID'),
+    content: z.string().optional().describe('Markdown proposal text'),
+    status: z.enum(['draft', 'submitted', 'accepted', 'rejected']).optional(),
+    submission_url: z.string().optional().describe('URL where proposal was submitted'),
+    links: z.array(z.object({ label: z.string(), url: z.string() })).optional().describe('Related links (Google Doc, Notion, GitHub)'),
+  },
+  async ({ opportunity_id, ...input }) => {
+    const client = getSupabase()
+    const { data, error } = await client.from('proposals').upsert({ ...input, opportunity_id }, { onConflict: 'opportunity_id' }).select().single()
+    if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
+    return { content: [{ type: 'text' as const, text: `Proposal ${data.status}: ${opportunity_id}\n\n${JSON.stringify(data, null, 2)}` }] }
+  }
+)
+
 // --- Resources ---
 
 server.resource(
