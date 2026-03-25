@@ -75,19 +75,19 @@ function OpportunitiesPage() {
 
   return (
     <main className="min-h-dvh">
-      <div className="mx-auto max-w-7xl px-4 py-6">
+      <div className="mx-auto max-w-7xl px-2 md:px-4 py-4 md:py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-1" aria-label="Main navigation">
-              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900" aria-current="page">
+        <div className="flex items-center justify-between mb-4 md:mb-6 flex-wrap gap-2">
+          <div className="flex items-center gap-3 md:gap-4">
+            <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
+              <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
                 <Table2 className="size-4" aria-hidden="true" /> Table
               </span>
-              <Link href="/calendar" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 transition-colors">
+              <Link href="/calendar" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
                 <Calendar className="size-4" aria-hidden="true" /> Calendar
               </Link>
             </nav>
-            <div>
+            <div className="hidden md:block">
               <h1 className="text-xl font-bold text-gray-900 text-balance">Crypto Opportunities</h1>
               <p className="text-sm text-gray-500 text-pretty">Hackathons, grants, fellowships, and bounties</p>
             </div>

@@ -80,11 +80,11 @@ function CalendarPage() {
     <div className="min-h-dvh flex flex-col">
       {/* Header */}
       <header className="border-b border-gray-200/80 bg-white/95 backdrop-blur-sm px-4 py-2.5 sticky top-0 z-20">
-        <div className="mx-auto max-w-7xl flex items-center justify-between">
-          <div className="flex items-center gap-5">
+        <div className="mx-auto max-w-7xl flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-3 md:gap-5">
             {/* Nav tabs */}
             <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
-              <Link href="/hack" className="inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+              <Link href="/hack" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
                 <Table2 className="size-4" aria-hidden="true" /> Table
               </Link>
               <span className="inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
@@ -132,12 +132,14 @@ function CalendarPage() {
 
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <OpportunitySidebar onDragStart={opp => { dragOppRef.current = opp }} />
+        {/* Sidebar — hidden on mobile */}
+        <div className="hidden md:block">
+          <OpportunitySidebar onDragStart={opp => { dragOppRef.current = opp }} />
+        </div>
 
         {/* Calendar */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <div className="p-4 overflow-auto flex-1">
+          <div className="p-2 md:p-4 overflow-auto flex-1">
             {blocksLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-10 w-full" />
