@@ -7,15 +7,17 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { typeColors } from '@/lib/type-colors'
 import type { Opportunity, OpportunityType } from '@/lib/types'
-import { Search, GripVertical } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 type Props = {
   onDragStart: (opportunity: Opportunity) => void
+  selectedId?: string | null
+  onSelect?: (opp: Opportunity) => void
 }
 
 const types: OpportunityType[] = ['hackathon', 'grant', 'fellowship', 'bounty']
 
-export function OpportunitySidebar({ onDragStart }: Props) {
+export function OpportunitySidebar({ onDragStart, selectedId, onSelect }: Props) {
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const [search, setSearch] = useState('')
   const { data } = useOpportunities({
@@ -35,11 +37,11 @@ export function OpportunitySidebar({ onDragStart }: Props) {
   }
 
   return (
-    <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
-      <div className="p-3 border-b border-gray-200">
-        <h2 className="text-sm font-semibold text-gray-900 mb-2 text-balance">Opportunities</h2>
-        <div className="relative mb-2">
-          <Search className="absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+    <div className="w-72 shrink-0 border-r border-gray-200 bg-white flex flex-col">
+      <div className="p-4 border-b border-gray-100">
+        <h2 className="text-lg font-bold text-gray-900 mb-3 text-balance">Opportunities</h2>
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
           <Input
             type="search"
             value={search}
@@ -47,17 +49,17 @@ export function OpportunitySidebar({ onDragStart }: Props) {
             placeholder="Search…"
             aria-label="Search opportunities"
             autoComplete="off"
-            className="h-7 pl-7 text-xs"
+            className="h-9 pl-9 text-sm bg-gray-100 border-none focus-visible:ring-2 focus-visible:ring-blue-500"
           />
         </div>
-        <div className="flex gap-1 flex-wrap">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             aria-pressed={!typeFilter}
             onClick={() => setTypeFilter(undefined)}
             className={cn(
-              'rounded-full px-2 py-0.5 text-[10px] font-medium focus-visible:ring-2 focus-visible:ring-gray-400',
-              !typeFilter ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
+              'px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-gray-400',
+              !typeFilter ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             )}
           >
             All
@@ -69,8 +71,8 @@ export function OpportunitySidebar({ onDragStart }: Props) {
               aria-pressed={typeFilter === t}
               onClick={() => setTypeFilter(typeFilter === t ? undefined : t)}
               className={cn(
-                'rounded-full px-2 py-0.5 text-[10px] font-medium capitalize focus-visible:ring-2 focus-visible:ring-gray-400',
-                typeFilter === t ? `${typeColors[t].bg} ${typeColors[t].text}` : 'bg-gray-100 text-gray-600'
+                'px-3 py-1 rounded-full text-xs font-medium capitalize transition-colors focus-visible:ring-2 focus-visible:ring-gray-400',
+                typeFilter === t ? `${typeColors[t].bg} ${typeColors[t].text}` : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               )}
             >
               {t}
@@ -79,41 +81,34 @@ export function OpportunitySidebar({ onDragStart }: Props) {
         </div>
       </div>
 
-      <div className="p-2 space-y-1.5">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {opportunities.length === 0 ? (
-          <p className="text-xs text-gray-400 text-center py-8 text-pretty">No opportunities found</p>
+          <p className="text-sm text-gray-400 text-center py-8 text-pretty">No opportunities found</p>
         ) : (
           opportunities.map(opp => {
             const oppType = opp.type as OpportunityType
-            const colors = typeColors[oppType]
+            const isSelected = selectedId === opp.id
             return (
-            <div
-              key={opp.id}
-              draggable
-              onDragStart={e => handleDragStart(e, opp)}
-              className={cn(
-                'rounded-lg p-2.5 cursor-grab active:cursor-grabbing transition-colors border-l-3',
-                `border-l-4 ${colors.bg} hover:shadow-sm`
-              )}
-            >
-              <div className="flex items-start gap-1.5">
-                <GripVertical className="size-3.5 text-gray-400 mt-0.5 shrink-0 opacity-50" aria-hidden="true" />
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-gray-900 truncate">{opp.name}</p>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <TypeBadge type={oppType} />
-                    {opp.organization && (
-                      <span className="text-[10px] text-gray-500 truncate">{opp.organization}</span>
-                  )}
-                </div>
-                {(opp.start_date || opp.end_date) && (
-                  <p className="text-[10px] text-gray-400 tabular-nums mt-0.5">
-                    {opp.start_date ?? '?'} → {opp.end_date ?? '?'}
-                  </p>
+              <div
+                key={opp.id}
+                draggable
+                onDragStart={e => handleDragStart(e, opp)}
+                onClick={() => onSelect?.(opp)}
+                className={cn(
+                  'p-3 rounded-xl border-2 cursor-grab active:cursor-grabbing transition-all',
+                  isSelected
+                    ? 'border-blue-500 bg-blue-50/30'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
                 )}
+              >
+                <p className="text-sm font-bold text-gray-900 leading-tight truncate">{opp.name}</p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <TypeBadge type={oppType} />
                 </div>
+                <p className="text-[10px] text-gray-500 font-medium tabular-nums mt-1.5">
+                  {opp.start_date ?? '—'} → {opp.end_date ?? '—'}
+                </p>
               </div>
-            </div>
             )
           })
         )}
