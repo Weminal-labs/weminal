@@ -12,7 +12,8 @@ import { DeleteConfirmDialog } from '@/components/forms/delete-confirm-dialog'
 import { OpportunityDetail } from '@/components/detail/opportunity-detail'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Opportunity } from '@/lib/types'
-import { Database } from 'lucide-react'
+import { Calendar, Table2 } from 'lucide-react'
+import Link from 'next/link'
 
 function OpportunitiesPage() {
   const [params, setParams] = useQueryStates({
@@ -77,8 +78,15 @@ function OpportunitiesPage() {
       <div className="mx-auto max-w-7xl px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Database className="size-6 text-gray-700" aria-hidden="true" />
+          <div className="flex items-center gap-4">
+            <nav className="flex items-center gap-1" aria-label="Main navigation">
+              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900">
+                <Table2 className="size-4" aria-hidden="true" /> Table
+              </span>
+              <Link href="/calendar" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 transition-colors">
+                <Calendar className="size-4" aria-hidden="true" /> Calendar
+              </Link>
+            </nav>
             <div>
               <h1 className="text-xl font-bold text-gray-900 text-balance">Crypto Opportunities</h1>
               <p className="text-sm text-gray-500 text-pretty">Hackathons, grants, fellowships, and bounties</p>

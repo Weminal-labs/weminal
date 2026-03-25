@@ -61,6 +61,37 @@ Tasks that are planned but not started yet. Ordered by priority.
 | T76 | `[ ]` | Mobile responsive testing | [deployment-and-polish](../features/deployment-and-polish.md) | |
 | T77 | `[ ]` | Run launch checklist | [deployment-and-polish](../features/deployment-and-polish.md) | |
 
+### Phase 5: Hacker Calendar
+
+| # | Status | Task | Feature | Notes |
+|---|--------|------|---------|-------|
+| T78 | `[ ]` | Create migration: calendar_blocks table | [hacker-calendar](../features/hacker-calendar.md) | |
+| T79 | `[ ]` | Create migration: milestones table | [hacker-calendar](../features/hacker-calendar.md) | |
+| T80 | `[ ]` | Create migration: proposals table | [hacker-calendar](../features/hacker-calendar.md) | |
+| T81 | `[ ]` | Seed milestones for existing opportunities | [hacker-calendar](../features/hacker-calendar.md) | |
+| T82 | `[ ]` | Zod schemas for blocks, milestones, proposals | [hacker-calendar](../features/hacker-calendar.md) | |
+| T83 | `[ ]` | API routes: /calendar/blocks CRUD | [hacker-calendar](../features/hacker-calendar.md) | |
+| T84 | `[ ]` | API routes: milestones CRUD | [hacker-calendar](../features/hacker-calendar.md) | |
+| T85 | `[ ]` | API routes: proposals GET/PUT/DELETE | [hacker-calendar](../features/hacker-calendar.md) | |
+| T86 | `[ ]` | MCP tools: milestone_list, milestone_create | [hacker-calendar](../features/hacker-calendar.md) | |
+| T87 | `[ ]` | MCP tools: proposal_get, proposal_update | [hacker-calendar](../features/hacker-calendar.md) | |
+| T88 | `[ ]` | Install date-fns | [hacker-calendar](../features/hacker-calendar.md) | |
+| T89 | `[ ]` | CalendarPage /calendar route + header | [hacker-calendar](../features/hacker-calendar.md) | |
+| T90 | `[ ]` | WeekView — CSS grid with AM/PM slots | [hacker-calendar](../features/hacker-calendar.md) | |
+| T91 | `[ ]` | MonthView — 4-month compact grid | [hacker-calendar](../features/hacker-calendar.md) | |
+| T92 | `[ ]` | BlockCard component | [hacker-calendar](../features/hacker-calendar.md) | |
+| T93 | `[ ]` | OpportunitySidebar (draggable) | [hacker-calendar](../features/hacker-calendar.md) | |
+| T94 | `[ ]` | DnD: sidebar → calendar (POST block) | [hacker-calendar](../features/hacker-calendar.md) | |
+| T95 | `[ ]` | DnD: calendar → calendar (PATCH move) | [hacker-calendar](../features/hacker-calendar.md) | |
+| T96 | `[ ]` | DetailPanel with block editing | [hacker-calendar](../features/hacker-calendar.md) | |
+| T97 | `[ ]` | MilestoneList + AddMilestoneForm | [hacker-calendar](../features/hacker-calendar.md) | |
+| T98 | `[ ]` | MilestoneTimeline strip | [hacker-calendar](../features/hacker-calendar.md) | |
+| T99 | `[ ]` | ProposalEditor | [hacker-calendar](../features/hacker-calendar.md) | |
+| T100 | `[ ]` | App header nav: /hack ↔ /calendar | [hacker-calendar](../features/hacker-calendar.md) | |
+| T101 | `[ ]` | TanStack Query hooks for new data | [hacker-calendar](../features/hacker-calendar.md) | |
+| T102 | `[ ]` | Empty states + loading skeletons | [hacker-calendar](../features/hacker-calendar.md) | |
+| T103 | `[ ]` | Post-event re-noting (done/skipped) | [hacker-calendar](../features/hacker-calendar.md) | |
+
 ---
 
 ## Blocked

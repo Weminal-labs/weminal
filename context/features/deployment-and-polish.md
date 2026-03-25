@@ -1,6 +1,6 @@
 # Feature: Deployment & Polish
 
-> **Status:** `in-progress`
+> **Status:** `complete`
 > **Phase:** v1 — Phase 4
 > **Last updated:** 2026-03-25
 
@@ -64,9 +64,9 @@ Deploy the complete application to Vercel, configure production environment, add
 
 | Task # | Status | What needs to be done |
 |--------|--------|-----------------------|
-| T59 | `[ ]` | Set up Vercel project and connect GitHub repo |
-| T60 | `[ ]` | Configure production environment variables in Vercel |
-| T61 | `[ ]` | Deploy initial build to Vercel and verify |
+| T59 | `[x]` | Set up Vercel project and connect GitHub repo |
+| T60 | `[x]` | Configure production environment variables in Vercel |
+| T61 | `[x]` | Deploy initial build to Vercel and verify |
 | T62 | `[x]` | Implement rate limiting middleware (100 req/min per IP) |
 | T63 | `[x]` | Configure production CORS |
 | T64 | `[x]` | Add security response headers middleware |

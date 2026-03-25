@@ -56,6 +56,20 @@
 - End-to-end testing (web + MCP, all 4 types)
 - Cross-browser + mobile testing
 
+### Phase 5: Hacker Calendar (1.5 weeks)
+
+- 3 new Supabase tables: calendar_blocks, milestones, proposals (FK to opportunities)
+- Calendar API: blocks CRUD with date range, milestones CRUD, proposals GET/PUT
+- MCP tools: milestone_list, milestone_create, proposal_get, proposal_update
+- Week view — 7-column CSS grid with AM/PM slots, date-fns math
+- Month view — 4-month compact grid
+- Opportunity sidebar with drag & drop → create calendar blocks
+- Block moving within calendar (drag to different day/slot)
+- Detail panel: block editing, milestone list, proposal editor
+- Milestone timeline strip below calendar
+- Post-event notes (done/skipped status, learnings)
+- App header with /hack ↔ /calendar navigation
+
 ## v1.1 — Polish
 
 - Keyboard navigation (Cmd+K for search, arrow keys in table)

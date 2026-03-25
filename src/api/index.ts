@@ -7,6 +7,9 @@ import { securityHeaders } from './middleware/security-headers'
 import { checkDbHealth } from './lib/supabase'
 import opportunities from './routes/opportunities'
 import meta from './routes/meta'
+import calendarBlocks from './routes/calendar-blocks'
+import milestones from './routes/milestones'
+import proposals from './routes/proposals'
 
 const app = new Hono().basePath('/api/v1')
 
@@ -20,7 +23,7 @@ app.use(
     origin: process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',')
       : ['http://localhost:3000'],
-    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type'],
   })
 )
@@ -28,6 +31,9 @@ app.use(
 // Routes
 app.route('/opportunities', opportunities)
 app.route('/meta', meta)
+app.route('/calendar/blocks', calendarBlocks)
+app.route('/milestones', milestones)
+app.route('/proposals', proposals)
 
 // Health check
 app.get('/health', async (c) => {
