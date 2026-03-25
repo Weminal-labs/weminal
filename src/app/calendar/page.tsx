@@ -166,7 +166,9 @@ function CalendarPage() {
                   if (dayBlocks.length > 0) {
                     setSelectedBlock(dayBlocks[0])
                   } else {
-                    setSelectedBlock(null)
+                    // Switch to week view for that day so user can add blocks
+                    setCurrentDate(date)
+                    setView('week')
                   }
                 }}
               />
