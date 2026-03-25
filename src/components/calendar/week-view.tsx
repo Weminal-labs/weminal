@@ -33,87 +33,112 @@ export function WeekView({ currentDate, blocks, milestones, onBlockClick, onSlot
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault()
-    e.currentTarget.classList.add('bg-blue-50')
+    e.currentTarget.classList.add('ring-2', 'ring-blue-400', 'ring-inset', 'bg-blue-50/50')
   }
 
   function handleDragLeave(e: React.DragEvent) {
-    e.currentTarget.classList.remove('bg-blue-50')
+    e.currentTarget.classList.remove('ring-2', 'ring-blue-400', 'ring-inset', 'bg-blue-50/50')
   }
 
   function handleDrop(e: React.DragEvent, date: Date, slot: 'AM' | 'PM' | 'ALL_DAY') {
     e.preventDefault()
-    e.currentTarget.classList.remove('bg-blue-50')
+    e.currentTarget.classList.remove('ring-2', 'ring-blue-400', 'ring-inset', 'bg-blue-50/50')
     onSlotDrop(format(date, 'yyyy-MM-dd'), slot)
   }
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
+    <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
       {/* Day headers */}
-      {days.map(day => (
-        <div
-          key={day.toISOString()}
-          className={cn(
-            'bg-white px-2 py-2 text-center',
-            isSameDay(day, today) && 'bg-blue-50'
-          )}
-        >
-          <p className="text-xs text-gray-500">{format(day, 'EEE')}</p>
-          <p className={cn(
-            'text-lg font-semibold tabular-nums',
-            isSameDay(day, today) ? 'text-blue-600' : 'text-gray-900'
-          )}>
-            {format(day, 'd')}
-          </p>
-          {/* Milestone dots */}
-          {getMilestones(day).length > 0 && (
-            <div className="flex justify-center gap-0.5 mt-0.5">
-              {getMilestones(day).slice(0, 3).map(m => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    'size-1.5 rounded-full',
-                    m.type === 'deadline' ? 'bg-red-500' :
-                    m.type === 'office_hour' ? 'bg-teal-500' :
-                    'bg-gray-400'
+      <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
+        {days.map(day => {
+          const isToday = isSameDay(day, today)
+          const dayMilestones = getMilestones(day)
+          return (
+            <div
+              key={day.toISOString()}
+              className={cn(
+                'px-3 py-3 text-center border-r border-gray-200 last:border-r-0',
+                isToday && 'bg-blue-50'
+              )}
+            >
+              <p className={cn('text-xs font-medium uppercase tracking-wider', isToday ? 'text-blue-600' : 'text-gray-500')}>{format(day, 'EEE')}</p>
+              <p className={cn(
+                'text-2xl font-bold tabular-nums mt-0.5',
+                isToday ? 'text-blue-600' : 'text-gray-900'
+              )}>
+                {format(day, 'd')}
+              </p>
+              {dayMilestones.length > 0 && (
+                <div className="flex justify-center gap-1 mt-1.5">
+                  {dayMilestones.slice(0, 3).map(m => (
+                    <div
+                      key={m.id}
+                      className={cn(
+                        'size-2 rounded-full',
+                        m.type === 'deadline' ? 'bg-red-500' :
+                        m.type === 'office_hour' ? 'bg-teal-500' :
+                        m.type === 'announcement' ? 'bg-amber-500' :
+                        'bg-gray-400'
+                      )}
+                      title={m.title}
+                    />
+                  ))}
+                  {dayMilestones.length > 3 && (
+                    <span className="text-[9px] text-gray-400">+{dayMilestones.length - 3}</span>
                   )}
-                  title={m.title}
-                />
-              ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          )
+        })}
+      </div>
 
       {/* Slot rows */}
       {SLOTS.map(slot => (
-        days.map(day => {
-          const cellBlocks = getBlocks(day, slot)
-          return (
-            <div
-              key={`${day.toISOString()}-${slot}`}
-              className={cn(
-                'bg-white min-h-[80px] p-1 transition-colors',
-                isSameDay(day, today) && 'bg-blue-50/30'
-              )}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, day, slot)}
-            >
-              <p className="text-[10px] text-gray-400 mb-1">{slot}</p>
-              <div className="space-y-1">
-                {cellBlocks.map(block => (
-                  <BlockCard
-                    key={block.id}
-                    block={block}
-                    onClick={() => onBlockClick(block)}
-                    draggable
-                    onDragStart={() => onBlockDragStart(block)}
-                  />
-                ))}
+        <div key={slot} className="grid grid-cols-7 border-b border-gray-100 last:border-b-0">
+          {days.map(day => {
+            const cellBlocks = getBlocks(day, slot)
+            const isToday = isSameDay(day, today)
+            const isEmpty = cellBlocks.length === 0
+
+            return (
+              <div
+                key={`${day.toISOString()}-${slot}`}
+                className={cn(
+                  'min-h-[100px] p-2 border-r border-gray-100 last:border-r-0 transition-colors',
+                  isToday ? 'bg-blue-50/40' : 'bg-white',
+                  isEmpty && 'hover:bg-gray-50/50'
+                )}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, day, slot)}
+              >
+                <p className={cn(
+                  'text-[10px] font-semibold uppercase tracking-wider mb-2',
+                  slot === 'AM' ? 'text-amber-500' : 'text-indigo-400'
+                )}>
+                  {slot}
+                </p>
+                <div className="space-y-1.5">
+                  {cellBlocks.map(block => (
+                    <BlockCard
+                      key={block.id}
+                      block={block}
+                      onClick={() => onBlockClick(block)}
+                      draggable
+                      onDragStart={() => onBlockDragStart(block)}
+                    />
+                  ))}
+                </div>
+                {isEmpty && (
+                  <div className="flex items-center justify-center h-12 rounded-md border border-dashed border-gray-200 text-[10px] text-gray-300">
+                    Drop here
+                  </div>
+                )}
               </div>
-            </div>
-          )
-        })
+            )
+          })}
+        </div>
       ))}
     </div>
   )

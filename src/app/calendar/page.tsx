@@ -85,7 +85,7 @@ function CalendarPage() {
               <Link href="/hack" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 transition-colors">
                 <Table2 className="size-4" aria-hidden="true" /> Table
               </Link>
-              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900">
+              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900" aria-current="page">
                 <Calendar className="size-4" aria-hidden="true" /> Calendar
               </span>
             </nav>
@@ -113,14 +113,14 @@ function CalendarPage() {
             <button
               type="button"
               onClick={() => setView('week')}
-              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${view === 'week' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`rounded px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${view === 'week' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
             >
               Week
             </button>
             <button
               type="button"
               onClick={() => setView('month')}
-              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${view === 'month' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`rounded px-3 py-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${view === 'month' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
             >
               Month
             </button>

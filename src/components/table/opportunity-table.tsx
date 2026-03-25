@@ -43,13 +43,16 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
                 return (
                   <th
                     key={header.id}
-                    className={cn(
-                      'px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500',
-                      canSort && 'cursor-pointer select-none hover:text-gray-700'
-                    )}
-                    onClick={header.column.getToggleSortingHandler()}
+                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                    aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : undefined}
                   >
-                    <div className="flex items-center gap-1">
+                    <div
+                      className={cn('flex items-center gap-1', canSort && 'cursor-pointer select-none hover:text-gray-700')}
+                      role={canSort ? 'button' : undefined}
+                      tabIndex={canSort ? 0 : undefined}
+                      onClick={header.column.getToggleSortingHandler()}
+                      onKeyDown={canSort ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()?.(e as unknown as React.MouseEvent) } } : undefined}
+                    >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {canSort && (
                         sorted === 'asc' ? <ArrowUp className="size-3" aria-hidden="true" /> :
@@ -74,8 +77,11 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
             table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                className="hover:bg-gray-50 transition-colors cursor-pointer"
+                className="hover:bg-gray-50 transition-colors cursor-pointer focus-visible:bg-gray-100 focus-visible:outline-none"
+                tabIndex={0}
+                role="row"
                 onClick={() => onRowClick?.(row.original)}
+                onKeyDown={(e) => { if (e.key === 'Enter') onRowClick?.(row.original) }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-4 py-3 text-sm whitespace-nowrap">

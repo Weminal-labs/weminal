@@ -88,18 +88,19 @@ export function CreateOpportunityDialog() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
-              <div className="flex gap-2">
+            <fieldset>
+              <legend className="block text-sm font-medium text-gray-700 mb-1">Type *</legend>
+              <div className="flex gap-2" role="group" aria-label="Opportunity type">
                 {types.map(t => {
                   const colors = typeColors[t]
                   return (
                     <button
                       key={t}
                       type="button"
+                      aria-pressed={form.type === t}
                       onClick={() => setForm(prev => ({ ...prev, type: t }))}
                       className={cn(
-                        'rounded-full px-3 py-1.5 text-sm font-medium capitalize transition-all',
+                        'rounded-full px-3 py-1.5 text-sm font-medium capitalize transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1',
                         form.type === t
                           ? `${colors.bg} ${colors.text} ring-2 ring-offset-1 ring-gray-400`
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -110,26 +111,26 @@ export function CreateOpportunityDialog() {
                   )
                 })}
               </div>
+            </fieldset>
+
+            <div>
+              <label htmlFor="opp-name" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+              <Input id="opp-name" value={form.name} onChange={set('name')} placeholder="e.g. ETHGlobal Bangkok" autoComplete="off" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-              <Input value={form.name} onChange={set('name')} placeholder="e.g. ETHGlobal Bangkok" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea value={form.description} onChange={set('description')} rows={2} className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400" />
+              <label htmlFor="opp-desc" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea id="opp-desc" value={form.description} onChange={set('description')} rows={2} className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
-                <Input value={form.organization} onChange={set('organization')} placeholder="e.g. ETHGlobal" />
+                <label htmlFor="opp-org" className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
+                <Input id="opp-org" value={form.organization} onChange={set('organization')} placeholder="e.g. ETHGlobal" autoComplete="off" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select value={form.status} onChange={set('status')} className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm">
+                <label htmlFor="opp-status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select id="opp-status" value={form.status} onChange={set('status')} className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400">
                   {statuses.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
                 </select>
               </div>
@@ -137,34 +138,34 @@ export function CreateOpportunityDialog() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <Input type="date" value={form.start_date} onChange={set('start_date')} />
+                <label htmlFor="opp-start" className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <Input id="opp-start" type="date" value={form.start_date} onChange={set('start_date')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <Input type="date" value={form.end_date} onChange={set('end_date')} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reward Amount</label>
-                <Input type="number" value={form.reward_amount} onChange={set('reward_amount')} placeholder="10000" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
-                <Input value={form.website_url} onChange={set('website_url')} placeholder="https://..." />
+                <label htmlFor="opp-end" className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <Input id="opp-end" type="date" value={form.end_date} onChange={set('end_date')} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Blockchains</label>
-                <Input value={form.blockchains} onChange={set('blockchains')} placeholder="Ethereum, Polygon" />
+                <label htmlFor="opp-reward" className="block text-sm font-medium text-gray-700 mb-1">Reward Amount</label>
+                <Input id="opp-reward" type="number" value={form.reward_amount} onChange={set('reward_amount')} placeholder="10000" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                <Input value={form.tags} onChange={set('tags')} placeholder="defi, nft" />
+                <label htmlFor="opp-url" className="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                <Input id="opp-url" type="url" value={form.website_url} onChange={set('website_url')} placeholder="https://…" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="opp-chains" className="block text-sm font-medium text-gray-700 mb-1">Blockchains</label>
+                <Input id="opp-chains" value={form.blockchains} onChange={set('blockchains')} placeholder="Ethereum, Polygon" autoComplete="off" />
+              </div>
+              <div>
+                <label htmlFor="opp-tags" className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                <Input id="opp-tags" value={form.tags} onChange={set('tags')} placeholder="defi, nft" autoComplete="off" />
               </div>
             </div>
 

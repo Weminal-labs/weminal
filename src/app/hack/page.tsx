@@ -80,7 +80,7 @@ function OpportunitiesPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <nav className="flex items-center gap-1" aria-label="Main navigation">
-              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900">
+              <span className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-900" aria-current="page">
                 <Table2 className="size-4" aria-hidden="true" /> Table
               </span>
               <Link href="/calendar" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 transition-colors">

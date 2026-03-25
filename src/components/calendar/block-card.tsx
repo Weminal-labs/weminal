@@ -4,6 +4,7 @@ import type { CalendarBlock } from '@/hooks/use-calendar'
 import { typeColors } from '@/lib/type-colors'
 import type { OpportunityType } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Clock } from 'lucide-react'
 
 type Props = {
   block: CalendarBlock
@@ -17,24 +18,32 @@ export function BlockCard({ block, onClick, draggable, onDragStart }: Props) {
   const colors = oppType ? typeColors[oppType] : null
   const isDone = block.status === 'done'
   const isSkipped = block.status === 'skipped'
+  const isInProgress = block.status === 'in_progress'
 
   return (
     <button
       type="button"
       className={cn(
-        'w-full rounded-md px-2 py-1.5 text-left text-xs transition-colors',
-        colors ? `${colors.bg} ${colors.text}` : 'bg-slate-100 text-slate-600 border border-slate-200',
+        'w-full rounded-lg px-2.5 py-2 text-left text-xs transition-colors shadow-sm',
+        colors
+          ? `${colors.bg} ${colors.text} border border-transparent`
+          : 'bg-slate-50 text-slate-600 border border-slate-200',
         isDone && 'opacity-50',
-        isSkipped && 'opacity-40 line-through',
-        'hover:ring-2 hover:ring-gray-300 cursor-pointer'
+        isSkipped && 'opacity-40',
+        isInProgress && 'ring-2 ring-offset-1 ring-blue-300',
+        'hover:shadow-md active:shadow-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none'
       )}
       onClick={onClick}
       draggable={draggable}
       onDragStart={onDragStart}
       aria-label={`${block.title} — ${block.hours}h ${block.slot}`}
     >
-      <p className={cn('font-medium truncate', isSkipped && 'line-through')}>{block.title}</p>
-      <p className="text-[10px] opacity-70 tabular-nums">{block.hours}h &middot; {block.slot}</p>
+      <p className={cn('font-semibold truncate text-[13px]', isSkipped && 'line-through')}>{block.title}</p>
+      <div className="flex items-center gap-1 mt-0.5 opacity-75">
+        <Clock className="size-2.5" aria-hidden="true" />
+        <span className="tabular-nums">{block.hours}h</span>
+        {block.notes && <span className="truncate ml-1">— {block.notes}</span>}
+      </div>
     </button>
   )
 }

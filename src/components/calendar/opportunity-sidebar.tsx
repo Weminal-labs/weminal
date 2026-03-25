@@ -41,18 +41,22 @@ export function OpportunitySidebar({ onDragStart }: Props) {
         <div className="relative mb-2">
           <Search className="absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-gray-400" aria-hidden="true" />
           <Input
+            type="search"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search..."
+            placeholder="Search…"
+            aria-label="Search opportunities"
+            autoComplete="off"
             className="h-7 pl-7 text-xs"
           />
         </div>
         <div className="flex gap-1 flex-wrap">
           <button
             type="button"
+            aria-pressed={!typeFilter}
             onClick={() => setTypeFilter(undefined)}
             className={cn(
-              'rounded-full px-2 py-0.5 text-[10px] font-medium',
+              'rounded-full px-2 py-0.5 text-[10px] font-medium focus-visible:ring-2 focus-visible:ring-gray-400',
               !typeFilter ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
             )}
           >
@@ -62,9 +66,10 @@ export function OpportunitySidebar({ onDragStart }: Props) {
             <button
               key={t}
               type="button"
+              aria-pressed={typeFilter === t}
               onClick={() => setTypeFilter(typeFilter === t ? undefined : t)}
               className={cn(
-                'rounded-full px-2 py-0.5 text-[10px] font-medium capitalize',
+                'rounded-full px-2 py-0.5 text-[10px] font-medium capitalize focus-visible:ring-2 focus-visible:ring-gray-400',
                 typeFilter === t ? `${typeColors[t].bg} ${typeColors[t].text}` : 'bg-gray-100 text-gray-600'
               )}
             >

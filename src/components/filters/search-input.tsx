@@ -28,9 +28,12 @@ export function SearchInput({ value, onChange }: Props) {
     <div className="relative">
       <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-gray-400" aria-hidden="true" />
       <Input
+        type="search"
         value={local}
         onChange={(e) => setLocal(e.target.value)}
-        placeholder="Search..."
+        placeholder="Search…"
+        aria-label="Search opportunities"
+        autoComplete="off"
         className="h-8 w-48 pl-8 text-xs"
       />
     </div>
