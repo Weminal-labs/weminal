@@ -1,14 +1,14 @@
 # Feature: Web Frontend
 
-> **Status:** `in-progress`
-> **Phase:** v1 — Phase 3
-> **Last updated:** 2026-03-25
+> **Status:** `mostly-complete`
+> **Phase:** v1 — Phase 3 + Phase 5 additions
+> **Last updated:** 2026-03-26
 
 ---
 
 ## Summary
 
-Notion-like web table interface for browsing, filtering, creating, editing, and deleting crypto opportunities. Uses TanStack Table for headless table logic, shadcn/ui for components, TanStack Query for server state. Features type badges with color coding, type/status/organization filters, inline editing, URL-persisted filters, and responsive design.
+Multi-view web interface for managing crypto opportunities and calendar. Includes a Notion-like table at /hack, a visual calendar at /calendar, and a homepage at /. Uses TanStack Table for headless table logic, shadcn/ui for components, TanStack Query for server state. Features type badges with color coding, type/status/organization filters, calendar time-blocking, mobile card list view, and responsive design. MCP usage dialog shows configuration snippets for Claude Code and Claude Desktop.
 
 ---
 
@@ -100,9 +100,15 @@ Notion-like web table interface for browsing, filtering, creating, editing, and 
 | T53 | `[x]` | Add loading skeletons |
 | T54 | `[x]` | Add empty state (generic and per-type) |
 | T55 | `[x]` | Add toast notifications for all CRUD operations |
-| T56 | `[>]` | Implement responsive card layout for mobile (with type badge) |
-| T57 | `[>]` | Add column visibility toggle |
-| T58 | `[>]` | Match Figma design tokens |
+| T56 | `[x]` | Implement responsive card layout for mobile (with type badge) |
+| T57 | `[ ]` | Add column visibility toggle |
+| T58 | `[ ]` | Match Figma design tokens |
+| T105 | `[x]` | Homepage at / with link to /hack |
+| T106 | `[x]` | Opportunities table moved to /hack route |
+| T107 | `[x]` | Mobile card list view (< md breakpoint) |
+| T108 | `[x]` | Mobile bottom sheet detail panel |
+| T109 | `[x]` | MCP Usage dialog with Claude Code + Claude Desktop config snippets |
+| T110 | `[x]` | Responsive filter bar for mobile |
 
 ---
 

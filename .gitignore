@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code local config (keep only CLAUDE.md)
+.agents/
+.claude/agents/
+.claude/commands/
+.claude/hooks/
+.claude/skills/
+.claude/settings.json
+.claude/settings.local.json
+.claude/mcp-config-example.json
+skills-lock.json
+
+# supabase local
+supabase/.temp/

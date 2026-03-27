@@ -1,14 +1,14 @@
 # Feature: MCP Server
 
 > **Status:** `complete`
-> **Phase:** v1 — Phase 2
-> **Last updated:** 2026-03-25
+> **Phase:** v1 — Phase 2 + Phase 5 (HTTP endpoint, 16 tools)
+> **Last updated:** 2026-03-26
 
 ---
 
 ## Summary
 
-Build an MCP server exposing opportunity CRUD as 5 tools and lookup data as 4 resources. Covers all 4 opportunity types. Uses stdio transport for Claude Code integration. Shares Supabase client and Zod schemas from Phase 1.
+MCP server exposing 16 tools for opportunity, calendar block, milestone, and proposal CRUD. Supports lookup data as 6 resources. Two transports: stdio for local Claude Code integration, HTTP at `/api/mcp` for remote Claude Desktop access with Bearer token auth. Shares Supabase client and Zod schemas from Phase 1. Public read tools (list/get), authenticated write tools (create/update/delete).
 
 ---
 
@@ -59,9 +59,10 @@ Build an MCP server exposing opportunity CRUD as 5 tools and lookup data as 4 re
 
 | Aspect | MVP (v1) | Full Version |
 |--------|----------|--------------|
-| Transport | stdio only | HTTP/SSE for remote access |
-| Auth | No auth (local only) | API key or token auth |
-| Rate limiting | None (single consumer) | Token bucket |
+| Transport | stdio + HTTP/JSON-RPC | WebSocket, SSE |
+| Auth | HTTP Bearer token | OAuth, JWT, webhook signatures |
+| Rate limiting | None (stdio), global quota per IP (HTTP) | Per-user rate limiting with Upstash |
+| Tools | 16 | + batch operations, search, export |
 
 ---
 
@@ -95,6 +96,7 @@ Build an MCP server exposing opportunity CRUD as 5 tools and lookup data as 4 re
 | T35 | `[x]` | Create Claude Code config example |
 | T36 | `[x]` | Test all tools via Claude Code (across all 4 types) |
 | T37 | `[x]` | Test all resources and error cases |
+| T104 | `[x]` | MCP HTTP endpoint at /api/mcp (POST JSON-RPC, GET info) |
 
 ---
 

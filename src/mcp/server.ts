@@ -26,7 +26,7 @@ const server = new McpServer({
 
 server.tool(
   'opportunity_list',
-  'List crypto opportunities (hackathons, grants, fellowships, bounties) with optional filters. Returns paginated results.',
+  'List crypto opportunities (hackathons, grants, fellowships, bounties, bootcamps) with optional filters. Returns paginated results.',
   {
     type: z.enum(opportunityTypes).optional().describe('Filter by opportunity type'),
     status: z.enum(opportunityStatuses).optional().describe('Filter by status'),
@@ -34,6 +34,7 @@ server.tool(
     blockchain: z.string().optional().describe("Filter by blockchain name (e.g. 'Ethereum')"),
     tag: z.string().optional().describe('Filter by tag'),
     search: z.string().optional().describe('Full-text search on name and description'),
+    parent_hackathon_id: z.string().uuid().optional().describe('Filter bootcamps by linked hackathon UUID'),
     start_date_gte: z.string().optional().describe('Start date >= value (YYYY-MM-DD)'),
     end_date_lte: z.string().optional().describe('End date <= value (YYYY-MM-DD)'),
     sort_by: z.enum(['name', 'type', 'status', 'organization', 'start_date', 'end_date', 'reward_amount', 'created_at', 'updated_at']).optional().default('created_at'),
@@ -66,7 +67,7 @@ server.tool(
 
 server.tool(
   'opportunity_create',
-  'Create a new opportunity entry. Supports hackathons, grants, fellowships, and bounties. Name and type are required.',
+  'Create a new opportunity entry. Supports hackathons, grants, fellowships, bounties, and bootcamps. Name and type are required.',
   {
     name: z.string().describe('Opportunity name'),
     type: z.enum(opportunityTypes).describe('Opportunity type'),
@@ -83,6 +84,7 @@ server.tool(
     tags: z.array(z.string()).optional().describe('Categorization tags'),
     links: z.array(z.object({ label: z.string(), url: z.string() })).optional().describe('Related links [{label, url}]'),
     notes: z.string().optional().describe('Internal notes'),
+    parent_hackathon_id: z.string().uuid().optional().describe('UUID of parent hackathon (bootcamp type only)'),
   },
   async (params) => {
     const data = await createOpportunity(params)
@@ -97,7 +99,7 @@ server.tool(
 
 server.tool(
   'opportunity_update',
-  'Update an existing opportunity (hackathon, grant, fellowship, or bounty). Only provided fields are changed.',
+  'Update an existing opportunity. Only provided fields are changed.',
   {
     id: z.string().uuid().describe('Opportunity UUID to update'),
     name: z.string().optional().describe('Opportunity name'),
@@ -115,6 +117,7 @@ server.tool(
     tags: z.array(z.string()).optional().describe('Categorization tags'),
     links: z.array(z.object({ label: z.string(), url: z.string() })).optional().describe('Related links'),
     notes: z.string().optional().describe('Internal notes'),
+    parent_hackathon_id: z.string().uuid().nullable().optional().describe('UUID of parent hackathon (bootcamp only, null to unlink)'),
   },
   async ({ id, ...updates }) => {
     if (Object.keys(updates).length === 0) {

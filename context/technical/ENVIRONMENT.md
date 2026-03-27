@@ -15,6 +15,7 @@
 |----------|-------------|---------|
 | `NEXT_PUBLIC_API_URL` | API base URL (or use relative `/api/v1`) | `/api/v1` |
 | `ALLOWED_ORIGINS` | Comma-separated CORS origins for production | `https://your-app.vercel.app` |
+| `MCP_API_KEY` | Bearer token for authenticated MCP write operations (HTTP endpoint at `/api/mcp`) | — |
 
 ## Setup Instructions
 
@@ -40,14 +41,16 @@
 
 ### MCP Server
 
-The MCP server needs the same Supabase variables. Pass them via the Claude Code config:
+#### Stdio Transport (Local)
+
+For local Claude Code development, run the stdio MCP server:
 
 ```json
 {
   "mcpServers": {
     "crypto-opportunities": {
       "command": "node",
-      "args": ["dist/mcp-server.js"],
+      "args": ["dist/mcp-server.mjs"],
       "env": {
         "SUPABASE_URL": "https://xxx.supabase.co",
         "SUPABASE_SERVICE_ROLE_KEY": "eyJ..."
@@ -56,6 +59,25 @@ The MCP server needs the same Supabase variables. Pass them via the Claude Code 
   }
 }
 ```
+
+#### HTTP Transport (Remote)
+
+For remote Claude Desktop access, use the HTTP MCP endpoint at `/api/mcp`:
+
+```json
+{
+  "mcpServers": {
+    "crypto-opportunities": {
+      "url": "https://weminal.vercel.app/api/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MCP_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Set `MCP_API_KEY` in Vercel production environment for write operations.
 
 ## Security Notes
 

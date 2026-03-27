@@ -12,6 +12,7 @@
 | **shadcn/ui** | Copy-paste UI components (Table, Button, Dialog, Select, Input, Badge, etc.) |
 | **Tailwind CSS** | Utility-first styling |
 | **nuqs** | Type-safe URL search params for filter state persistence |
+| **date-fns** | Date/time utilities (calendar math, formatting) |
 | **Zod** | Client-side form validation (shared schemas with API) |
 
 ## Backend

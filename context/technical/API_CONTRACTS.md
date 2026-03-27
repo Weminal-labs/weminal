@@ -178,17 +178,193 @@ Returns distinct organizations across all opportunities.
 
 Returns 503 if database is unreachable.
 
+### POST /calendar/blocks
+
+Create a calendar block (opportunity time slot).
+
+**Request Body:**
+```json
+{
+  "opportunity_id": "550e8400-e29b-41d4-a716-446655440000",
+  "date": "2026-04-15",
+  "slot": "morning",
+  "hours": 4,
+  "notes": "Focus on UI design"
+}
+```
+
+**Response 201:** Created block with `id`, `created_at`, `updated_at`.
+
+### GET /calendar/blocks
+
+List calendar blocks with date range filter.
+
+**Query Parameters:**
+- `start_date`: ISO date (inclusive)
+- `end_date`: ISO date (inclusive)
+- `opportunity_id`: Filter by opportunity (optional)
+
+**Response 200:** Array of blocks.
+
+### PATCH /calendar/blocks/:id
+
+Update block (move to different date/slot, change notes, mark done/skipped).
+
+**Response 200:** Updated block.
+
+### DELETE /calendar/blocks/:id
+
+Delete block.
+
+**Response 200:** `{ "success": true, "deleted_id": "..." }`
+
+### POST /opportunities/:id/milestones
+
+Create milestone for opportunity.
+
+**Request Body:**
+```json
+{
+  "title": "Registration deadline",
+  "date": "2026-05-10",
+  "notes": "Team roster due"
+}
+```
+
+**Response 201:** Created milestone.
+
+### GET /opportunities/:id/milestones
+
+List milestones for opportunity.
+
+### PATCH /milestones/:id
+
+Update milestone.
+
+### DELETE /milestones/:id
+
+Delete milestone.
+
+### GET /milestones
+
+List all milestones with optional date range filter.
+
+**Query Parameters:**
+- `start_date`: ISO date (inclusive)
+- `end_date`: ISO date (inclusive)
+
+### GET /opportunities/:id/proposal
+
+Get proposal for opportunity.
+
+### POST /opportunities/:id/proposal
+
+Create or update proposal for opportunity.
+
+**Request Body:**
+```json
+{
+  "content": "Markdown proposal text",
+  "status": "draft",
+  "links": [{ "label": "Submission", "url": "https://..." }]
+}
+```
+
+### PATCH /proposals/:id
+
+Update proposal.
+
+### DELETE /proposals/:id
+
+Delete proposal.
+
 ---
 
-## MCP Tools
+## HTTP MCP Endpoint
 
-| Tool | Description | Required Params |
-|------|-------------|-----------------|
-| `opportunity_list` | List opportunities with filters | none (all optional) |
-| `opportunity_get` | Get single opportunity by ID | `id` (UUID) |
-| `opportunity_create` | Create new opportunity | `name`, `type` |
-| `opportunity_update` | Update existing opportunity | `id` (UUID) |
-| `opportunity_delete` | Delete opportunity by ID | `id` (UUID) |
+**Base URL:** `/api/mcp`
+
+**Transport:** JSON-RPC 2.0 over HTTP POST. GET returns server info.
+
+### Authentication
+
+- **Public read tools:** `opportunity_list`, `opportunity_get`, `block_list`, `milestone_list`, `proposal_get`
+- **Authenticated write tools:** all `_create`, `_update`, `_delete` operations
+- **Header:** `Authorization: Bearer <MCP_API_KEY>` (required for write)
+
+### POST /api/mcp
+
+**Request:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "opportunity_list",
+    "arguments": { "type": "grant" }
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [{ "type": "text", "text": "..." }]
+  }
+}
+```
+
+Also supports:
+- `initialize` — get protocol version and capabilities
+- `tools/list` — list available tools
+- `resources/list` — list available resources
+- `resources/read` — read a resource by URI
+- `notifications/initialized` — acknowledge initialization
+
+### GET /api/mcp
+
+Returns server info, auth scheme, available tools, and Claude Code configuration example.
+
+---
+
+## MCP Tools (16 total)
+
+### Opportunity Tools (5)
+| Tool | Auth | Description |
+|------|------|-------------|
+| `opportunity_list` | public | List opportunities with filters |
+| `opportunity_get` | public | Get single opportunity by ID |
+| `opportunity_create` | auth | Create new opportunity |
+| `opportunity_update` | auth | Update existing opportunity |
+| `opportunity_delete` | auth | Delete opportunity by ID |
+
+### Calendar Block Tools (6)
+| Tool | Auth | Description |
+|------|------|-------------|
+| `block_list` | public | List blocks with date range filter |
+| `block_get` | public | Get block by ID |
+| `block_create` | auth | Create calendar block |
+| `block_update` | auth | Update/move block |
+| `block_delete` | auth | Delete block |
+
+### Milestone Tools (4)
+| Tool | Auth | Description |
+|------|------|-------------|
+| `milestone_list` | public | List milestones with date range filter |
+| `milestone_get` | public | Get milestone by ID |
+| `milestone_create` | auth | Create milestone |
+| `milestone_update` | auth | Update milestone |
+| `milestone_delete` | auth | Delete milestone |
+
+### Proposal Tools (2)
+| Tool | Auth | Description |
+|------|------|-------------|
+| `proposal_get` | public | Get proposal by ID or opportunity_id |
+| `proposal_update` | auth | Update proposal |
 
 ## MCP Resources
 
@@ -198,3 +374,5 @@ Returns 503 if database is unreachable.
 | `opportunity://meta/statuses` | Valid status enum values |
 | `opportunity://meta/blockchains` | Distinct blockchains in database |
 | `opportunity://meta/tags` | Distinct tags in database |
+| `opportunity://calendar/upcoming-milestones` | Milestones in next 30 days |
+| `opportunity://calendar/blocks-by-week` | Blocks grouped by week |

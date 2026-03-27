@@ -38,7 +38,7 @@ export function createMcpServer() {
 
   server.tool(
     'opportunity_list',
-    'List crypto opportunities (hackathons, grants, fellowships, bounties) with optional filters.',
+    'List crypto opportunities (hackathons, grants, fellowships, bounties, bootcamps) with optional filters.',
     {
       type: z.enum(opportunityTypes).optional().describe('Filter by type'),
       status: z.enum(opportunityStatuses).optional().describe('Filter by status'),
@@ -46,6 +46,7 @@ export function createMcpServer() {
       blockchain: z.string().optional().describe('Filter by blockchain'),
       tag: z.string().optional().describe('Filter by tag'),
       search: z.string().optional().describe('Full-text search'),
+      parent_hackathon_id: z.string().uuid().optional().describe('Filter bootcamps by parent hackathon UUID'),
       sort_by: z.enum(['name', 'type', 'status', 'organization', 'start_date', 'end_date', 'reward_amount', 'created_at', 'updated_at']).optional().default('created_at'),
       sort_order: z.enum(['asc', 'desc']).optional().default('desc'),
       page: z.number().int().min(1).optional().default(1),
@@ -141,6 +142,7 @@ export function createMcpServer() {
       tags: z.array(z.string()).optional(),
       links: z.array(z.object({ label: z.string(), url: z.string() })).optional(),
       notes: z.string().optional(),
+      parent_hackathon_id: z.string().uuid().optional().describe('Parent hackathon UUID (bootcamp only)'),
     },
     async (params) => {
       const data = await createOpportunity(params)
@@ -158,6 +160,7 @@ export function createMcpServer() {
       start_date: z.string().optional(), end_date: z.string().optional(),
       reward_amount: z.number().optional(), blockchains: z.array(z.string()).optional(),
       tags: z.array(z.string()).optional(), notes: z.string().optional(),
+      parent_hackathon_id: z.string().uuid().nullable().optional().describe('Parent hackathon UUID (bootcamp only, null to unlink)'),
     },
     async ({ id, ...updates }) => {
       const data = await updateOpportunity(id, updates)

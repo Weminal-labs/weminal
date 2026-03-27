@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { typeColors } from '@/lib/type-colors'
 import type { OpportunityType } from '@/lib/types'
-import { useCreateOpportunity } from '@/hooks/use-opportunities'
+import { useCreateOpportunity, useOpportunities } from '@/hooks/use-opportunities'
 import { toast } from 'sonner'
 import { Plus, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const types: OpportunityType[] = ['hackathon', 'grant', 'fellowship', 'bounty']
+const types: OpportunityType[] = ['hackathon', 'grant', 'fellowship', 'bounty', 'bootcamp']
 const statuses = ['discovered', 'evaluating', 'applying', 'accepted', 'in_progress', 'submitted', 'completed', 'rejected', 'cancelled']
 
 export function CreateOpportunityDialog() {
@@ -29,12 +29,14 @@ export function CreateOpportunityDialog() {
     reward_currency: 'USD',
     blockchains: '',
     tags: '',
+    parent_hackathon_id: '',
   })
 
   const mutation = useCreateOpportunity()
+  const { data: hackathonData } = useOpportunities({ type: 'hackathon', per_page: 200 })
 
   function reset() {
-    setForm({ name: '', type: '', description: '', status: 'discovered', organization: '', website_url: '', start_date: '', end_date: '', reward_amount: '', reward_currency: 'USD', blockchains: '', tags: '' })
+    setForm({ name: '', type: '', description: '', status: 'discovered', organization: '', website_url: '', start_date: '', end_date: '', reward_amount: '', reward_currency: 'USD', blockchains: '', tags: '', parent_hackathon_id: '' })
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,6 +60,7 @@ export function CreateOpportunityDialog() {
     if (form.reward_currency) input.reward_currency = form.reward_currency
     if (form.blockchains) input.blockchains = form.blockchains.split(',').map(s => s.trim()).filter(Boolean)
     if (form.tags) input.tags = form.tags.split(',').map(s => s.trim()).filter(Boolean)
+    if (form.type === 'bootcamp' && form.parent_hackathon_id) input.parent_hackathon_id = form.parent_hackathon_id
 
     try {
       await mutation.mutateAsync(input)
@@ -112,6 +115,23 @@ export function CreateOpportunityDialog() {
                 })}
               </div>
             </fieldset>
+
+            {form.type === 'bootcamp' && (
+              <div>
+                <label htmlFor="opp-parent" className="block text-sm font-medium text-gray-700 mb-1">Parent Hackathon</label>
+                <select
+                  id="opp-parent"
+                  value={form.parent_hackathon_id}
+                  onChange={set('parent_hackathon_id')}
+                  className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
+                >
+                  <option value="">None (standalone bootcamp)</option>
+                  {(hackathonData?.data ?? []).map(h => (
+                    <option key={h.id} value={h.id}>{h.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label htmlFor="opp-name" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>

@@ -44,53 +44,34 @@ Tasks that are planned but not started yet. Ordered by priority.
 
 | # | Status | Task | Feature | Notes |
 |---|--------|------|---------|-------|
-| T49 | `[>]` | Build EditableCell component | [web-frontend](../features/web-frontend.md) | Deferred to v1.1 |
-| T56 | `[>]` | Implement responsive card layout for mobile | [web-frontend](../features/web-frontend.md) | Deferred to v1.1 |
-| T57 | `[ ]` | Add column visibility toggle | [web-frontend](../features/web-frontend.md) | |
-| T58 | `[ ]` | Match Figma design tokens | [web-frontend](../features/web-frontend.md) | |
+| T57 | `[ ]` | Add column visibility toggle | [web-frontend](../features/web-frontend.md) | v1.1 |
+| T58 | `[ ]` | Match Figma design tokens | [web-frontend](../features/web-frontend.md) | v1.1 |
 
 ### Phase 4: Deployment & Polish
 
 | # | Status | Task | Feature | Notes |
 |---|--------|------|---------|-------|
-| T59 | `[ ]` | Set up Vercel project and connect GitHub repo | [deployment-and-polish](../features/deployment-and-polish.md) | Needs Vercel account |
-| T60 | `[ ]` | Configure production environment variables | [deployment-and-polish](../features/deployment-and-polish.md) | Needs Vercel |
-| T61 | `[ ]` | Deploy initial build to Vercel | [deployment-and-polish](../features/deployment-and-polish.md) | Needs Vercel |
-| T77 | `[ ]` | Run launch checklist | [deployment-and-polish](../features/deployment-and-polish.md) | After deploy |
-| T75 | `[ ]` | Cross-browser testing | [deployment-and-polish](../features/deployment-and-polish.md) | |
-| T76 | `[ ]` | Mobile responsive testing | [deployment-and-polish](../features/deployment-and-polish.md) | |
-| T77 | `[ ]` | Run launch checklist | [deployment-and-polish](../features/deployment-and-polish.md) | |
+| T74 | `[>]` | End-to-end testing (web + MCP, all 4 types) | [deployment-and-polish](../features/deployment-and-polish.md) | Deferred to v1.1 |
+| T75 | `[>]` | Cross-browser testing | [deployment-and-polish](../features/deployment-and-polish.md) | Deferred to v1.1 |
+| T76 | `[>]` | Mobile responsive testing | [deployment-and-polish](../features/deployment-and-polish.md) | Deferred to v1.1 |
+| T77 | `[ ]` | Run launch checklist | [deployment-and-polish](../features/deployment-and-polish.md) | Pending |
 
-### Phase 5: Hacker Calendar
+### Phase 5: Hacker Calendar — Complete
+
+### Phase 6: Bootcamp Type — Upcoming
 
 | # | Status | Task | Feature | Notes |
 |---|--------|------|---------|-------|
-| T78 | `[ ]` | Create migration: calendar_blocks table | [hacker-calendar](../features/hacker-calendar.md) | |
-| T79 | `[ ]` | Create migration: milestones table | [hacker-calendar](../features/hacker-calendar.md) | |
-| T80 | `[ ]` | Create migration: proposals table | [hacker-calendar](../features/hacker-calendar.md) | |
-| T81 | `[ ]` | Seed milestones for existing opportunities | [hacker-calendar](../features/hacker-calendar.md) | |
-| T82 | `[ ]` | Zod schemas for blocks, milestones, proposals | [hacker-calendar](../features/hacker-calendar.md) | |
-| T83 | `[ ]` | API routes: /calendar/blocks CRUD | [hacker-calendar](../features/hacker-calendar.md) | |
-| T84 | `[ ]` | API routes: milestones CRUD | [hacker-calendar](../features/hacker-calendar.md) | |
-| T85 | `[ ]` | API routes: proposals GET/PUT/DELETE | [hacker-calendar](../features/hacker-calendar.md) | |
-| T86 | `[ ]` | MCP tools: milestone_list, milestone_create | [hacker-calendar](../features/hacker-calendar.md) | |
-| T87 | `[ ]` | MCP tools: proposal_get, proposal_update | [hacker-calendar](../features/hacker-calendar.md) | |
-| T88 | `[ ]` | Install date-fns | [hacker-calendar](../features/hacker-calendar.md) | |
-| T89 | `[ ]` | CalendarPage /calendar route + header | [hacker-calendar](../features/hacker-calendar.md) | |
-| T90 | `[ ]` | WeekView — CSS grid with AM/PM slots | [hacker-calendar](../features/hacker-calendar.md) | |
-| T91 | `[ ]` | MonthView — 4-month compact grid | [hacker-calendar](../features/hacker-calendar.md) | |
-| T92 | `[ ]` | BlockCard component | [hacker-calendar](../features/hacker-calendar.md) | |
-| T93 | `[ ]` | OpportunitySidebar (draggable) | [hacker-calendar](../features/hacker-calendar.md) | |
-| T94 | `[ ]` | DnD: sidebar → calendar (POST block) | [hacker-calendar](../features/hacker-calendar.md) | |
-| T95 | `[ ]` | DnD: calendar → calendar (PATCH move) | [hacker-calendar](../features/hacker-calendar.md) | |
-| T96 | `[ ]` | DetailPanel with block editing | [hacker-calendar](../features/hacker-calendar.md) | |
-| T97 | `[ ]` | MilestoneList + AddMilestoneForm | [hacker-calendar](../features/hacker-calendar.md) | |
-| T98 | `[ ]` | MilestoneTimeline strip | [hacker-calendar](../features/hacker-calendar.md) | |
-| T99 | `[ ]` | ProposalEditor | [hacker-calendar](../features/hacker-calendar.md) | |
-| T100 | `[ ]` | App header nav: /hack ↔ /calendar | [hacker-calendar](../features/hacker-calendar.md) | |
-| T101 | `[ ]` | TanStack Query hooks for new data | [hacker-calendar](../features/hacker-calendar.md) | |
-| T102 | `[ ]` | Empty states + loading skeletons | [hacker-calendar](../features/hacker-calendar.md) | |
-| T103 | `[ ]` | Post-event re-noting (done/skipped) | [hacker-calendar](../features/hacker-calendar.md) | |
+| T111 | `[ ]` | Migration: add 'bootcamp' to opportunity_type enum | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T112 | `[ ]` | Migration: add parent_hackathon_id column with FK, constraint, index | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T113 | `[ ]` | Update Zod schemas for bootcamp type + parent_hackathon_id validation | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T114 | `[ ]` | Update query builder for parent_hackathon_id filter + joined query | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T115 | `[ ]` | Update API responses to include parent_hackathon_name | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T116 | `[ ]` | Update MCP tools for bootcamp type + parent_hackathon_id args | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T117 | `[ ]` | Add bootcamp to TypeBadge (teal) and TypeFilter | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T118 | `[ ]` | Add HackathonSelect to CreateOpportunityDialog (type = bootcamp) | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T119 | `[ ]` | Add ParentHackathonChip to table rows + togglable column | [bootcamp-type](../features/bootcamp-type.md) | —— |
+| T120 | `[ ]` | Update MCP Usage dialog / docs for bootcamp | [bootcamp-type](../features/bootcamp-type.md) | —— |
 
 ---
 
@@ -175,6 +156,39 @@ Finished tasks — kept for reference and audit trail.
 | T71 | Write API reference docs | deployment-and-polish | 2026-03-25 |
 | T72 | Write MCP setup guide | deployment-and-polish | 2026-03-25 |
 | T73 | Write deployment guide | deployment-and-polish | 2026-03-25 |
+| T78 | Create migration: calendar_blocks table | hacker-calendar | 2026-03-26 |
+| T79 | Create migration: milestones table | hacker-calendar | 2026-03-26 |
+| T80 | Create migration: proposals table | hacker-calendar | 2026-03-26 |
+| T81 | Seed milestones for existing opportunities | hacker-calendar | 2026-03-26 |
+| T82 | Zod schemas for blocks, milestones, proposals | hacker-calendar | 2026-03-26 |
+| T83 | API routes: /calendar/blocks CRUD with date range filter | hacker-calendar | 2026-03-26 |
+| T84 | API routes: /opportunities/:id/milestones CRUD + /milestones date range | hacker-calendar | 2026-03-26 |
+| T85 | API routes: /opportunities/:id/proposal GET/PUT/DELETE | hacker-calendar | 2026-03-26 |
+| T86 | MCP tools: milestone_list, milestone_create | hacker-calendar | 2026-03-26 |
+| T87 | MCP tools: proposal_get, proposal_update | hacker-calendar | 2026-03-26 |
+| T88 | Install date-fns | hacker-calendar | 2026-03-26 |
+| T89 | CalendarPage /calendar route with header + view toggle + navigation | hacker-calendar | 2026-03-26 |
+| T90 | WeekView — 7-column CSS grid with AM/PM slots | hacker-calendar | 2026-03-26 |
+| T91 | MonthView — 4-month compact grid | hacker-calendar | 2026-03-26 |
+| T92 | BlockCard component with type-colored styling | hacker-calendar | 2026-03-26 |
+| T93 | OpportunitySidebar (draggable cards, type filter, search) | hacker-calendar | 2026-03-26 |
+| T94 | Drag & Drop: sidebar → calendar (POST new block) | hacker-calendar | 2026-03-26 |
+| T95 | Drag & Drop: calendar → calendar (PATCH move block) | hacker-calendar | 2026-03-26 |
+| T96 | DetailPanel with block editing (hours, notes, status) | hacker-calendar | 2026-03-26 |
+| T97 | MilestoneList + AddMilestoneForm per opportunity | hacker-calendar | 2026-03-26 |
+| T98 | MilestoneTimeline strip below calendar | hacker-calendar | 2026-03-26 |
+| T99 | ProposalEditor — markdown textarea, status, links | hacker-calendar | 2026-03-26 |
+| T100 | App header navigation: /hack ↔ /calendar tabs | hacker-calendar | 2026-03-26 |
+| T101 | TanStack Query hooks for blocks, milestones, proposals | hacker-calendar | 2026-03-26 |
+| T102 | Empty states + loading skeletons for calendar | hacker-calendar | 2026-03-26 |
+| T103 | Post-event re-noting (done/skipped status, muted styling) | hacker-calendar | 2026-03-26 |
+| T104 | MCP HTTP endpoint at /api/mcp (POST JSON-RPC, GET info) | mcp-server | 2026-03-26 |
+| T105 | Homepage at / with link to /hack | web-frontend | 2026-03-26 |
+| T106 | Opportunities table moved to /hack route | web-frontend | 2026-03-26 |
+| T107 | Mobile card list view (< md breakpoint) | web-frontend | 2026-03-26 |
+| T108 | Mobile bottom sheet detail panel | web-frontend | 2026-03-26 |
+| T109 | MCP Usage dialog with Claude Code + Claude Desktop config snippets | web-frontend | 2026-03-26 |
+| T110 | Responsive filter bar for mobile | web-frontend | 2026-03-26 |
 
 ---
 

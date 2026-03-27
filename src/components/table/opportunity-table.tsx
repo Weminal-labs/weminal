@@ -68,6 +68,9 @@ function MobileCardList({ data, onRowClick }: { data: Opportunity[]; onRowClick?
               {opp.organization && (
                 <span className="text-xs text-gray-500">{opp.organization}</span>
               )}
+              {opp.parent_hackathon_name && (
+                <span className="text-xs text-teal-600">↳ {opp.parent_hackathon_name}</span>
+              )}
             </div>
 
             {(reward || endDate || opp.website_url) && (

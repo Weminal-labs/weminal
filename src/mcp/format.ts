@@ -15,12 +15,14 @@ type OpportunityRow = {
   tags?: string[]
   links?: { label: string; url: string }[]
   notes?: string | null
+  parent_hackathon_id?: string | null
+  parent_hackathon_name?: string | null
   created_at: string
   updated_at: string
 }
 
 type ListResult = {
-  data: OpportunityRow[]
+  data: Record<string, unknown>[]
   pagination: {
     page: number
     per_page: number
@@ -38,7 +40,8 @@ export function formatListResponse(result: ListResult, typeFilter?: string): str
     '',
   ]
 
-  for (const item of data) {
+  for (const raw of data) {
+    const item = raw as OpportunityRow
     const reward = item.reward_amount
       ? `${item.reward_currency ?? 'USD'} ${Number(item.reward_amount).toLocaleString()}${item.reward_token ? ` (${item.reward_token})` : ''}`
       : 'N/A'
@@ -66,7 +69,7 @@ export function formatListResponse(result: ListResult, typeFilter?: string): str
   return lines.join('\n')
 }
 
-export function formatSingleResponse(item: OpportunityRow): string {
+export function formatSingleResponse(item: Record<string, unknown>): string {
   return JSON.stringify(item, null, 2)
 }
 

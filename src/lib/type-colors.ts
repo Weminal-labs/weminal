@@ -5,6 +5,7 @@ export const typeColors: Record<OpportunityType, { bg: string; text: string; dot
   grant: { bg: 'bg-green-100 dark:bg-green-900', text: 'text-green-800 dark:text-green-200', dot: 'bg-green-500' },
   fellowship: { bg: 'bg-purple-100 dark:bg-purple-900', text: 'text-purple-800 dark:text-purple-200', dot: 'bg-purple-500' },
   bounty: { bg: 'bg-orange-100 dark:bg-orange-900', text: 'text-orange-800 dark:text-orange-200', dot: 'bg-orange-500' },
+  bootcamp: { bg: 'bg-teal-100 dark:bg-teal-900', text: 'text-teal-800 dark:text-teal-200', dot: 'bg-teal-500' },
 }
 
 export const statusColors: Record<string, string> = {

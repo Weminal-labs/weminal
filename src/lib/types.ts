@@ -1,4 +1,4 @@
-export type OpportunityType = 'hackathon' | 'grant' | 'fellowship' | 'bounty'
+export type OpportunityType = 'hackathon' | 'grant' | 'fellowship' | 'bounty' | 'bootcamp'
 
 export type OpportunityStatus =
   | 'discovered'
@@ -33,6 +33,8 @@ export type Opportunity = {
   tags: string[]
   links: OpportunityLink[]
   notes: string | null
+  parent_hackathon_id: string | null
+  parent_hackathon_name: string | null
   created_at: string
   updated_at: string
 }

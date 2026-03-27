@@ -56,19 +56,36 @@
 - End-to-end testing (web + MCP, all 4 types)
 - Cross-browser + mobile testing
 
-### Phase 5: Hacker Calendar (1.5 weeks)
+### Phase 5: Hacker Calendar (1.5 weeks) — COMPLETE
 
-- 3 new Supabase tables: calendar_blocks, milestones, proposals (FK to opportunities)
-- Calendar API: blocks CRUD with date range, milestones CRUD, proposals GET/PUT
-- MCP tools: milestone_list, milestone_create, proposal_get, proposal_update
-- Week view — 7-column CSS grid with AM/PM slots, date-fns math
-- Month view — 4-month compact grid
-- Opportunity sidebar with drag & drop → create calendar blocks
-- Block moving within calendar (drag to different day/slot)
-- Detail panel: block editing, milestone list, proposal editor
-- Milestone timeline strip below calendar
-- Post-event notes (done/skipped status, learnings)
-- App header with /hack ↔ /calendar navigation
+- 3 new Supabase tables: calendar_blocks, milestones, proposals (FK to opportunities) ✓
+- Calendar API: blocks CRUD with date range, milestones CRUD, proposals GET/PUT ✓
+- MCP tools: milestone_list, milestone_create, proposal_get, proposal_update ✓
+- Week view — 7-column CSS grid with AM/PM slots, date-fns math ✓
+- Month view — 4-month compact grid ✓
+- Opportunity sidebar with drag & drop → create calendar blocks ✓
+- Block moving within calendar (drag to different day/slot) ✓
+- Detail panel: block editing, milestone list, proposal editor ✓
+- Milestone timeline strip below calendar ✓
+- Post-event notes (done/skipped status, learnings) ✓
+- App header with /hack ↔ /calendar navigation ✓
+- Homepage at / with navigation links ✓
+- Mobile card list view for opportunities ✓
+- MCP HTTP endpoint at /api/mcp (public read, authenticated write) ✓
+- MCP Usage dialog with config snippets ✓
+- Live deployment at weminal.vercel.app ✓
+
+### Phase 6: Bootcamp Type (Upcoming)
+
+- Add `bootcamp` to opportunity_type enum (5th type)
+- New column: `parent_hackathon_id` UUID FK with constraint (bootcamp-only)
+- Updated API filters: GET /opportunities?parent_hackathon_id=...
+- API responses include joined `parent_hackathon_name`
+- MCP tools updated: parent_hackathon_id arg for bootcamp CRUD
+- Frontend: teal badge for bootcamp type
+- Frontend: HackathonSelect dropdown in create/edit dialog when type = bootcamp
+- Frontend: ParentHackathonChip display in table rows
+- Frontend: Optional "Parent Hackathon" column (hidden by default)
 
 ## v1.1 — Polish
 

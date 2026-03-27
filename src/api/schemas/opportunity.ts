@@ -5,6 +5,7 @@ export const opportunityTypes = [
   'grant',
   'fellowship',
   'bounty',
+  'bootcamp',
 ] as const
 
 export const opportunityStatuses = [
@@ -40,7 +41,11 @@ export const createOpportunitySchema = z.object({
   tags: z.array(z.string().max(100)).optional(),
   links: z.array(linkSchema).optional(),
   notes: z.string().max(10000).optional(),
-})
+  parent_hackathon_id: z.string().uuid().optional(),
+}).refine(
+  (data) => data.parent_hackathon_id == null || data.type === 'bootcamp',
+  { message: 'parent_hackathon_id is only valid for type=bootcamp', path: ['parent_hackathon_id'] }
+)
 
 export const updateOpportunitySchema = z.object({
   name: z.string().min(1).max(500).optional(),
@@ -58,6 +63,7 @@ export const updateOpportunitySchema = z.object({
   tags: z.array(z.string().max(100)).optional(),
   links: z.array(linkSchema).optional(),
   notes: z.string().max(10000).nullable().optional(),
+  parent_hackathon_id: z.string().uuid().nullable().optional(),
 })
 
 export const listQuerySchema = z.object({
@@ -67,6 +73,7 @@ export const listQuerySchema = z.object({
   blockchain: z.string().optional(),
   tag: z.string().optional(),
   search: z.string().max(500).optional(),
+  parent_hackathon_id: z.string().uuid().optional(),
   start_date_gte: z.iso.date().optional(),
   end_date_lte: z.iso.date().optional(),
   sort_by: z

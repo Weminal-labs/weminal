@@ -15,6 +15,7 @@ export async function queryOpportunities(params: ListQueryInput) {
     search,
     start_date_gte,
     end_date_lte,
+    parent_hackathon_id,
     sort_by,
     sort_order,
     page,
@@ -23,7 +24,7 @@ export async function queryOpportunities(params: ListQueryInput) {
 
   let query = supabase
     .from('opportunities')
-    .select('*', { count: 'exact' })
+    .select('*, parent_hackathon:parent_hackathon_id(id, name)', { count: 'exact' })
 
   // Filters
   if (type) {
@@ -54,6 +55,10 @@ export async function queryOpportunities(params: ListQueryInput) {
     query = query.lte('end_date', end_date_lte)
   }
 
+  if (parent_hackathon_id) {
+    query = query.eq('parent_hackathon_id', parent_hackathon_id)
+  }
+
   if (search) {
     query = query.textSearch('fts', search, {
       type: 'websearch',
@@ -75,8 +80,15 @@ export async function queryOpportunities(params: ListQueryInput) {
     throw error
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const flattened = (data ?? []).map((row: any) => {
+    const { parent_hackathon, ...rest } = row
+    const ph = parent_hackathon as { id: string; name: string } | null
+    return { ...rest, parent_hackathon_name: ph?.name ?? null }
+  }) as Record<string, unknown>[]
+
   return {
-    data: data ?? [],
+    data: flattened,
     pagination: {
       page,
       per_page,
@@ -89,7 +101,7 @@ export async function queryOpportunities(params: ListQueryInput) {
 export async function getOpportunity(id: string) {
   const { data, error } = await supabase
     .from('opportunities')
-    .select('*')
+    .select('*, parent_hackathon:parent_hackathon_id(id, name)')
     .eq('id', id)
     .single()
 
@@ -100,7 +112,10 @@ export async function getOpportunity(id: string) {
     throw error
   }
 
-  return data
+  if (!data) return null
+  const { parent_hackathon, ...rest } = data as Record<string, unknown>
+  const ph = parent_hackathon as { id: string; name: string } | null
+  return { ...rest, parent_hackathon_name: ph?.name ?? null }
 }
 
 export async function createOpportunity(input: CreateOpportunityInput) {

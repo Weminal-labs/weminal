@@ -4,8 +4,8 @@
 
 ## In Scope — v1
 
-- **Opportunity CRUD** — create, read, update, delete for all 4 types (hackathon, grant, fellowship, bounty)
-- **Single table schema** — `opportunities` table with `type` enum, status enum, arrays for blockchains/tags, JSONB for links
+- **Opportunity CRUD** — create, read, update, delete for all 5 types (hackathon, grant, fellowship, bounty, bootcamp)
+- **Single table schema** — `opportunities` table with `type` enum (5 types), status enum, arrays for blockchains/tags, JSONB for links, parent_hackathon_id for bootcamps
 - **Filtering** — by type, status, organization, blockchain, tags, date range
 - **Full-text search** — on name and description fields
 - **Sorting & pagination** — server-side, any column, asc/desc
@@ -14,7 +14,7 @@
 - **Health check** — /health endpoint
 - **MCP Server** — 5 tools (list, get, create, update, delete) + 4 resources, stdio transport
 - **Web table UI** — TanStack Table, shadcn/ui, type badges with color coding, inline editing
-- **Type filter** — prominent multi-select for opportunity types (blue/green/purple/orange)
+- **Type filter** — prominent multi-select for opportunity types (blue/green/purple/orange/teal for hackathon/grant/fellowship/bounty/bootcamp)
 - **Organization filter** — autocomplete filter for organizing entities
 - **URL-persisted filters** — via nuqs library
 - **Create dialog** — with type selector as first required field

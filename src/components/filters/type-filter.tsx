@@ -4,7 +4,7 @@ import { typeColors } from '@/lib/type-colors'
 import type { OpportunityType } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
-const types: OpportunityType[] = ['hackathon', 'grant', 'fellowship', 'bounty']
+const types: OpportunityType[] = ['hackathon', 'grant', 'fellowship', 'bounty', 'bootcamp']
 
 type Props = {
   value?: string

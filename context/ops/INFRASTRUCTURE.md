@@ -7,16 +7,22 @@
 | Environment | URL | Purpose |
 |------------|-----|---------|
 | Local | `http://localhost:3000` | Development |
-| Preview | `*.vercel.app` (auto-generated per PR) | PR review |
-| Production | `*.vercel.app` (or custom domain) | Live |
+| Production | `weminal.vercel.app` | Live |
 
 ## Hosting
 
 **Vercel** — zero-config Next.js hosting.
-- Auto-deploys on push to `main`
-- Preview deploys on PRs
-- Edge functions for API routes
+- Manual deployments with `npx vercel --prod` (not auto-deploy from git)
 - Environment variables encrypted at rest
+- Serverless functions for API routes + MCP HTTP endpoint
+- One-click rollback available
+
+### Deployment Process
+
+1. Commit and push to `main` (GitHub)
+2. Run `npx vercel --prod` locally or from CI
+3. Vercel rebuilds and deploys to weminal.vercel.app
+4. No automatic deploys from git — explicit manual deploy required
 
 ## Database Hosting
 
@@ -27,9 +33,19 @@
 
 ## MCP Server
 
-Not hosted — runs locally as a stdio child process of Claude Code.
-- Bundled with esbuild to `dist/mcp-server.js`
-- Users clone repo, build, and configure in Claude Code
+Two deployment options:
+
+### Stdio Transport (Local)
+- Runs as a child process of Claude Code or Claude Desktop
+- Bundled with esbuild to `dist/mcp-server.mjs`
+- Users clone repo, run `pnpm mcp:build`, and configure in Claude Code
+
+### HTTP Transport (Remote)
+- HTTP endpoint at `https://weminal.vercel.app/api/mcp`
+- Serverless function on Vercel, no separate hosting needed
+- JSON-RPC 2.0 protocol
+- Public read tools (no auth), authenticated write tools (Bearer token required)
+- Token: set `MCP_API_KEY` in Vercel environment variables
 
 ## DNS & Domains
 

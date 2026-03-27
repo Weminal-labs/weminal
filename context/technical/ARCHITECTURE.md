@@ -10,26 +10,34 @@
  |                                               |
  |  +----------------+    +-------------------+  |
  |  |  React Web UI  |    |  Claude Agent     |  |
- |  |  (Next.js)     |    |  (Claude Code)    |  |
+ |  |  (Next.js)     |    |  (stdio or HTTP)  |  |
  |  +-------+--------+    +--------+----------+  |
  |          |                      |              |
  +----------------------------------------------+
             |                      |
-            v                      v
+            v                      v (stdio)
  +------------------+   +-------------------+
  |  Hono API        |   |  MCP Server       |
  |  /api/v1/*       |   |  (stdio transport)|
- |  (REST + JSON)   |   |  5 tools +        |
- |                  |   |  4 resources      |
+ |  /api/mcp (HTTP) |   |  16 tools +       |
+ |  /hack, /calendar|   |  6 resources      |
+ |  (REST + JSON)   |   |                   |
  +--------+---------+   +--------+----------+
           |                      |
-          |   Both use Supabase  |
+          |   HTTP MCP endpoint  |
+          |   (public read +     |
+          |   auth write)        |
+          |                      |
+          |   All use Supabase   |
           |   JS client with     |
           |   service_role key   |
           v                      v
  +----------------------------------------------+
  |              Supabase (PostgreSQL)            |
  |  - opportunities table (all 4 types)         |
+ |  - calendar_blocks (time slots)              |
+ |  - milestones (key dates)                    |
+ |  - proposals (drafts & submissions)          |
  |  - GIN indexes (arrays, JSONB, FTS)          |
  |  - RLS: service_role bypass only             |
  +----------------------------------------------+
@@ -104,40 +112,54 @@ Request
 
 ```
 src/
-  app/                    # Next.js App Router pages
-    api/[...route]/       # Hono API catch-all
-    page.tsx              # Main table view
+  app/                      # Next.js App Router pages
+    page.tsx                # Homepage (/)
     layout.tsx
-  api/                    # Hono application
+    hack/
+      page.tsx              # Opportunities table (/hack)
+    calendar/
+      page.tsx              # Calendar view (/calendar)
+    api/
+      [...route]/           # Hono API catch-all
+      mcp/
+        route.ts            # HTTP MCP endpoint (/api/mcp)
+  api/                      # Hono application
     index.ts
     routes/
-      opportunities.ts    # CRUD routes
-      meta.ts             # Lookup endpoints
+      opportunities.ts      # Opportunity CRUD
+      calendar-blocks.ts    # Block CRUD
+      milestones.ts         # Milestone CRUD
+      proposals.ts          # Proposal CRUD
+      meta.ts               # Lookup endpoints
     middleware/
       error-handler.ts
       rate-limiter.ts
       logger.ts
     schemas/
-      opportunity.ts      # Zod schemas
+      opportunity.ts        # Zod schemas for opportunities
+      calendar.ts           # Zod schemas for calendar data
     lib/
-      supabase.ts         # Client singleton
-      query-builder.ts    # Dynamic filter builder
-  components/             # React components
+      supabase.ts           # Client singleton
+      query-builder.ts      # Dynamic filter builder
+  components/               # React components
     table/
     filters/
+    calendar/
     forms/
     detail/
-    ui/                   # shadcn components
-  mcp/                    # MCP server (separate entry point)
-    server.ts
-    tools/
-    resources/
-  hooks/                  # React hooks
-  lib/                    # Shared utilities
+    ui/                     # shadcn components
+    mcp-usage-dialog.tsx    # MCP config snippets
+    mcp-snippet.tsx
+  mcp/                      # MCP server (separate entry point)
+    server.ts               # Stdio transport entry point
+    http-server.ts          # HTTP transport + tool definitions
+    format.ts               # Response formatting
+  hooks/                    # React hooks (useCalendar, useBlocks, etc.)
+  lib/                      # Shared utilities
     types.ts
     api-client.ts
     type-colors.ts
 supabase/
-  migrations/             # SQL migration files
-  seed.sql                # Seed data
+  migrations/               # SQL migration files
+  seed.sql                  # Seed data
 ```

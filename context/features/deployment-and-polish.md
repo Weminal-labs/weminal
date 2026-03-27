@@ -1,14 +1,14 @@
 # Feature: Deployment & Polish
 
-> **Status:** `complete`
+> **Status:** `mostly-complete`
 > **Phase:** v1 — Phase 4
-> **Last updated:** 2026-03-25
+> **Last updated:** 2026-03-26
 
 ---
 
 ## Summary
 
-Deploy the complete application to Vercel, configure production environment, add rate limiting and security hardening, set up monitoring, bundle MCP server for distribution, and write documentation. Takes the working dev build to production-ready state.
+Deploy the complete application to Vercel, configure production environment, add rate limiting and security hardening, bundle MCP server for distribution, and write documentation. Application is live at weminal.vercel.app with web UI (/hack, /calendar, /), Hono REST API, HTTP MCP endpoint, and stdio MCP server. Manual `npx vercel --prod` deploy (not auto-deploy from git).
 
 ---
 
@@ -71,7 +71,7 @@ Deploy the complete application to Vercel, configure production environment, add
 | T63 | `[x]` | Configure production CORS |
 | T64 | `[x]` | Add security response headers middleware |
 | T65 | `[x]` | Security audit (inputs, secrets, error messages, enum validation) |
-| T66 | `[>]` | Performance review (Lighthouse, API latency, Supabase queries) |
+| T66 | `[>]` | Performance review (Lighthouse, API latency, Supabase queries) | Deferred to v1.1 |
 | T67 | `[x]` | Build and test MCP server bundle (esbuild → dist/mcp-server.mjs) |
 | T68 | `[x]` | Create Claude Code config example for MCP |
 | T69 | `[x]` | Set up GitHub Actions CI (lint + typecheck on PR) |
@@ -79,10 +79,10 @@ Deploy the complete application to Vercel, configure production environment, add
 | T71 | `[x]` | Write API reference docs |
 | T72 | `[x]` | Write MCP setup guide |
 | T73 | `[x]` | Write deployment guide |
-| T74 | `[>]` | End-to-end testing (web + MCP, all 4 types) |
-| T75 | `[>]` | Cross-browser testing (Chrome, Firefox, Safari, Edge) |
-| T76 | `[>]` | Mobile responsive testing |
-| T77 | `[ ]` | Run launch checklist |
+| T74 | `[>]` | End-to-end testing (web + MCP, all 4 types) | Deferred to v1.1 |
+| T75 | `[>]` | Cross-browser testing (Chrome, Firefox, Safari, Edge) | Deferred to v1.1 |
+| T76 | `[>]` | Mobile responsive testing | Deferred to v1.1 |
+| T77 | `[ ]` | Run launch checklist | Pending |
 
 ---
 
