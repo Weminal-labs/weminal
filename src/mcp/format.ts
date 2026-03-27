@@ -15,6 +15,8 @@ type OpportunityRow = {
   tags?: string[]
   links?: { label: string; url: string }[]
   notes?: string | null
+  format?: string
+  location?: string | null
   parent_hackathon_id?: string | null
   parent_hackathon_name?: string | null
   created_at: string

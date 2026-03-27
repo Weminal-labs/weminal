@@ -68,6 +68,12 @@ function MobileCardList({ data, onRowClick }: { data: Opportunity[]; onRowClick?
               {opp.organization && (
                 <span className="text-xs text-gray-500">{opp.organization}</span>
               )}
+              {opp.format && opp.format !== 'online' && (
+                <span className="text-xs text-gray-400">{opp.format === 'in_person' ? '📍' : '🔀'} {opp.format.replace('_', ' ')}</span>
+              )}
+              {opp.location && (
+                <span className="text-xs text-gray-400">{opp.location}</span>
+              )}
               {opp.parent_hackathon_name && (
                 <span className="text-xs text-teal-600">↳ {opp.parent_hackathon_name}</span>
               )}

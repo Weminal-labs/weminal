@@ -29,6 +29,8 @@ export function CreateOpportunityDialog() {
     reward_currency: 'USD',
     blockchains: '',
     tags: '',
+    format: 'online',
+    location: '',
     parent_hackathon_id: '',
   })
 
@@ -36,7 +38,7 @@ export function CreateOpportunityDialog() {
   const { data: hackathonData } = useOpportunities({ type: 'hackathon', per_page: 200 })
 
   function reset() {
-    setForm({ name: '', type: '', description: '', status: 'discovered', organization: '', website_url: '', start_date: '', end_date: '', reward_amount: '', reward_currency: 'USD', blockchains: '', tags: '', parent_hackathon_id: '' })
+    setForm({ name: '', type: '', description: '', status: 'discovered', organization: '', website_url: '', start_date: '', end_date: '', reward_amount: '', reward_currency: 'USD', blockchains: '', tags: '', format: 'online', location: '', parent_hackathon_id: '' })
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -60,6 +62,8 @@ export function CreateOpportunityDialog() {
     if (form.reward_currency) input.reward_currency = form.reward_currency
     if (form.blockchains) input.blockchains = form.blockchains.split(',').map(s => s.trim()).filter(Boolean)
     if (form.tags) input.tags = form.tags.split(',').map(s => s.trim()).filter(Boolean)
+    if (form.format) input.format = form.format
+    if (form.location) input.location = form.location
     if (form.type === 'bootcamp' && form.parent_hackathon_id) input.parent_hackathon_id = form.parent_hackathon_id
 
     try {
@@ -153,6 +157,21 @@ export function CreateOpportunityDialog() {
                 <select id="opp-status" value={form.status} onChange={set('status')} className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400">
                   {statuses.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
                 </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="opp-format" className="block text-sm font-medium text-gray-700 mb-1">Format</label>
+                <select id="opp-format" value={form.format} onChange={set('format')} className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400">
+                  <option value="online">Online</option>
+                  <option value="in_person">In Person</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="opp-location" className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <Input id="opp-location" value={form.location} onChange={set('location')} placeholder="e.g. Prague, Czech Republic" autoComplete="off" />
               </div>
             </div>
 

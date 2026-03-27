@@ -20,6 +20,7 @@ function OpportunitiesPage() {
   const [params, setParams] = useQueryStates({
     type: parseAsString,
     status: parseAsString,
+    format: parseAsString,
     organization: parseAsString,
     blockchain: parseAsString,
     tag: parseAsString,
@@ -39,6 +40,7 @@ function OpportunitiesPage() {
   const { data, isLoading, isError, error } = useOpportunities({
     type: params.type ?? undefined,
     status: params.status ?? undefined,
+    format: params.format ?? undefined,
     organization: params.organization ?? undefined,
     blockchain: params.blockchain ?? undefined,
     tag: params.tag ?? undefined,
@@ -55,7 +57,7 @@ function OpportunitiesPage() {
 
   const handleClearAll = useCallback(() => {
     setParams({
-      type: null, status: null, organization: null, blockchain: null,
+      type: null, status: null, format: null, organization: null, blockchain: null,
       tag: null, search: null, page: 1,
     })
   }, [setParams])
@@ -105,6 +107,7 @@ function OpportunitiesPage() {
             filters={{
               type: params.type ?? undefined,
               status: params.status ?? undefined,
+              format: params.format ?? undefined,
               organization: params.organization ?? undefined,
               blockchain: params.blockchain ?? undefined,
               tag: params.tag ?? undefined,

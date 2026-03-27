@@ -8,6 +8,12 @@ export const opportunityTypes = [
   'bootcamp',
 ] as const
 
+export const opportunityFormats = [
+  'in_person',
+  'online',
+  'hybrid',
+] as const
+
 export const opportunityStatuses = [
   'discovered',
   'evaluating',
@@ -41,6 +47,8 @@ export const createOpportunitySchema = z.object({
   tags: z.array(z.string().max(100)).optional(),
   links: z.array(linkSchema).optional(),
   notes: z.string().max(10000).optional(),
+  format: z.enum(opportunityFormats).optional(),
+  location: z.string().max(500).optional(),
   parent_hackathon_id: z.string().uuid().optional(),
 }).refine(
   (data) => data.parent_hackathon_id == null || data.type === 'bootcamp',
@@ -63,6 +71,8 @@ export const updateOpportunitySchema = z.object({
   tags: z.array(z.string().max(100)).optional(),
   links: z.array(linkSchema).optional(),
   notes: z.string().max(10000).nullable().optional(),
+  format: z.enum(opportunityFormats).nullable().optional(),
+  location: z.string().max(500).nullable().optional(),
   parent_hackathon_id: z.string().uuid().nullable().optional(),
 })
 
@@ -73,6 +83,7 @@ export const listQuerySchema = z.object({
   blockchain: z.string().optional(),
   tag: z.string().optional(),
   search: z.string().max(500).optional(),
+  format: z.enum(opportunityFormats).optional(),
   parent_hackathon_id: z.string().uuid().optional(),
   start_date_gte: z.iso.date().optional(),
   end_date_lte: z.iso.date().optional(),

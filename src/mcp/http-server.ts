@@ -3,6 +3,7 @@ import { z } from 'zod/v4'
 import {
   opportunityTypes,
   opportunityStatuses,
+  opportunityFormats,
 } from '../api/schemas/opportunity'
 import {
   queryOpportunities,
@@ -47,6 +48,7 @@ export function createMcpServer() {
       tag: z.string().optional().describe('Filter by tag'),
       search: z.string().optional().describe('Full-text search'),
       parent_hackathon_id: z.string().uuid().optional().describe('Filter bootcamps by parent hackathon UUID'),
+      format: z.enum(opportunityFormats).optional().describe('Filter by format: in_person, online, hybrid'),
       sort_by: z.enum(['name', 'type', 'status', 'organization', 'start_date', 'end_date', 'reward_amount', 'created_at', 'updated_at']).optional().default('created_at'),
       sort_order: z.enum(['asc', 'desc']).optional().default('desc'),
       page: z.number().int().min(1).optional().default(1),
@@ -142,6 +144,8 @@ export function createMcpServer() {
       tags: z.array(z.string()).optional(),
       links: z.array(z.object({ label: z.string(), url: z.string() })).optional(),
       notes: z.string().optional(),
+      format: z.enum(opportunityFormats).optional(),
+      location: z.string().optional(),
       parent_hackathon_id: z.string().uuid().optional().describe('Parent hackathon UUID (bootcamp only)'),
     },
     async (params) => {
@@ -160,6 +164,7 @@ export function createMcpServer() {
       start_date: z.string().optional(), end_date: z.string().optional(),
       reward_amount: z.number().optional(), blockchains: z.array(z.string()).optional(),
       tags: z.array(z.string()).optional(), notes: z.string().optional(),
+      format: z.enum(opportunityFormats).optional(), location: z.string().nullable().optional(),
       parent_hackathon_id: z.string().uuid().nullable().optional().describe('Parent hackathon UUID (bootcamp only, null to unlink)'),
     },
     async ({ id, ...updates }) => {

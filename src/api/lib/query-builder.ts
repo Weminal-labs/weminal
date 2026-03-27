@@ -13,6 +13,7 @@ export async function queryOpportunities(params: ListQueryInput) {
     blockchain,
     tag,
     search,
+    format,
     start_date_gte,
     end_date_lte,
     parent_hackathon_id,
@@ -53,6 +54,10 @@ export async function queryOpportunities(params: ListQueryInput) {
 
   if (end_date_lte) {
     query = query.lte('end_date', end_date_lte)
+  }
+
+  if (format) {
+    query = query.eq('format', format)
   }
 
   if (parent_hackathon_id) {

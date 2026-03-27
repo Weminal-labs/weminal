@@ -10,6 +10,7 @@ import { X } from 'lucide-react'
 type FilterValues = {
   type?: string
   status?: string
+  format?: string
   organization?: string
   blockchain?: string
   tag?: string
@@ -36,6 +37,7 @@ export function FilterBar({ filters, onFilterChange, onClearAll }: Props) {
       <div className="hidden md:flex md:flex-wrap md:items-center md:gap-2">
         <TypeFilter value={filters.type} onChange={(v) => onFilterChange('type', v)} />
         <SelectFilter label="Status" value={filters.status} options={statusData?.data ?? []} onChange={(v) => onFilterChange('status', v)} formatLabel={(s) => s.replace('_', ' ')} />
+        <SelectFilter label="Format" value={filters.format} options={['in_person', 'online', 'hybrid']} onChange={(v) => onFilterChange('format', v)} formatLabel={(s) => s.replace('_', ' ')} />
         <SelectFilter label="Organization" value={filters.organization} options={orgData?.data ?? []} onChange={(v) => onFilterChange('organization', v)} />
         <SelectFilter label="Chain" value={filters.blockchain} options={chainData?.data ?? []} onChange={(v) => onFilterChange('blockchain', v)} />
         <SelectFilter label="Tag" value={filters.tag} options={tagData?.data ?? []} onChange={(v) => onFilterChange('tag', v)} />
@@ -59,6 +61,7 @@ export function FilterBar({ filters, onFilterChange, onClearAll }: Props) {
 
         {/* Row 2: secondary filters */}
         <div className="flex flex-wrap items-center gap-2">
+          <SelectFilter label="Format" value={filters.format} options={['in_person', 'online', 'hybrid']} onChange={(v) => onFilterChange('format', v)} formatLabel={(s) => s.replace('_', ' ')} />
           <SelectFilter label="Organization" value={filters.organization} options={orgData?.data ?? []} onChange={(v) => onFilterChange('organization', v)} />
           <SelectFilter label="Chain" value={filters.blockchain} options={chainData?.data ?? []} onChange={(v) => onFilterChange('blockchain', v)} />
           <SelectFilter label="Tag" value={filters.tag} options={tagData?.data ?? []} onChange={(v) => onFilterChange('tag', v)} />

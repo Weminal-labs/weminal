@@ -20,6 +20,7 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
 export type ListParams = {
   type?: string
   status?: string
+  format?: string
   organization?: string
   blockchain?: string
   tag?: string

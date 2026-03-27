@@ -4,6 +4,7 @@ import { z } from 'zod/v4'
 import {
   opportunityTypes,
   opportunityStatuses,
+  opportunityFormats,
 } from '../api/schemas/opportunity'
 import {
   queryOpportunities,
@@ -35,6 +36,7 @@ server.tool(
     tag: z.string().optional().describe('Filter by tag'),
     search: z.string().optional().describe('Full-text search on name and description'),
     parent_hackathon_id: z.string().uuid().optional().describe('Filter bootcamps by linked hackathon UUID'),
+    format: z.enum(opportunityFormats).optional().describe('Filter by format: in_person, online, hybrid'),
     start_date_gte: z.string().optional().describe('Start date >= value (YYYY-MM-DD)'),
     end_date_lte: z.string().optional().describe('End date <= value (YYYY-MM-DD)'),
     sort_by: z.enum(['name', 'type', 'status', 'organization', 'start_date', 'end_date', 'reward_amount', 'created_at', 'updated_at']).optional().default('created_at'),
@@ -84,6 +86,8 @@ server.tool(
     tags: z.array(z.string()).optional().describe('Categorization tags'),
     links: z.array(z.object({ label: z.string(), url: z.string() })).optional().describe('Related links [{label, url}]'),
     notes: z.string().optional().describe('Internal notes'),
+    format: z.enum(opportunityFormats).optional().describe('Format: in_person, online, hybrid'),
+    location: z.string().optional().describe('Location (e.g. "Prague, Czech Republic", "Global")'),
     parent_hackathon_id: z.string().uuid().optional().describe('UUID of parent hackathon (bootcamp type only)'),
   },
   async (params) => {
@@ -117,6 +121,8 @@ server.tool(
     tags: z.array(z.string()).optional().describe('Categorization tags'),
     links: z.array(z.object({ label: z.string(), url: z.string() })).optional().describe('Related links'),
     notes: z.string().optional().describe('Internal notes'),
+    format: z.enum(opportunityFormats).optional().describe('Format: in_person, online, hybrid'),
+    location: z.string().nullable().optional().describe('Location'),
     parent_hackathon_id: z.string().uuid().nullable().optional().describe('UUID of parent hackathon (bootcamp only, null to unlink)'),
   },
   async ({ id, ...updates }) => {
