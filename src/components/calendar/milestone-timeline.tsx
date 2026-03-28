@@ -21,9 +21,9 @@ const typeIcons = {
 
 const typeBg = {
   deadline: 'bg-red-50 text-red-700 border-red-200',
-  office_hour: 'bg-teal-50 text-teal-700 border-teal-200',
+  office_hour: 'bg-gray-50 text-gray-600 border-gray-200',
   announcement: 'bg-amber-50 text-amber-700 border-amber-200',
-  checkpoint: 'bg-blue-50 text-blue-700 border-blue-200',
+  checkpoint: 'bg-gray-50 text-gray-700 border-gray-200',
   other: 'bg-gray-50 text-gray-600 border-gray-200',
 }
 

@@ -1,21 +1,21 @@
 import type { OpportunityType } from './types'
 
 export const typeColors: Record<OpportunityType, { bg: string; text: string; dot: string }> = {
-  hackathon: { bg: 'bg-blue-100 dark:bg-blue-900', text: 'text-blue-800 dark:text-blue-200', dot: 'bg-blue-500' },
-  grant: { bg: 'bg-green-100 dark:bg-green-900', text: 'text-green-800 dark:text-green-200', dot: 'bg-green-500' },
-  fellowship: { bg: 'bg-purple-100 dark:bg-purple-900', text: 'text-purple-800 dark:text-purple-200', dot: 'bg-purple-500' },
-  bounty: { bg: 'bg-orange-100 dark:bg-orange-900', text: 'text-orange-800 dark:text-orange-200', dot: 'bg-orange-500' },
-  bootcamp: { bg: 'bg-teal-100 dark:bg-teal-900', text: 'text-teal-800 dark:text-teal-200', dot: 'bg-teal-500' },
+  hackathon: { bg: 'bg-gray-900', text: 'text-white', dot: 'bg-gray-900' },
+  grant: { bg: 'bg-gray-700', text: 'text-white', dot: 'bg-gray-700' },
+  fellowship: { bg: 'bg-gray-500', text: 'text-white', dot: 'bg-gray-500' },
+  bounty: { bg: 'bg-gray-400', text: 'text-white', dot: 'bg-gray-400' },
+  bootcamp: { bg: 'bg-gray-300', text: 'text-gray-800', dot: 'bg-gray-300' },
 }
 
 export const statusColors: Record<string, string> = {
-  discovered: 'bg-gray-100 text-gray-700',
-  evaluating: 'bg-yellow-100 text-yellow-800',
-  applying: 'bg-blue-100 text-blue-800',
-  accepted: 'bg-green-100 text-green-800',
-  in_progress: 'bg-indigo-100 text-indigo-800',
-  submitted: 'bg-cyan-100 text-cyan-800',
-  completed: 'bg-emerald-100 text-emerald-800',
-  rejected: 'bg-red-100 text-red-700',
-  cancelled: 'bg-gray-200 text-gray-500',
+  discovered: 'bg-gray-100 text-gray-500',
+  evaluating: 'bg-gray-200 text-gray-600',
+  applying: 'bg-gray-300 text-gray-700',
+  accepted: 'bg-gray-800 text-white',
+  in_progress: 'bg-gray-700 text-white',
+  submitted: 'bg-gray-600 text-white',
+  completed: 'bg-gray-900 text-white',
+  rejected: 'bg-gray-200 text-gray-400',
+  cancelled: 'bg-gray-100 text-gray-400',
 }

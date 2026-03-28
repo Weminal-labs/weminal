@@ -10,6 +10,7 @@ import meta from './routes/meta'
 import calendarBlocks from './routes/calendar-blocks'
 import milestones from './routes/milestones'
 import proposals from './routes/proposals'
+import stats from './routes/stats'
 
 const app = new Hono().basePath('/api/v1')
 
@@ -34,6 +35,7 @@ app.route('/meta', meta)
 app.route('/calendar/blocks', calendarBlocks)
 app.route('/milestones', milestones)
 app.route('/proposals', proposals)
+app.route('/stats', stats)
 
 // Health check
 app.get('/health', async (c) => {

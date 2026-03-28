@@ -91,13 +91,13 @@ export function MonthlySummary({ blocks, milestones, monthLabel }: Props) {
           <div className="space-y-1 text-[10px]">
             {byStatus.done > 0 && (
               <div className="flex items-center justify-between">
-                <span className="text-emerald-600 font-medium">Done</span>
+                <span className="text-gray-700 font-medium">Done</span>
                 <span className="font-bold tabular-nums">{byStatus.done}</span>
               </div>
             )}
             {byStatus.in_progress > 0 && (
               <div className="flex items-center justify-between">
-                <span className="text-blue-600 font-medium">In Progress</span>
+                <span className="text-gray-600 font-medium">In Progress</span>
                 <span className="font-bold tabular-nums">{byStatus.in_progress}</span>
               </div>
             )}

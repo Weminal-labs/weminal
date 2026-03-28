@@ -54,7 +54,7 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-[10px] font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+            className="text-[10px] font-bold text-gray-600 hover:text-gray-700 hover:underline transition-colors"
           >
             {proposal ? 'Edit' : 'Create'}
           </button>
@@ -87,8 +87,8 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
                     'rounded-full px-2.5 py-0.5 text-[10px] font-medium capitalize transition-colors focus-visible:ring-2 focus-visible:ring-gray-400',
                     proposalStatus === s
                       ? s === 'draft' ? 'bg-gray-900 text-white'
-                      : s === 'submitted' ? 'bg-blue-600 text-white'
-                      : s === 'accepted' ? 'bg-emerald-600 text-white'
+                      : s === 'submitted' ? 'bg-gray-900 text-white'
+                      : s === 'accepted' ? 'bg-gray-800 text-white'
                       : 'bg-red-600 text-white'
                       : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   )}
@@ -108,7 +108,7 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
               onChange={e => setContent(e.target.value)}
               rows={8}
               placeholder="Write your proposal in markdown…&#10;&#10;# Project Title&#10;&#10;## What We Built&#10;- Feature 1&#10;- Feature 2&#10;&#10;## Impact&#10;..."
-              className="flex w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-mono shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:bg-white resize-y"
+              className="flex w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-mono shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:bg-white resize-y"
             />
           </div>
 
@@ -139,8 +139,8 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
           <span className={cn(
             'inline-flex text-[10px] font-semibold rounded-full px-2 py-0.5',
             (proposal?.status ?? 'draft') === 'draft' ? 'bg-gray-100 text-gray-600' :
-            proposal?.status === 'submitted' ? 'bg-blue-100 text-blue-700' :
-            proposal?.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' :
+            proposal?.status === 'submitted' ? 'bg-gray-200 text-gray-700' :
+            proposal?.status === 'accepted' ? 'bg-gray-200 text-gray-700' :
             proposal?.status === 'rejected' ? 'bg-red-100 text-red-700' :
             'bg-gray-100 text-gray-600'
           )}>
@@ -162,7 +162,7 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
               href={proposal.submission_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[10px] text-blue-600 hover:text-blue-700 font-medium"
+              className="inline-flex items-center gap-1 text-[10px] text-gray-600 hover:text-gray-700 font-medium"
             >
               View submission <ExternalLink className="size-2.5" aria-hidden="true" />
             </a>

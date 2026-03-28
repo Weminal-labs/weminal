@@ -132,8 +132,8 @@ export function BlockDetailPanel({ block, onClose }: Props) {
                 className={cn(
                   'rounded-full px-2.5 py-1 text-[10px] font-medium capitalize transition-colors focus-visible:ring-2 focus-visible:ring-gray-400',
                   status === s
-                    ? s === 'done' ? 'bg-emerald-100 text-emerald-700'
-                    : s === 'in_progress' ? 'bg-blue-100 text-blue-700'
+                    ? s === 'done' ? 'bg-gray-200 text-gray-700'
+                    : s === 'in_progress' ? 'bg-gray-200 text-gray-700'
                     : s === 'skipped' ? 'bg-gray-200 text-gray-500'
                     : 'bg-gray-900 text-white'
                     : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -177,9 +177,9 @@ export function BlockDetailPanel({ block, onClose }: Props) {
                 <div key={m.id} className="flex items-center gap-2 text-xs">
                   <div className={cn(
                     'size-2 rounded-full shrink-0',
-                    m.completed ? 'bg-emerald-500' :
+                    m.completed ? 'bg-gray-800' :
                     m.type === 'deadline' ? 'bg-red-500' :
-                    m.type === 'office_hour' ? 'bg-teal-500' :
+                    m.type === 'office_hour' ? 'bg-gray-600' :
                     'bg-gray-400'
                   )} />
                   <span className={cn('truncate', m.completed && 'line-through text-gray-400')}>{m.title}</span>

@@ -51,8 +51,8 @@ export const createOpportunitySchema = z.object({
   location: z.string().max(500).optional(),
   parent_hackathon_id: z.string().uuid().optional(),
 }).refine(
-  (data) => data.parent_hackathon_id == null || data.type === 'bootcamp',
-  { message: 'parent_hackathon_id is only valid for type=bootcamp', path: ['parent_hackathon_id'] }
+  (data) => data.parent_hackathon_id == null || data.type === 'bootcamp' || data.type === 'hackathon',
+  { message: 'parent_hackathon_id is only valid for bootcamp or hackathon types', path: ['parent_hackathon_id'] }
 )
 
 export const updateOpportunitySchema = z.object({

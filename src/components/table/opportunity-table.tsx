@@ -12,6 +12,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TypeBadge } from './type-badge'
 import { StatusBadge } from './status-badge'
+import { RowThumbnail } from './row-thumbnail'
 
 type Props = {
   data: Opportunity[]
@@ -55,15 +56,16 @@ function MobileCardList({ data, onRowClick }: { data: Opportunity[]; onRowClick?
           <button
             key={opp.id}
             type="button"
-            className="w-full text-left rounded-lg border border-gray-200 bg-white px-4 py-3.5 transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+            className="relative w-full text-left rounded-xl border border-gray-100 bg-white px-4 py-3.5 overflow-hidden transition-colors hover:bg-gray-50/60 active:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200"
             onClick={() => onRowClick?.(opp)}
           >
-            <div className="flex items-start justify-between gap-3">
-              <p className="font-medium text-gray-900 text-sm leading-snug flex-1 min-w-0">{opp.name}</p>
+            <RowThumbnail websiteUrl={opp.website_url} thumbnailUrl={opp.thumbnail_url} />
+            <div className="relative flex items-start justify-between gap-3">
+              <p className="font-medium text-gray-800 text-sm leading-snug flex-1 min-w-0">{opp.name}</p>
               <TypeBadge type={opp.type as OpportunityType} />
             </div>
 
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <div className="relative mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
               <StatusBadge status={opp.status} />
               {opp.organization && (
                 <span className="text-xs text-gray-500">{opp.organization}</span>
@@ -75,14 +77,14 @@ function MobileCardList({ data, onRowClick }: { data: Opportunity[]; onRowClick?
                 <span className="text-xs text-gray-400">{opp.location}</span>
               )}
               {opp.parent_hackathon_name && (
-                <span className="text-xs text-teal-600">↳ {opp.parent_hackathon_name}</span>
+                <span className="text-xs text-gray-400">↳ {opp.parent_hackathon_name}</span>
               )}
             </div>
 
             {(reward || endDate || opp.website_url) && (
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+              <div className="relative mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
                 {reward && (
-                  <span className="text-xs font-medium text-emerald-700 tabular-nums">{reward}</span>
+                  <span className="text-xs font-medium text-gray-700 tabular-nums">{reward}</span>
                 )}
                 {endDate && (
                   <span className="text-xs text-gray-400">Ends {endDate}</span>
@@ -92,7 +94,7 @@ function MobileCardList({ data, onRowClick }: { data: Opportunity[]; onRowClick?
                     href={opp.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5"
+                    className="text-xs text-gray-400 hover:text-gray-700 flex items-center gap-0.5"
                     onClick={(e) => e.stopPropagation()}
                     aria-label="Visit website"
                   >
@@ -129,9 +131,9 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
       </div>
 
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-100">
+        <table className="min-w-full divide-y divide-gray-100 table-fixed">
+          <thead className="bg-gray-50/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -140,11 +142,12 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
                   return (
                     <th
                       key={header.id}
-                      className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      style={{ width: header.getSize() }}
+                      className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-wider text-gray-300"
                       aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : undefined}
                     >
                       <div
-                        className={cn('flex items-center gap-1', canSort && 'cursor-pointer select-none hover:text-gray-700')}
+                        className={cn('flex items-center gap-1', canSort && 'cursor-pointer select-none hover:text-gray-500')}
                         role={canSort ? 'button' : undefined}
                         tabIndex={canSort ? 0 : undefined}
                         onClick={header.column.getToggleSortingHandler()}
@@ -163,7 +166,7 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody className="divide-y divide-gray-50 bg-white">
             {table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-12 text-center text-gray-500">
@@ -174,14 +177,14 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer focus-visible:bg-gray-100 focus-visible:outline-none"
+                  className="hover:bg-gray-50/60 transition-colors cursor-pointer focus-visible:bg-gray-50 focus-visible:outline-none"
                   tabIndex={0}
                   role="row"
                   onClick={() => onRowClick?.(row.original)}
                   onKeyDown={(e) => { if (e.key === 'Enter') onRowClick?.(row.original) }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 text-sm whitespace-nowrap">
+                    <td key={cell.id} className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap truncate">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

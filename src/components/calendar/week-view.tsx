@@ -35,16 +35,16 @@ export function WeekView({ currentDate, blocks, milestones, onBlockClick, onSlot
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault()
-    e.currentTarget.classList.add('ring-2', 'ring-blue-300', 'ring-inset', 'bg-blue-50/40')
+    e.currentTarget.classList.add('ring-2', 'ring-gray-300', 'ring-inset', 'bg-gray-100')
   }
 
   function handleDragLeave(e: React.DragEvent) {
-    e.currentTarget.classList.remove('ring-2', 'ring-blue-300', 'ring-inset', 'bg-blue-50/40')
+    e.currentTarget.classList.remove('ring-2', 'ring-gray-300', 'ring-inset', 'bg-gray-100')
   }
 
   function handleDrop(e: React.DragEvent, date: Date, slot: 'AM' | 'PM' | 'ALL_DAY') {
     e.preventDefault()
-    e.currentTarget.classList.remove('ring-2', 'ring-blue-300', 'ring-inset', 'bg-blue-50/40')
+    e.currentTarget.classList.remove('ring-2', 'ring-gray-300', 'ring-inset', 'bg-gray-100')
     onSlotDrop(format(date, 'yyyy-MM-dd'), slot)
   }
 
@@ -61,15 +61,15 @@ export function WeekView({ currentDate, blocks, milestones, onBlockClick, onSlot
               key={day.toISOString()}
               className={cn(
                 'px-2 py-3 text-center border-l border-gray-100',
-                isToday && 'bg-blue-50/50'
+                isToday && 'bg-gray-50'
               )}
             >
-              <p className={cn('text-[11px] font-semibold uppercase tracking-wider', isToday ? 'text-blue-600' : 'text-gray-400')}>
+              <p className={cn('text-[11px] font-semibold uppercase tracking-wider', isToday ? 'text-gray-600' : 'text-gray-400')}>
                 {format(day, 'EEE')}
               </p>
               <p className={cn(
                 'text-xl font-bold tabular-nums tracking-tight mt-0.5',
-                isToday ? 'text-white bg-blue-600 rounded-full size-8 flex items-center justify-center mx-auto' : 'text-gray-800'
+                isToday ? 'text-white bg-gray-900 rounded-full size-8 flex items-center justify-center mx-auto' : 'text-gray-800'
               )}>
                 {format(day, 'd')}
               </p>
@@ -81,7 +81,7 @@ export function WeekView({ currentDate, blocks, milestones, onBlockClick, onSlot
                       className={cn(
                         'size-1.5 rounded-full',
                         m.type === 'deadline' ? 'bg-red-500' :
-                        m.type === 'office_hour' ? 'bg-teal-500' :
+                        m.type === 'office_hour' ? 'bg-gray-600' :
                         m.type === 'announcement' ? 'bg-amber-500' :
                         'bg-gray-300'
                       )}
@@ -119,7 +119,7 @@ export function WeekView({ currentDate, blocks, milestones, onBlockClick, onSlot
                 key={`${day.toISOString()}-${slot}`}
                 className={cn(
                   `${minH} p-1.5 border-l border-gray-100 transition-colors`,
-                  isToday ? 'bg-blue-50/20' : 'bg-white',
+                  isToday ? 'bg-gray-50/30' : 'bg-white',
                   cellBlocks.length === 0 && 'hover:bg-gray-50/30'
                 )}
                 onDragOver={handleDragOver}

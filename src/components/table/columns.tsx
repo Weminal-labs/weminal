@@ -13,33 +13,39 @@ const col = createColumnHelper<Opportunity>()
 export const columns = [
   col.accessor('name', {
     header: 'Name',
+    size: 280,
     cell: (info) => (
-      <span className="font-medium text-gray-900">{info.getValue()}</span>
+      <span className="font-medium text-gray-800 line-clamp-1">{info.getValue()}</span>
     ),
   }),
   col.accessor('type', {
     header: 'Type',
+    size: 100,
     cell: (info) => <TypeBadge type={info.getValue() as OpportunityType} />,
   }),
   col.accessor('status', {
     header: 'Status',
+    size: 110,
     cell: (info) => <StatusBadge status={info.getValue()} />,
   }),
   col.accessor('organization', {
     header: 'Organization',
+    size: 150,
     cell: (info) => info.getValue() ?? <span className="text-gray-400">—</span>,
   }),
   col.accessor('parent_hackathon_name', {
     header: 'Parent Hackathon',
+    size: 160,
     enableSorting: false,
     cell: (info) => {
       const name = info.getValue()
       if (!name) return <span className="text-gray-400">—</span>
-      return <span className="text-teal-700 text-xs font-medium">↳ {name}</span>
+      return <span className="text-gray-400 text-xs font-medium">↳ {name}</span>
     },
   }),
   col.accessor('reward_amount', {
     header: 'Reward',
+    size: 120,
     cell: (info) => {
       const amount = info.getValue()
       if (!amount) return <span className="text-gray-400">—</span>
@@ -55,6 +61,7 @@ export const columns = [
   }),
   col.accessor('blockchains', {
     header: 'Chains',
+    size: 140,
     cell: (info) => {
       const chains = info.getValue()
       if (!chains?.length) return <span className="text-gray-400">—</span>
@@ -72,6 +79,7 @@ export const columns = [
   }),
   col.accessor('start_date', {
     header: 'Start',
+    size: 100,
     cell: (info) => {
       const val = info.getValue()
       return val ? <span className="text-sm tabular-nums">{val}</span> : <span className="text-gray-400">—</span>
@@ -79,6 +87,7 @@ export const columns = [
   }),
   col.accessor('end_date', {
     header: 'End',
+    size: 100,
     cell: (info) => {
       const val = info.getValue()
       return val ? <span className="text-sm tabular-nums">{val}</span> : <span className="text-gray-400">—</span>
@@ -86,11 +95,12 @@ export const columns = [
   }),
   col.accessor('website_url', {
     header: 'Link',
+    size: 50,
     cell: (info) => {
       const url = info.getValue()
       if (!url) return <span className="text-gray-400">—</span>
       return (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800" aria-label="Visit website">
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-700" aria-label="Visit website">
           <ExternalLink className="size-4" aria-hidden="true" />
         </a>
       )

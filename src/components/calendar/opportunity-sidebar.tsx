@@ -49,7 +49,7 @@ export function OpportunitySidebar({ onDragStart, selectedId, onSelect }: Props)
             placeholder="Search…"
             aria-label="Search opportunities"
             autoComplete="off"
-            className="h-9 pl-9 text-sm bg-gray-100 border-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="h-9 pl-9 text-sm bg-gray-100 border-none focus-visible:ring-2 focus-visible:ring-gray-400"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -97,7 +97,7 @@ export function OpportunitySidebar({ onDragStart, selectedId, onSelect }: Props)
                 className={cn(
                   'p-3 rounded-xl border-2 cursor-grab active:cursor-grabbing transition-all',
                   isSelected
-                    ? 'border-blue-500 bg-blue-50/30'
+                    ? 'border-gray-400 bg-gray-50'
                     : 'border-gray-100 bg-white hover:border-gray-200'
                 )}
               >

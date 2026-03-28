@@ -37,6 +37,7 @@ export type Opportunity = {
   notes: string | null
   format: string
   location: string | null
+  thumbnail_url: string | null
   parent_hackathon_id: string | null
   parent_hackathon_name: string | null
   created_at: string
