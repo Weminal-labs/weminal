@@ -204,8 +204,8 @@ function ReviewContent() {
                   aspectRatio="3 / 1"
                   margin={{ top: 8, right: 4, bottom: 20, left: 4 }}
                 >
-                  <Area dataKey="created" fill="oklch(0.7 0.15 250)" fillOpacity={0.4} strokeWidth={1.5} stroke="oklch(0.8 0.15 250)" />
-                  <Area dataKey="updated" fill="oklch(0.6 0.05 265)" fillOpacity={0.2} strokeWidth={1} stroke="oklch(0.7 0.05 265)" />
+                  <Area dataKey="created" fill="oklch(0.85 0 0)" fillOpacity={0.15} strokeWidth={1.5} stroke="oklch(0.75 0 0)" />
+                  <Area dataKey="updated" fill="oklch(0.65 0 0)" fillOpacity={0.08} strokeWidth={1} stroke="oklch(0.55 0 0)" />
                   <XAxis />
                 </AreaChart>
               </div>
