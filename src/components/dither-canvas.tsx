@@ -1,140 +1,261 @@
 'use client'
 
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 
-// 4x4 Bayer matrix
-const BAYER = [
-  [0, 8, 2, 10],
-  [12, 4, 14, 6],
-  [3, 11, 1, 9],
-  [15, 7, 13, 5],
-]
+type Particle = {
+  // Target (original) position
+  tx: number
+  ty: number
+  // Current position
+  x: number
+  y: number
+  // Velocity
+  vx: number
+  vy: number
+  // Size
+  size: number
+}
 
 type Props = {
   src: string
   className?: string
-  animationDuration?: number
+  /** Particle sample scale — lower = more particles. Default: 3 */
+  particleScale?: number
+  /** Particle dot size. Default: 2 */
+  dotSize?: number
+  /** Mouse repulsion radius. Default: 80 */
+  repulsionRadius?: number
+  /** Mouse repulsion force. Default: 8 */
+  repulsionForce?: number
+  /** Spring stiffness (0-1). Default: 0.08 */
+  spring?: number
+  /** Friction (0-1). Default: 0.85 */
+  friction?: number
 }
 
 export function DitherCanvas({
   src,
   className = '',
-  animationDuration = 2000,
+  particleScale = 3,
+  dotSize = 2,
+  repulsionRadius = 80,
+  repulsionForce = 8,
+  spring = 0.08,
+  friction = 0.85,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [dimensions, setDimensions] = useState({ w: 0, h: 0 })
-  const sourceDataRef = useRef<ImageData | null>(null)
+  const particlesRef = useRef<Particle[]>([])
+  const mouseRef = useRef({ x: -9999, y: -9999 })
   const animRef = useRef<number>(0)
+  const initializedRef = useRef(false)
 
-  // Load image → rasterize to offscreen canvas → store pixel data
-  useEffect(() => {
+  // Initialize particles from image
+  const initParticles = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
     const img = new Image()
     img.crossOrigin = 'anonymous'
     img.onload = () => {
-      // Use natural dimensions, capped
-      const maxW = Math.min(img.naturalWidth || 900, 1200)
-      const ratio = (img.naturalHeight || 450) / (img.naturalWidth || 900)
-      const w = maxW
-      const h = Math.round(maxW * ratio)
+      const w = canvas.width
+      const h = canvas.height
 
-      // Rasterize SVG to offscreen canvas
+      // Rasterize to offscreen canvas
       const offscreen = document.createElement('canvas')
       offscreen.width = w
       offscreen.height = h
       const octx = offscreen.getContext('2d')!
-
-      // White background for SVG
       octx.fillStyle = '#ffffff'
       octx.fillRect(0, 0, w, h)
       octx.drawImage(img, 0, 0, w, h)
 
-      sourceDataRef.current = octx.getImageData(0, 0, w, h)
-      setDimensions({ w, h })
+      const imageData = octx.getImageData(0, 0, w, h)
+      const data = imageData.data
+      const particles: Particle[] = []
+
+      // Sample pixels at intervals
+      const step = particleScale
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const i = (y * w + x) * 4
+          const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
+
+          // Only create particles for dark pixels (the logo)
+          if (gray < 128) {
+            particles.push({
+              tx: x,
+              ty: y,
+              // Start scattered randomly
+              x: x + (Math.random() - 0.5) * w * 0.8,
+              y: y + (Math.random() - 0.5) * h * 0.8,
+              vx: 0,
+              vy: 0,
+              size: dotSize + Math.random() * 0.5,
+            })
+          }
+        }
+      }
+
+      particlesRef.current = particles
+      initializedRef.current = true
     }
     img.src = src
-  }, [src])
+  }, [src, particleScale, dotSize])
 
-  const render = useCallback((progress: number) => {
+  // Animation loop
+  const animate = useCallback(() => {
     const canvas = canvasRef.current
-    const sourceData = sourceDataRef.current
-    if (!canvas || !sourceData) return
+    if (!canvas) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const { width: w, height: h } = sourceData
-    const src = sourceData.data
-    const output = ctx.createImageData(w, h)
-    const out = output.data
+    const w = canvas.width
+    const h = canvas.height
+    const mouse = mouseRef.current
+    const particles = particlesRef.current
 
-    // Animated pixel size: starts large (blocky), shrinks to 1 (crisp)
-    const pixelSize = Math.max(1, Math.round(8 * (1 - progress) + 1))
-    // Animated threshold: starts at 255 (all white), settles to 128
-    const thresh = 128 + 127 * (1 - progress)
+    // Clear
+    ctx.clearRect(0, 0, w, h)
 
-    for (let y = 0; y < h; y += pixelSize) {
-      for (let x = 0; x < w; x += pixelSize) {
-        // Sample center of block
-        const cx = Math.min(x + (pixelSize >> 1), w - 1)
-        const cy = Math.min(y + (pixelSize >> 1), h - 1)
-        const si = (cy * w + cx) * 4
+    // Update & draw particles
+    ctx.fillStyle = '#000000'
 
-        // Grayscale
-        const gray = src[si] * 0.299 + src[si + 1] * 0.587 + src[si + 2] * 0.114
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i]
 
-        // Bayer dithering
-        const bayer = (BAYER[y % 4][x % 4] / 16 - 0.5) * 255 * 0.5
-        const val = gray + bayer > thresh ? 255 : 0
+      // Spring force toward target
+      const dx = p.tx - p.x
+      const dy = p.ty - p.y
+      p.vx += dx * spring
+      p.vy += dy * spring
 
-        // Fill block
-        for (let dy = 0; dy < pixelSize && y + dy < h; dy++) {
-          for (let dx = 0; dx < pixelSize && x + dx < w; dx++) {
-            const oi = ((y + dy) * w + (x + dx)) * 4
-            out[oi] = val
-            out[oi + 1] = val
-            out[oi + 2] = val
-            out[oi + 3] = 255
-          }
+      // Mouse repulsion
+      const mx = p.x - mouse.x
+      const my = p.y - mouse.y
+      const dist = Math.sqrt(mx * mx + my * my)
+
+      if (dist < repulsionRadius && dist > 0) {
+        const force = (repulsionRadius - dist) / repulsionRadius * repulsionForce
+        p.vx += (mx / dist) * force
+        p.vy += (my / dist) * force
+      }
+
+      // Apply friction
+      p.vx *= friction
+      p.vy *= friction
+
+      // Update position
+      p.x += p.vx
+      p.y += p.vy
+
+      // Draw
+      ctx.fillRect(
+        Math.round(p.x),
+        Math.round(p.y),
+        p.size,
+        p.size,
+      )
+    }
+
+    animRef.current = requestAnimationFrame(animate)
+  }, [spring, friction, repulsionRadius, repulsionForce])
+
+  // Setup canvas size and init
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const updateSize = () => {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = Math.min(window.devicePixelRatio, 2)
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      const ctx = canvas.getContext('2d')
+      if (ctx) ctx.scale(dpr, dpr)
+      // Re-adjust canvas internal size for drawing
+      canvas.width = rect.width
+      canvas.height = rect.height
+      initParticles()
+    }
+
+    updateSize()
+
+    const observer = new ResizeObserver(updateSize)
+    observer.observe(canvas)
+    return () => observer.disconnect()
+  }, [initParticles])
+
+  // Start animation
+  useEffect(() => {
+    if (!initializedRef.current) return
+    animRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animRef.current)
+  }, [animate])
+
+  // Also start when particles load
+  useEffect(() => {
+    const check = setInterval(() => {
+      if (initializedRef.current && particlesRef.current.length > 0) {
+        clearInterval(check)
+        cancelAnimationFrame(animRef.current)
+        animRef.current = requestAnimationFrame(animate)
+      }
+    }, 100)
+    return () => clearInterval(check)
+  }, [animate])
+
+  // Mouse tracking
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      mouseRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      }
+    }
+
+    const handleLeave = () => {
+      mouseRef.current = { x: -9999, y: -9999 }
+    }
+
+    // Click explosion
+    const handleClick = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const cx = e.clientX - rect.left
+      const cy = e.clientY - rect.top
+
+      for (const p of particlesRef.current) {
+        const dx = p.x - cx
+        const dy = p.y - cy
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < 150 && dist > 0) {
+          const force = (150 - dist) / 150 * 25
+          p.vx += (dx / dist) * force
+          p.vy += (dy / dist) * force
         }
       }
     }
 
-    ctx.putImageData(output, 0, 0)
+    canvas.addEventListener('mousemove', handleMove)
+    canvas.addEventListener('mouseleave', handleLeave)
+    canvas.addEventListener('click', handleClick)
+
+    return () => {
+      canvas.removeEventListener('mousemove', handleMove)
+      canvas.removeEventListener('mouseleave', handleLeave)
+      canvas.removeEventListener('click', handleClick)
+    }
   }, [])
-
-  // Run animation when image is loaded
-  useEffect(() => {
-    if (dimensions.w === 0) return
-
-    const canvas = canvasRef.current
-    if (canvas) {
-      canvas.width = dimensions.w
-      canvas.height = dimensions.h
-    }
-
-    const start = performance.now()
-
-    function animate(now: number) {
-      const t = Math.min((now - start) / animationDuration, 1)
-      const eased = 1 - Math.pow(1 - t, 3) // ease out cubic
-      render(eased)
-      if (t < 1) animRef.current = requestAnimationFrame(animate)
-    }
-
-    animRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(animRef.current)
-  }, [dimensions, animationDuration, render])
 
   return (
     <canvas
       ref={canvasRef}
       className={className}
-      style={{
-        width: '100%',
-        maxWidth: dimensions.w || 900,
-        height: 'auto',
-        aspectRatio: dimensions.w && dimensions.h ? `${dimensions.w} / ${dimensions.h}` : '2 / 1',
-      }}
+      style={{ cursor: 'pointer', aspectRatio: '2 / 1' }}
     />
   )
 }
