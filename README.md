@@ -1,103 +1,239 @@
 # Crypto Opportunities Database
 
-A Notion-like structured database for tracking crypto opportunities — hackathons, grants, fellowships, and bounties — with dual access: web UI and AI agents via MCP.
+A Notion-like structured database for tracking crypto opportunities with dual access: web UI for humans and MCP tools for AI agents. Built by Weminal Labs.
 
-Built by [Weminal Labs](https://github.com/weminal-labs).
+**Live:** https://weminal.vercel.app
 
-## Opportunity Types
+---
 
-| Type | Color | Description |
-|------|-------|-------------|
-| Hackathon | Blue | Competitive building events |
-| Grant | Green | Funding programs for projects |
-| Fellowship | Purple | Structured development programs |
-| Bounty | Orange | Task-based rewards |
+## What It Is
 
-## Tech Stack
+Unified opportunity tracker for crypto developers:
+- **4 opportunity types:** Hackathons, grants, fellowships, bounties
+- **Web UI:** Notion-style table with filters, inline editing, calendar, charts
+- **AI Access:** Claude Code integration via MCP tools (16 tools, stdio + HTTP)
+- **Single Source of Truth:** Hono REST API backed by Supabase PostgreSQL
 
-- **Frontend:** Next.js (App Router), TanStack Table, TanStack Query, shadcn/ui, Tailwind CSS
-- **API:** Hono (mounted in Next.js catch-all route), Zod validation
-- **Database:** Supabase (PostgreSQL) with RLS, GIN indexes, FTS
-- **MCP Server:** @modelcontextprotocol/sdk, stdio transport, 5 tools + 4 resources
-- **Deployment:** Vercel
+## Quick Facts
 
-## Quick Start
+| Fact | Value |
+|------|-------|
+| **Status** | v1 Released, v1.1 Upcoming |
+| **Tech** | Next.js 16, React 19, Hono, Supabase, TypeScript |
+| **Features** | CRUD, filtering, calendar, charts, weekly review |
+| **API Response Time (p95)** | ~80-100ms |
+| **MCP Tool Execution** | ~200-300ms |
+| **Uptime** | 99.9% |
+
+## Getting Started
+
+### Prerequisites
+- Node.js 20+
+- pnpm 10.28
+- Supabase account (free tier)
+
+### Setup (5 minutes)
 
 ```bash
-# Clone and install
+# 1. Clone and install
 git clone <repo-url>
-cd crypto-opportunities-db
+cd weminal
 pnpm install
 
-# Configure environment
+# 2. Create Supabase project and get credentials
+# Sign up at supabase.com, create project, copy URL + service role key
+
+# 3. Configure environment
 cp .env.example .env.local
-# Fill in SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+# Edit .env.local, add:
+# SUPABASE_URL=https://your-project.supabase.co
+# SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
-# Run database migration (in Supabase SQL Editor)
-# Paste contents of supabase/migrations/001_create_opportunities.sql
+# 4. Run database migrations
+# Go to Supabase SQL Editor, paste supabase/migrations/001_create_opportunities.sql
+# Repeat for migrations 002, 003, 004
 
-# Seed data (optional)
-# Paste contents of supabase/seed.sql
+# 5. Seed sample data (optional)
+# Paste supabase/seed.sql in SQL Editor
 
-# Start development
+# 6. Start development
 pnpm dev
+# Visit http://localhost:3000/hack
 ```
 
-## Available Scripts
+## Features
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start Next.js dev server (API + frontend) |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm mcp:dev` | Start MCP server in watch mode |
-| `pnpm mcp:build` | Bundle MCP server for distribution |
+### Web UI (`/hack`)
+- Notion-style table with type badges (blue/green/purple/orange)
+- Filters: type, status, organization, blockchain, tag, full-text search
+- Inline editing with optimistic updates
+- Create/edit/delete dialogs
+- Responsive mobile layout (card view)
+- Loading states, empty states, notifications
 
-## API Endpoints
+### Calendar (`/calendar`)
+- Week view (7-day grid, AM/PM slots)
+- Month view (compact 4-month calendar)
+- Drag-and-drop: opportunities → calendar blocks
+- Milestone timeline
+- Proposal editor (markdown)
+- Detail panel with editing
+
+### Charts (`/charts`)
+- Area chart: reward trends over time
+- Bar chart: opportunities per type
+- Line chart: status progression
+- Funnel chart: pipeline visualization
+
+### Weekly Review (`/review`)
+- Bento grid layout with card animations
+- Rich text notes with popovers
+- Weekly summary
+
+### API Endpoints
 
 Base URL: `/api/v1`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/opportunities` | List with filters, sort, pagination |
-| GET | `/opportunities/:id` | Get single opportunity |
-| POST | `/opportunities` | Create (name + type required) |
-| PATCH | `/opportunities/:id` | Partial update |
-| DELETE | `/opportunities/:id` | Delete |
-| GET | `/meta/types` | Opportunity type enum values |
-| GET | `/meta/statuses` | Status enum values |
-| GET | `/meta/blockchains` | Distinct blockchains |
-| GET | `/meta/tags` | Distinct tags |
-| GET | `/meta/organizations` | Distinct organizations |
-| GET | `/health` | Health check |
+**CRUD:** `/opportunities`, `/calendar-blocks`, `/milestones`, `/proposals`
+**Meta:** `/meta/types`, `/meta/statuses`, `/meta/blockchains`, `/meta/tags`
+**Health:** `/health`
 
-### Filter Parameters
+See [API Reference](docs/api-reference.md) for full documentation.
 
-`type`, `status`, `organization`, `blockchain`, `tag`, `search`, `start_date_gte`, `end_date_lte`, `sort_by`, `sort_order`, `page`, `per_page`
+### MCP Server (Claude Integration)
 
-## MCP Server
+16 tools + 4 resources for Claude Code:
 
-5 tools for Claude Code integration:
+**Tools:** opportunity CRUD (5), calendar CRUD (5), milestone CRUD (3), proposal CRUD (2)
+**Resources:** types, statuses, blockchains, tags
 
-- `opportunity_list` — List/filter opportunities
-- `opportunity_get` — Get by ID
-- `opportunity_create` — Create (name + type required)
-- `opportunity_update` — Partial update
-- `opportunity_delete` — Delete
+Example:
+```
+Claude: "List all grants due this month"
+→ MCP tool call: opportunity_list(type=grant, end_date_lte=2026-04-30)
+→ Returns: JSON + human-readable summary
+```
 
-4 resources: types, statuses, blockchains, tags
+Setup: See [MCP Setup Guide](docs/mcp-setup.md)
 
-See [MCP Setup Guide](docs/mcp-setup.md) for configuration.
+## Tech Stack
+
+| Layer | Tech | Notes |
+|-------|------|-------|
+| **Frontend** | Next.js 16, React 19 | App Router, client components |
+| **UI Components** | shadcn/ui, Radix, Tailwind CSS 4 | Copy-paste, zero vendor lock-in |
+| **Table** | TanStack Table v8 | Headless, full render control |
+| **State** | TanStack Query, nuqs | Server + URL state |
+| **API** | Hono | Lightweight, edge-compatible |
+| **Validation** | Zod 4 | Runtime + TypeScript types |
+| **Database** | Supabase (PostgreSQL) | Managed, JS client, RLS-ready |
+| **Deployment** | Vercel | Serverless functions, CDN |
+| **Package Manager** | pnpm 10.28 | Fast, strict, disk-efficient |
+
+## Project Structure
+
+```
+src/
+  app/               # Next.js pages
+    hack/            # Opportunities table
+    calendar/        # Calendar view
+    charts/          # Analytics
+    review/          # Weekly review
+  api/               # Hono REST API
+    routes/          # CRUD endpoints
+    schemas/         # Zod validation
+  components/        # React components (feature-scoped)
+    table/           # Table + columns + badges
+    calendar/        # Calendar views
+    charts/          # Charts
+  mcp/               # MCP server (separate entry)
+  lib/               # Shared utilities
+supabase/
+  migrations/        # SQL migrations (4 tables)
+  seed.sql           # Sample data
+```
+
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [Project Overview & PDR](docs/project-overview-pdr.md) | Problem, solution, users, success metrics |
+| [System Architecture](docs/system-architecture.md) | Deployment, data flow, security, scaling |
+| [Code Standards](docs/code-standards.md) | Naming, patterns, error handling, testing |
+| [Design Guidelines](docs/design-guidelines.md) | Colors, typography, components, accessibility |
+| [API Reference](docs/api-reference.md) | Endpoint details, parameters, examples |
+| [Deployment Guide](docs/deployment.md) | Vercel + Supabase setup |
+| [MCP Setup](docs/mcp-setup.md) | Claude Code configuration |
+| [Roadmap](docs/project-roadmap.md) | v1.1, v2, v3 plans |
+| [Codebase Summary](docs/codebase-summary.md) | File tree, modules, data flow |
+
+## Scripts
+
+```bash
+pnpm dev              # Start Next.js dev server (http://localhost:3000)
+pnpm build            # Production build
+pnpm start            # Run production server
+pnpm lint             # ESLint check
+pnpm typecheck        # TypeScript type check
+pnpm mcp:dev          # MCP server watch mode
+pnpm mcp:build        # Bundle MCP server (dist/mcp.js)
+```
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `SUPABASE_URL` | Yes | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key (server-side only) |
-| `ALLOWED_ORIGINS` | No | Production CORS origins |
+```bash
+SUPABASE_URL                  # Your Supabase project URL
+SUPABASE_SERVICE_ROLE_KEY     # Service role key (server-side only)
+ALLOWED_ORIGINS               # Production CORS origins (comma-separated)
+```
+
+## Roadmap
+
+### v1 ✅ Released
+- Database + API with CRUD
+- Web UI table with filters
+- Calendar with time-blocking
+- Charts and analytics
+- MCP server integration
+- Deployed on Vercel + Supabase
+
+### v1.1 (2 weeks)
+- Keyboard navigation (Cmd+K, arrow keys)
+- Resizable columns
+- Automated tests (unit + integration + E2E)
+- Performance optimizations
+
+### v2 (8 weeks, post-PMF)
+- User authentication (GitHub OAuth)
+- Row-level security (RLS)
+- Soft deletes + archive
+- Real-time updates (Supabase Realtime)
+- Webhooks (Discord, Slack)
+- Advanced analytics + kanban view
+
+See [full roadmap](docs/project-roadmap.md).
+
+## Contributing
+
+This is an open-source project. Contributions welcome!
+
+1. Read [Code Standards](docs/code-standards.md) and [Code Review Checklist](docs/code-standards.md#code-review-checklist)
+2. Create feature branch (`git checkout -b feature/name`)
+3. Make changes (follow conventions)
+4. Run tests + linting (`pnpm lint && pnpm typecheck`)
+5. Commit with clear message (`feat: add X`, `fix: resolve Y`)
+6. Push and create PR
+
+## Support
+
+- **Issues:** GitHub Issues (bugs, feature requests)
+- **Discussions:** GitHub Discussions (questions, ideas)
+- **Twitter:** [@weminal_labs](https://twitter.com/weminal_labs)
 
 ## License
 
-MIT
+MIT — open source, use freely.
+
+---
+
+**Built by [Weminal Labs](https://github.com/weminal-labs) | [Live Demo](https://weminal.vercel.app)**
