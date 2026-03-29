@@ -29,7 +29,7 @@ export default function Home() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw]">
+      <div className="relative z-10 mx-auto" style={{ width: 'min(92vw, 1100px)' }}>
         <ParticleLogo
           src="/hero-frame.svg"
           className="w-full"
@@ -38,10 +38,10 @@ export default function Home() {
 
       <Link
         href="/hack"
-        className="relative z-10 group mt-10 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/10"
+        className="relative z-10 group mt-10 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-[transform,background-color] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-gray-900/10"
       >
         Explore Opportunities
-        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+        <ArrowRight className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
       </Link>
     </main>
   )

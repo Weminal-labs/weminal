@@ -205,8 +205,8 @@ export function ParticleLogo({ src, className = '' }: Props) {
   return (
     <canvas
       ref={canvasRef}
-      className={className}
-      style={{ cursor: 'pointer', aspectRatio: '2 / 1', width: '100%' }}
+      className={`block w-full max-w-full ${className}`}
+      style={{ cursor: 'pointer', aspectRatio: '966 / 644', width: '100%' }}
     />
   )
 }
