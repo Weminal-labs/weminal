@@ -53,7 +53,7 @@ export function ParticleLogo({ src, className = '' }: Props) {
 
       const pixels = octx.getImageData(0, 0, w, h).data
       const targets: { x: number; y: number; d: number }[] = []
-      const step = Math.round(2 * dpr)
+      const step = Math.round(4 * dpr)
 
       for (let y = 0; y < h; y += step) {
         for (let x = 0; x < w; x += step) {
@@ -79,7 +79,7 @@ export function ParticleLogo({ src, className = '' }: Props) {
         tx[i] = px[i] = targets[i].x
         ty[i] = py[i] = targets[i].y
         vx[i] = vy[i] = 0
-        sz[i] = (3.5 + targets[i].d * 1.5) * dpr
+        sz[i] = (8 + targets[i].d * 4) * dpr
         sd[i] = Math.random() * Math.PI * 2
       }
 
