@@ -5,6 +5,7 @@ import { format, startOfWeek, addWeeks, subWeeks } from 'date-fns'
 import { useWeeklyReview, useGenerateWeeklyReview } from '@/hooks/use-weekly-review'
 import { AreaChart, Area } from '@/components/charts/area-chart'
 import { XAxis } from '@/components/charts/x-axis'
+import RichPopover from '@/components/ui/rich-popover'
 import { HackDrawer } from '@/components/review/hack-drawer'
 import { CardStack } from '@/components/review/card-stack'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -93,6 +94,75 @@ function ReviewContent() {
           </Button>
         </div>
       ) : (
+        <>
+        {/* ── Weekly Notes ── */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 md:p-6 mb-4">
+          <p className="text-sm text-gray-600 leading-relaxed">
+            <span className="font-semibold text-gray-900">Week of {format(currentDate, 'MMM d')} – {format(weekEndDate, 'MMM d, yyyy')}</span>
+            {' — '}
+            {snap.stats.totalNew > 0 ? (
+              <>
+                Added <span className="font-medium text-gray-900">{snap.stats.totalNew} new opportunities</span> this week
+                {snap.topHacks.length > 0 && (
+                  <>
+                    . Biggest find:
+                    <RichPopover
+                      trigger={
+                        <span className="mx-1 inline-flex cursor-pointer items-center rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-800 hover:bg-gray-100 align-middle">
+                          {snap.topHacks[0].name.slice(0, 30)}{snap.topHacks[0].name.length > 30 ? '...' : ''}
+                        </span>
+                      }
+                      title={snap.topHacks[0].name}
+                      description={snap.topHacks[0].description?.slice(0, 150) ?? `${snap.topHacks[0].type} by ${snap.topHacks[0].organization ?? 'Unknown'}`}
+                      actionLabel="View details"
+                      onActionClick={() => setSelectedOpp(snap.topHacks[0])}
+                      meta={snap.topHacks[0].reward_amount ? `$${Number(snap.topHacks[0].reward_amount).toLocaleString()}` : undefined}
+                      side="bottom"
+                    />
+                    with {snap.topHacks[0].reward_amount ? `$${Number(snap.topHacks[0].reward_amount).toLocaleString()} reward` : 'no reward listed'}
+                  </>
+                )}
+              </>
+            ) : (
+              <>No new opportunities added this week</>
+            )}
+            {snap.completedDeadlines.length > 0 && (
+              <>
+                . Completed{' '}
+                {snap.completedDeadlines.map((opp, i) => (
+                  <span key={opp.id}>
+                    {i > 0 && ', '}
+                    <RichPopover
+                      trigger={
+                        <span className="inline-flex cursor-pointer items-center rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-800 hover:bg-gray-100 align-middle">
+                          {opp.name.slice(0, 25)}{opp.name.length > 25 ? '...' : ''}
+                        </span>
+                      }
+                      title={opp.name}
+                      description={`${opp.type} · ${opp.organization ?? 'Unknown org'}`}
+                      actionLabel="Details"
+                      onActionClick={() => setSelectedOpp(opp)}
+                      meta={opp.reward_amount ? `$${Number(opp.reward_amount).toLocaleString()}` : undefined}
+                      side="bottom"
+                    />
+                  </span>
+                ))}
+              </>
+            )}
+            {snap.upcomingDeadlines.length > 0 && (
+              <>
+                . <span className="font-medium text-gray-900">{snap.upcomingDeadlines.length} deadline{snap.upcomingDeadlines.length > 1 ? 's' : ''}</span> coming up
+              </>
+            )}
+            {snap.missingDeadlines.length > 0 && (
+              <>
+                . <span className="text-gray-500">{snap.missingDeadlines.length} hackathon{snap.missingDeadlines.length > 1 ? 's' : ''} still missing deadlines</span>
+              </>
+            )}
+            .
+          </p>
+        </div>
+
         <div className="grid gap-3 md:grid-cols-4">
 
           {/* ── Hero: KPIs + Activity (span 2 cols, 2 rows) ── */}
@@ -293,6 +363,7 @@ function ReviewContent() {
             </div>
           )}
         </div>
+        </>
       )}
 
       <HackDrawer
