@@ -15,7 +15,7 @@ import type { Opportunity, OpportunityType } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import {
-  Table2, Calendar, BarChart3, LayoutGrid,
+  Table2, Calendar, BarChart3, LayoutGrid, ExternalLink,
   ChevronLeft, ChevronRight, Sparkles,
   Trophy, Clock, CheckCircle2, AlertTriangle, TrendingUp,
 } from 'lucide-react'
@@ -95,107 +95,168 @@ function ReviewContent() {
         </div>
       ) : (
         <>
-        {/* ── Weekly Notes ── */}
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 md:p-6 mb-4 space-y-4">
-          {/* Summary paragraph */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">
-              Week of {format(currentDate, 'MMM d')} – {format(weekEndDate, 'MMM d, yyyy')}
-            </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {snap.stats.totalNew > 0 ? (
+        {/* ── Weekly Notes — editorial long-form ── */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 mb-4">
+          <div className="max-w-2xl space-y-5 text-base leading-relaxed text-gray-500">
+            {/* Paragraph 1: Overview */}
+            <p>
+              This week we tracked{' '}
+              <span className="font-semibold text-gray-900">{snap.stats.totalNew} new opportunities</span>{' '}
+              across the crypto ecosystem, bringing the total to{' '}
+              <span className="font-semibold text-gray-900">{snap.stats.totalOpportunities} active opportunities</span>{' '}
+              with a combined reward pool of{' '}
+              <span className="font-semibold text-gray-900">
+                {snap.stats.totalReward >= 1_000_000 ? `$${(snap.stats.totalReward / 1_000_000).toFixed(1)}M` : `$${(snap.stats.totalReward / 1_000).toFixed(0)}k`}
+              </span>.{' '}
+              {snap.stats.byType.length > 0 && (
                 <>
-                  Added <span className="font-medium text-gray-900">{snap.stats.totalNew} new opportunities</span> this week
-                  {snap.topHacks.length > 0 && (
-                    <>
-                      . Biggest find:
-                      <RichPopover
-                        trigger={
-                          <span className="mx-1 inline-flex cursor-pointer items-center rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-800 hover:bg-gray-100 align-middle">
-                            {snap.topHacks[0].name.slice(0, 30)}{snap.topHacks[0].name.length > 30 ? '...' : ''}
-                          </span>
-                        }
-                        title={snap.topHacks[0].name}
-                        description={snap.topHacks[0].description?.slice(0, 150) ?? `${snap.topHacks[0].type} by ${snap.topHacks[0].organization ?? 'Unknown'}`}
-                        actionLabel="View details"
-                        onActionClick={() => setSelectedOpp(snap.topHacks[0])}
-                        meta={snap.topHacks[0].reward_amount ? `$${Number(snap.topHacks[0].reward_amount).toLocaleString()}` : undefined}
-                        side="bottom"
-                      />
-                      with {snap.topHacks[0].reward_amount ? `$${Number(snap.topHacks[0].reward_amount).toLocaleString()} reward` : 'no reward listed'}
-                    </>
-                  )}
-                  {snap.completedDeadlines.length > 0 && (
-                    <>
-                      . Completed{' '}
-                      {snap.completedDeadlines.map((opp, i) => (
-                        <span key={opp.id}>
-                          {i > 0 && ', '}
-                          <RichPopover
-                            trigger={
-                              <span className="inline-flex cursor-pointer items-center rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-800 hover:bg-gray-100 align-middle">
-                                {opp.name.slice(0, 25)}{opp.name.length > 25 ? '...' : ''}
-                              </span>
-                            }
-                            title={opp.name}
-                            description={`${opp.type} · ${opp.organization ?? 'Unknown org'}`}
-                            actionLabel="Details"
-                            onActionClick={() => setSelectedOpp(opp)}
-                            meta={opp.reward_amount ? `$${Number(opp.reward_amount).toLocaleString()}` : undefined}
-                            side="bottom"
-                          />
-                        </span>
-                      ))}
-                    </>
-                  )}
-                  {snap.upcomingDeadlines.length > 0 && (
-                    <>. <span className="font-medium text-gray-900">{snap.upcomingDeadlines.length} deadline{snap.upcomingDeadlines.length > 1 ? 's' : ''}</span> coming up</>
-                  )}
-                  {snap.missingDeadlines.length > 0 && (
-                    <>. <span className="text-gray-500">{snap.missingDeadlines.length} hackathon{snap.missingDeadlines.length > 1 ? 's' : ''} still missing deadlines</span></>
-                  )}
-                  .
+                  The breakdown: {snap.stats.byType.map((t, i) => (
+                    <span key={t.type}>
+                      {i > 0 && (i === snap.stats.byType.length - 1 ? ', and ' : ', ')}
+                      <span className="font-medium text-gray-700">{t.count} {t.type}{t.count > 1 ? 's' : ''}</span>
+                    </span>
+                  ))}.
                 </>
-              ) : (
-                <>No new opportunities added this week.</>
               )}
             </p>
-          </div>
 
-          {/* Tech Stack & Chains */}
-          {snap.insights && (snap.insights.topChains.length > 0 || snap.insights.topTags.length > 0) && (
-            <div className="flex flex-wrap gap-4 pt-3 border-t border-gray-50">
-              {snap.insights.topChains.length > 0 && (
-                <div>
-                  <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-1.5">Tech Stack</p>
-                  <div className="flex flex-wrap gap-1">
-                    {snap.insights.topChains.map((c) => (
-                      <span key={c.name} className="inline-flex items-center gap-1 rounded-full bg-gray-50 border border-gray-100 px-2 py-0.5 text-[11px] text-gray-600">
-                        {c.name} <span className="text-gray-300">{c.count}</span>
+            {/* Paragraph 2: Top find */}
+            {snap.topHacks.length > 0 && (
+              <p>
+                The standout this week is{' '}
+                <RichPopover
+                  trigger={
+                    <span className="font-semibold text-gray-900 cursor-pointer border-b border-gray-300 border-dashed hover:border-gray-900 transition-colors">
+                      {snap.topHacks[0].name}
+                    </span>
+                  }
+                  title={snap.topHacks[0].name}
+                  description={snap.topHacks[0].description?.slice(0, 200) ?? `A ${snap.topHacks[0].type} opportunity by ${snap.topHacks[0].organization ?? 'an unknown organization'}.`}
+                  actionLabel="View details"
+                  onActionClick={() => setSelectedOpp(snap.topHacks[0])}
+                  meta={snap.topHacks[0].reward_amount ? `$${Number(snap.topHacks[0].reward_amount).toLocaleString()}` : undefined}
+                  side="bottom"
+                  align="start"
+                />
+                {snap.topHacks[0].organization && (
+                  <> by <span className="font-medium text-gray-700">{snap.topHacks[0].organization}</span></>
+                )}
+                {snap.topHacks[0].reward_amount && (
+                  <>, offering <span className="font-semibold text-gray-900">${Number(snap.topHacks[0].reward_amount).toLocaleString()}</span> in rewards</>
+                )}.{' '}
+                {snap.topHacks.length > 1 && (
+                  <>
+                    Other high-value opportunities include{' '}
+                    {snap.topHacks.slice(1, 3).map((opp, i) => (
+                      <span key={opp.id}>
+                        {i > 0 && ' and '}
+                        <RichPopover
+                          trigger={
+                            <span className="font-medium text-gray-700 cursor-pointer border-b border-gray-200 border-dashed hover:border-gray-700 transition-colors">
+                              {opp.name}
+                            </span>
+                          }
+                          title={opp.name}
+                          description={opp.description?.slice(0, 150) ?? `${opp.type} by ${opp.organization ?? 'Unknown'}`}
+                          actionLabel="Details"
+                          onActionClick={() => setSelectedOpp(opp)}
+                          meta={opp.reward_amount ? `$${Number(opp.reward_amount).toLocaleString()}` : undefined}
+                          side="bottom"
+                          align="start"
+                        />
+                        {opp.reward_amount && (
+                          <span className="text-gray-400"> (${Number(opp.reward_amount).toLocaleString()})</span>
+                        )}
+                      </span>
+                    ))}.
+                  </>
+                )}
+              </p>
+            )}
+
+            {/* Paragraph 3: Completed + Deadlines */}
+            {(snap.completedDeadlines.length > 0 || snap.upcomingDeadlines.length > 0 || snap.missingDeadlines.length > 0) && (
+              <p>
+                {snap.completedDeadlines.length > 0 && (
+                  <>
+                    We wrapped up{' '}
+                    {snap.completedDeadlines.map((opp, i) => (
+                      <span key={opp.id}>
+                        {i > 0 && (i === snap.completedDeadlines.length - 1 ? ' and ' : ', ')}
+                        <RichPopover
+                          trigger={
+                            <span className="font-semibold text-gray-900 cursor-pointer border-b border-gray-300 border-dashed hover:border-gray-900 transition-colors">
+                              {opp.name}
+                            </span>
+                          }
+                          title={opp.name}
+                          description={`Completed ${opp.type} · ${opp.organization ?? 'Unknown org'}`}
+                          actionLabel="Details"
+                          onActionClick={() => setSelectedOpp(opp)}
+                          meta={opp.reward_amount ? `$${Number(opp.reward_amount).toLocaleString()}` : undefined}
+                          side="bottom"
+                          align="start"
+                        />
                       </span>
                     ))}
-                  </div>
-                </div>
-              )}
-              {snap.insights.topTags.length > 0 && (
-                <div>
-                  <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-1.5">Topics</p>
-                  <div className="flex flex-wrap gap-1">
-                    {snap.insights.topTags.map((t) => (
-                      <span key={t.name} className="inline-flex items-center gap-1 rounded-full bg-gray-50 border border-gray-100 px-2 py-0.5 text-[11px] text-gray-600">
-                        {t.name}
+                    {' '}this week.{' '}
+                  </>
+                )}
+                {snap.upcomingDeadlines.length > 0 && (
+                  <>
+                    There {snap.upcomingDeadlines.length === 1 ? 'is' : 'are'}{' '}
+                    <span className="font-semibold text-gray-900">{snap.upcomingDeadlines.length} deadline{snap.upcomingDeadlines.length > 1 ? 's' : ''}</span>{' '}
+                    approaching — don&apos;t miss them.{' '}
+                  </>
+                )}
+                {snap.missingDeadlines.length > 0 && (
+                  <>
+                    Worth noting: <span className="font-medium text-gray-700">{snap.missingDeadlines.length} hackathon{snap.missingDeadlines.length > 1 ? 's' : ''}</span>{' '}
+                    still {snap.missingDeadlines.length === 1 ? 'doesn\'t have a' : 'don\'t have'} deadline{snap.missingDeadlines.length > 1 ? 's' : ''} set yet.
+                  </>
+                )}
+              </p>
+            )}
+
+            {/* Paragraph 4: Tech landscape */}
+            {snap.insights && (snap.insights.topChains.length > 0 || snap.insights.topTags.length > 0) && (
+              <p>
+                {snap.insights.topChains.length > 0 && (
+                  <>
+                    The tech landscape this week leans toward{' '}
+                    {snap.insights.topChains.slice(0, 3).map((c, i) => (
+                      <span key={c.name}>
+                        {i > 0 && (i === Math.min(snap.insights.topChains.length, 3) - 1 ? ' and ' : ', ')}
+                        <span className="font-semibold text-gray-900">{c.name}</span>
                       </span>
                     ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+                    {snap.insights.topChains.length > 3 && (
+                      <span className="text-gray-400"> (+{snap.insights.topChains.length - 3} more)</span>
+                    )}.{' '}
+                  </>
+                )}
+                {snap.insights.topTags.length > 0 && (
+                  <>
+                    Trending topics:{' '}
+                    {snap.insights.topTags.map((t, i) => (
+                      <span key={t.name}>
+                        {i > 0 && ', '}
+                        <span className="font-medium text-gray-700">{t.name}</span>
+                      </span>
+                    ))}.{' '}
+                    {snap.insights.topTags.some((t) => t.name.toLowerCase().includes('ai')) && (
+                      <>AI continues to dominate the opportunity space — good time to be building in this area.</>
+                    )}
+                  </>
+                )}
+              </p>
+            )}
+          </div>
 
           {/* Resource Links */}
           {snap.insights?.resourceLinks && snap.insights.resourceLinks.length > 0 && (
-            <div className="pt-3 border-t border-gray-50">
-              <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-1.5">Docs & Links</p>
+            <div className="mt-6 pt-5 border-t border-gray-100 max-w-2xl">
+              <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">Explore this week</p>
               <div className="flex flex-wrap gap-1.5">
                 {snap.insights.resourceLinks.map((link) => (
                   <a
@@ -203,13 +264,10 @@ function ReviewContent() {
                     href={link.url!}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-md border border-gray-100 bg-white px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-gray-100 bg-gray-50/50 px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                   >
-                    <span className="size-1 rounded-full bg-gray-300 shrink-0" />
-                    <span className="truncate max-w-[160px]">{link.name}</span>
-                    <svg className="size-2.5 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
+                    <span className="truncate max-w-[180px]">{link.name}</span>
+                    <ExternalLink className="size-3 text-gray-300 shrink-0" />
                   </a>
                 ))}
               </div>
