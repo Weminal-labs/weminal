@@ -8,6 +8,7 @@ import { TooltipBox } from "./tooltip-box";
 import { TooltipContent, type TooltipRow } from "./tooltip-content";
 import { TooltipDot } from "./tooltip-dot";
 import { TooltipIndicator } from "./tooltip-indicator";
+import { createPortal } from "react-dom";
 
 // Spring config for crosshair
 const crosshairSpringConfig = { stiffness: 300, damping: 30 };
@@ -59,11 +60,15 @@ export function ChartTooltip({
   const isHorizontal = orientation === "horizontal";
 
   const [mounted, setMounted] = useState(false);
+  const [container, setContainer] = useState<Element | null>(null);
 
   // Only render portals on client side after mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+     
+    setContainer(containerRef.current);
+  }, [containerRef]);
 
   const visible = tooltipData !== null;
   const x = tooltipData?.x ?? 0;
@@ -120,13 +125,9 @@ export function ChartTooltip({
 
   // Use portal to render into the chart container
   // Only render after mount on client side
-  const container = containerRef.current;
   if (!(mounted && container)) {
     return null;
   }
-
-  // Dynamic import to avoid SSR issues
-  const { createPortal } = require("react-dom") as typeof import("react-dom");
 
   const tooltipContent = (
     <>
@@ -189,14 +190,14 @@ export function ChartTooltip({
       >
         {content && tooltipData
           ? content({
-              point: tooltipData.point,
-              index: tooltipData.index,
-            })
+            point: tooltipData.point,
+            index: tooltipData.index,
+          })
           : !content && (
-              <TooltipContent rows={tooltipRows} title={title}>
-                {children}
-              </TooltipContent>
-            )}
+            <TooltipContent rows={tooltipRows} title={title}>
+              {children}
+            </TooltipContent>
+          )}
       </TooltipBox>
 
       {/* Date/Category Ticker - only show for vertical charts */}

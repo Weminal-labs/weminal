@@ -88,11 +88,11 @@ export function ParticleLogo({ src, className = '' }: Props) {
     img.src = src
   }, [src])
 
-  const render = useCallback((time: number) => {
+  const render = useCallback(function renderFrame(time: number) {
     const canvas = canvasRef.current
     const data = dataRef.current
     if (!canvas || !data) {
-      animRef.current = requestAnimationFrame(render)
+      animRef.current = requestAnimationFrame(renderFrame)
       return
     }
 
@@ -147,7 +147,7 @@ export function ParticleLogo({ src, className = '' }: Props) {
     }
 
     ctx.globalAlpha = 1
-    animRef.current = requestAnimationFrame(render)
+    animRef.current = requestAnimationFrame(renderFrame)
   }, [])
 
   useEffect(() => {

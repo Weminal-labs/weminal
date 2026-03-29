@@ -103,10 +103,10 @@ export function DitherCanvas({ src, className = '' }: Props) {
   }, [src])
 
   // Animation loop
-  const render = useCallback(() => {
+  const render = useCallback(function renderFrame() {
     const canvas = canvasRef.current
     if (!canvas || !readyRef.current) {
-      animRef.current = requestAnimationFrame(render)
+      animRef.current = requestAnimationFrame(renderFrame)
       return
     }
 
@@ -156,7 +156,7 @@ export function DitherCanvas({ src, className = '' }: Props) {
       ctx.fill()
     }
 
-    animRef.current = requestAnimationFrame(render)
+    animRef.current = requestAnimationFrame(renderFrame)
   }, [])
 
   // Init on mount

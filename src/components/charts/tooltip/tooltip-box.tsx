@@ -4,6 +4,7 @@ import { motion, useSpring } from "motion/react";
 import type { RefObject } from "react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { createPortal } from "react-dom";
 
 // Spring config for smooth tooltip movement
 const springConfig = { stiffness: 100, damping: 20 };
@@ -53,11 +54,15 @@ export function TooltipBox({
   const [tooltipWidth, setTooltipWidth] = useState(180);
   const [tooltipHeight, setTooltipHeight] = useState(80);
   const [mounted, setMounted] = useState(false);
+  const [container, setContainer] = useState<Element | null>(null);
 
   // Only render portals on client side after mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+     
+    setContainer(containerRef.current);
+  }, [containerRef]);
 
   // Measure tooltip dimensions
   useLayoutEffect(() => {
@@ -89,6 +94,7 @@ export function TooltipBox({
 
   useEffect(() => {
     if (prevFlipRef.current !== shouldFlipX) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFlipKey((k) => k + 1);
       prevFlipRef.current = shouldFlipX;
     }
@@ -113,13 +119,9 @@ export function TooltipBox({
   const transformOrigin = isFlipped ? "right top" : "left top";
 
   // Use portal to render into the container
-  const container = containerRef.current;
   if (!(mounted && container)) {
     return null;
   }
-
-  // Dynamic import to avoid SSR issues
-  const { createPortal } = require("react-dom") as typeof import("react-dom");
 
   if (!visible) {
     return null;

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useChart } from "./chart-context";
+import { createPortal } from "react-dom";
 
 export interface BarYAxisProps {
   /** Whether to show all labels or skip some for dense data. Default: true */
@@ -68,11 +69,15 @@ export function BarYAxis({
     hoveredBarIndex,
   } = useChart();
   const [mounted, setMounted] = useState(false);
+  const [container, setContainer] = useState<Element | null>(null);
 
   // Only render on client side after mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+     
+    setContainer(containerRef.current);
+  }, [containerRef]);
 
   // Generate labels for each bar
   const labelsToShow = useMemo(() => {
@@ -107,7 +112,6 @@ export function BarYAxis({
   ]);
 
   // Use portal to render into the chart container
-  const container = containerRef.current;
   if (!(mounted && container)) {
     return null;
   }
@@ -116,9 +120,6 @@ export function BarYAxis({
   if (!barScale) {
     return null;
   }
-
-  // Dynamic import to avoid SSR issues
-  const { createPortal } = require("react-dom") as typeof import("react-dom");
 
   return createPortal(
     <div

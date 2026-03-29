@@ -1,0 +1,395 @@
+
+> crypto-opportunities-db@0.1.0 lint
+> eslint .
+
+
+/Users/harryphan/Documents/dev/weminal/src/app/api/mcp/route.ts
+  34:13  warning  'result' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/harryphan/Documents/dev/weminal/src/app/calendar/page.tsx
+  4:123  warning  'addM' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/harryphan/Documents/dev/weminal/src/components/calendar/block-detail-panel.tsx
+  12:21  warning  'Clock' is defined but never used  @typescript-eslint/no-unused-vars
+  12:28  warning  'Flag' is defined but never used   @typescript-eslint/no-unused-vars
+  12:34  warning  'Check' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/harryphan/Documents/dev/weminal/src/components/calendar/milestone-timeline.tsx
+  6:10  warning  'typeColors' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/harryphan/Documents/dev/weminal/src/components/calendar/monthly-summary.tsx
+  34:9  warning  'upcomingDeadlines' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/harryphan/Documents/dev/weminal/src/components/calendar/proposal-editor.tsx
+  26:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/harryphan/Documents/dev/weminal/src/components/calendar/proposal-editor.tsx:26:5
+  24 |
+  25 |   useEffect(() => {
+> 26 |     setContent(proposal?.content ?? '')
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  27 |     setProposalStatus(proposal?.status ?? 'draft')
+  28 |     setSubmissionUrl(proposal?.submission_url ?? '')
+  29 |   }, [proposal])  react-hooks/set-state-in-effect
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/area.tsx
+  8:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-chart.tsx
+  285:17  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-chart.tsx:285:17
+  283 |   // Create a fake time scale for compatibility with ChartContext
+  284 |   const fakeTimeScale = useMemo(() => {
+> 285 |     const now = Date.now();
+      |                 ^^^^^^^^^^ Cannot call impure function
+  286 |     const start = now - data.length * 24 * 60 * 60 * 1000;
+  287 |     const scale = {
+  288 |       ...categoryScale,  react-hooks/purity
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-x-axis.tsx
+  126:21  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-x-axis.tsx:126:21
+  124 |
+  125 |   // Use portal to render into the chart container
+> 126 |   const container = containerRef.current;
+      |                     ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  127 |   if (!(mounted && container)) {
+  128 |     return null;
+  129 |   }                                                                                           react-hooks/refs
+  127:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-x-axis.tsx:127:9
+  125 |   // Use portal to render into the chart container
+  126 |   const container = containerRef.current;
+> 127 |   if (!(mounted && container)) {
+      |         ^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  128 |     return null;
+  129 |   }
+  130 |
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`  react-hooks/refs
+  137:28  error  A `require()` style import is forbidden                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-require-imports
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-y-axis.tsx
+  110:21  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-y-axis.tsx:110:21
+  108 |
+  109 |   // Use portal to render into the chart container
+> 110 |   const container = containerRef.current;
+      |                     ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  111 |   if (!(mounted && container)) {
+  112 |     return null;
+  113 |   }                                                                                           react-hooks/refs
+  111:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/bar-y-axis.tsx:111:9
+  109 |   // Use portal to render into the chart container
+  110 |   const container = containerRef.current;
+> 111 |   if (!(mounted && container)) {
+      |         ^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  112 |     return null;
+  113 |   }
+  114 |
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`  react-hooks/refs
+  121:28  error  A `require()` style import is forbidden                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-require-imports
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/chart-context.tsx
+  5:26  warning  '_Input' is defined but never used  @typescript-eslint/no-unused-vars
+  8:24  warning  '_Input' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/line.tsx
+  8:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/chart-tooltip.tsx
+  123:21  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/chart-tooltip.tsx:123:21
+  121 |   // Use portal to render into the chart container
+  122 |   // Only render after mount on client side
+> 123 |   const container = containerRef.current;
+      |                     ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  124 |   if (!(mounted && container)) {
+  125 |     return null;
+  126 |   }                                        react-hooks/refs
+  124:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/chart-tooltip.tsx:124:9
+  122 |   // Only render after mount on client side
+  123 |   const container = containerRef.current;
+> 124 |   if (!(mounted && container)) {
+      |         ^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  125 |     return null;
+  126 |   }
+  127 |
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`  react-hooks/refs
+  129:28  error  A `require()` style import is forbidden                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-require-imports
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-box.tsx
+  116:21  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-box.tsx:116:21
+  114 |
+  115 |   // Use portal to render into the container
+> 116 |   const container = containerRef.current;
+      |                     ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  117 |   if (!(mounted && container)) {
+  118 |     return null;
+  119 |   }                                                                                           react-hooks/refs
+  117:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-box.tsx:117:9
+  115 |   // Use portal to render into the container
+  116 |   const container = containerRef.current;
+> 117 |   if (!(mounted && container)) {
+      |         ^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  118 |     return null;
+  119 |   }
+  120 |
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`  react-hooks/refs
+  122:28  error  A `require()` style import is forbidden                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-require-imports
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx
+  33:5   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:33:5
+  31 |   // This is true when children state differs from our last committed state
+  32 |   const isWaitingForSettlement =
+> 33 |     committedChildrenStateRef.current !== null &&
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  34 |     committedChildrenStateRef.current !== hasChildren;
+  35 |
+  36 |   // Commit height changes with a frame delay when structure changes                                                                                              react-hooks/refs
+  33:5   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:33:5
+  31 |   // This is true when children state differs from our last committed state
+  32 |   const isWaitingForSettlement =
+> 33 |     committedChildrenStateRef.current !== null &&
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  34 |     committedChildrenStateRef.current !== hasChildren;
+  35 |
+  36 |   // Commit height changes with a frame delay when structure changes                                                                                              react-hooks/refs
+  33:5   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:33:5
+  31 |   // This is true when children state differs from our last committed state
+  32 |   const isWaitingForSettlement =
+> 33 |     committedChildrenStateRef.current !== null &&
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  34 |     committedChildrenStateRef.current !== hasChildren;
+  35 |
+  36 |   // Commit height changes with a frame delay when structure changes                                                                                              react-hooks/refs
+  33:5   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:33:5
+  31 |   // This is true when children state differs from our last committed state
+  32 |   const isWaitingForSettlement =
+> 33 |     committedChildrenStateRef.current !== null &&
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |     committedChildrenStateRef.current !== hasChildren;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  35 |
+  36 |   // Commit height changes with a frame delay when structure changes
+  37 |   useEffect(() => {  react-hooks/refs
+  34:5   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:34:5
+  32 |   const isWaitingForSettlement =
+  33 |     committedChildrenStateRef.current !== null &&
+> 34 |     committedChildrenStateRef.current !== hasChildren;
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  35 |
+  36 |   // Commit height changes with a frame delay when structure changes
+  37 |   useEffect(() => {                                                                                                                                                               react-hooks/refs
+  48:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:48:9
+  46 |     }
+  47 |
+> 48 |     if (isWaitingForSettlement) {
+     |         ^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  49 |       // Structure changed - wait for layout to settle before committing
+  50 |       frameRef.current = requestAnimationFrame(() => {
+  51 |         frameRef.current = requestAnimationFrame(() => {                                                                                                                                                                        react-hooks/refs
+  67:35  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:67:35
+  65 |       }
+  66 |     };
+> 67 |   }, [bounds.height, hasChildren, isWaitingForSettlement]);
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  68 |
+  69 |   // Animate if we have a committed height
+  70 |   const shouldAnimate = committedHeight !== null;                                                                                                                                                                                                      react-hooks/refs
+  67:35  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/tooltip/tooltip-content.tsx:67:35
+  65 |       }
+  66 |     };
+> 67 |   }, [bounds.height, hasChildren, isWaitingForSettlement]);
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  68 |
+  69 |   // Animate if we have a committed height
+  70 |   const shouldAnimate = committedHeight !== null;                                                                                                                                                                                                      react-hooks/refs
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/x-axis.tsx
+  117:21  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/x-axis.tsx:117:21
+  115 |   // Use portal to render into the chart container
+  116 |   // Only render after mount on client side
+> 117 |   const container = containerRef.current;
+      |                     ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  118 |   if (!(mounted && container)) {
+  119 |     return null;
+  120 |   }                                        react-hooks/refs
+  118:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/harryphan/Documents/dev/weminal/src/components/charts/x-axis.tsx:118:9
+  116 |   // Only render after mount on client side
+  117 |   const container = containerRef.current;
+> 118 |   if (!(mounted && container)) {
+      |         ^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  119 |     return null;
+  120 |   }
+  121 |
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`  react-hooks/refs
+  123:28  error  A `require()` style import is forbidden                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-require-imports
+
+/Users/harryphan/Documents/dev/weminal/src/components/dither-canvas.tsx
+  109:47  error  Error: Cannot access variable before it is declared
+
+`render` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/Users/harryphan/Documents/dev/weminal/src/components/dither-canvas.tsx:109:47
+  107 |     const canvas = canvasRef.current
+  108 |     if (!canvas || !readyRef.current) {
+> 109 |       animRef.current = requestAnimationFrame(render)
+      |                                               ^^^^^^ `render` accessed before it is declared
+  110 |       return
+  111 |     }
+  112 |
+
+/Users/harryphan/Documents/dev/weminal/src/components/dither-canvas.tsx:106:3
+  104 |
+  105 |   // Animation loop
+> 106 |   const render = useCallback(() => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 107 |     const canvas = canvasRef.current
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 108 |     if (!canvas || !readyRef.current) {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 159 |     animRef.current = requestAnimationFrame(render)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 160 |   }, [])
+      | ^^^^^^^^^ `render` is declared here
+  161 |
+  162 |   // Init on mount
+  163 |   useEffect(() => {  react-hooks/immutability
+
+/Users/harryphan/Documents/dev/weminal/src/components/particle-logo.tsx
+  95:47  error  Error: Cannot access variable before it is declared
+
+`render` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/Users/harryphan/Documents/dev/weminal/src/components/particle-logo.tsx:95:47
+  93 |     const data = dataRef.current
+  94 |     if (!canvas || !data) {
+> 95 |       animRef.current = requestAnimationFrame(render)
+     |                                               ^^^^^^ `render` accessed before it is declared
+  96 |       return
+  97 |     }
+  98 |
+
+/Users/harryphan/Documents/dev/weminal/src/components/particle-logo.tsx:91:3
+   89 |   }, [src])
+   90 |
+>  91 |   const render = useCallback((time: number) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  92 |     const canvas = canvasRef.current
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     const data = dataRef.current
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 150 |     animRef.current = requestAnimationFrame(render)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 151 |   }, [])
+      | ^^^^^^^^^ `render` is declared here
+  152 |
+  153 |   useEffect(() => {
+  154 |     init()  react-hooks/immutability
+
+/Users/harryphan/Documents/dev/weminal/src/components/table/opportunity-table.tsx
+  114:17  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/harryphan/Documents/dev/weminal/src/components/table/opportunity-table.tsx:114:17
+  112 |
+  113 | export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }: Props) {
+> 114 |   const table = useReactTable({
+      |                 ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  115 |     data,
+  116 |     columns,
+  117 |     state: { sorting },  react-hooks/incompatible-library
+
+/Users/harryphan/Documents/dev/weminal/src/components/table/row-thumbnail.tsx
+  37:7  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/harryphan/Documents/dev/weminal/src/hooks/use-calendar.ts
+  4:10  warning  'fetchMeta' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 41 problems (29 errors, 12 warnings)
+

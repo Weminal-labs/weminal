@@ -21,7 +21,7 @@ export function TooltipContent({ title, rows, children }: TooltipContentProps) {
   const [measureRef, bounds] = useMeasure({ debounce: 0, scroll: false });
   const [committedHeight, setCommittedHeight] = useState<number | null>(null);
   // Track the children state that we've committed to (not the current one)
-  const committedChildrenStateRef = useRef<boolean | null>(null);
+  const [committedChildrenState, setCommittedChildrenState] = useState<boolean | null>(null);
   const frameRef = useRef<number | null>(null);
 
   const hasChildren = !!children;
@@ -30,8 +30,8 @@ export function TooltipContent({ title, rows, children }: TooltipContentProps) {
   // Check if we're waiting for a structural change to settle
   // This is true when children state differs from our last committed state
   const isWaitingForSettlement =
-    committedChildrenStateRef.current !== null &&
-    committedChildrenStateRef.current !== hasChildren;
+    committedChildrenState !== null &&
+    committedChildrenState !== hasChildren;
 
   // Commit height changes with a frame delay when structure changes
   useEffect(() => {
@@ -50,13 +50,15 @@ export function TooltipContent({ title, rows, children }: TooltipContentProps) {
       frameRef.current = requestAnimationFrame(() => {
         frameRef.current = requestAnimationFrame(() => {
           setCommittedHeight(bounds.height);
-          committedChildrenStateRef.current = hasChildren;
+          setCommittedChildrenState(hasChildren);
         });
       });
     } else {
       // No structural change, commit immediately
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCommittedHeight(bounds.height);
-      committedChildrenStateRef.current = hasChildren;
+       
+      setCommittedChildrenState(hasChildren);
     }
 
     return () => {
@@ -82,11 +84,11 @@ export function TooltipContent({ title, rows, children }: TooltipContentProps) {
       transition={
         shouldAnimate
           ? {
-              type: "spring",
-              stiffness: 500,
-              damping: 35,
-              mass: 0.8,
-            }
+            type: "spring",
+            stiffness: 500,
+            damping: 35,
+            mass: 0.8,
+          }
           : { duration: 0 }
       }
     >

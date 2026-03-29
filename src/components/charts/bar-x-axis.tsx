@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useChart } from "./chart-context";
 
+import { createPortal } from "react-dom";
+
 export interface BarXAxisProps {
   /** Width of the date ticker box for fade calculation. Default: 50 */
   tickerHalfWidth?: number;
@@ -81,11 +83,15 @@ export function BarXAxis({
     data,
   } = useChart();
   const [mounted, setMounted] = useState(false);
+  const [container, setContainer] = useState<Element | null>(null);
 
   // Only render on client side after mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+     
+    setContainer(containerRef.current);
+  }, [containerRef]);
 
   // Generate labels for each bar
   const labelsToShow = useMemo(() => {
@@ -123,7 +129,6 @@ export function BarXAxis({
   const crosshairX = tooltipData ? tooltipData.x + margin.left : null;
 
   // Use portal to render into the chart container
-  const container = containerRef.current;
   if (!(mounted && container)) {
     return null;
   }
@@ -132,9 +137,6 @@ export function BarXAxis({
   if (!barScale) {
     return null;
   }
-
-  // Dynamic import to avoid SSR issues
-  const { createPortal } = require("react-dom") as typeof import("react-dom");
 
   return createPortal(
     <div className="pointer-events-none absolute inset-0">

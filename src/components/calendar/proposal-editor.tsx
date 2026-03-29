@@ -22,11 +22,13 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
   const [submissionUrl, setSubmissionUrl] = useState(proposal?.submission_url ?? '')
   const upsertProposal = useUpsertProposal()
 
-  useEffect(() => {
+  const [prevProposal, setPrevProposal] = useState(proposal)
+  if (proposal !== prevProposal) {
+    setPrevProposal(proposal)
     setContent(proposal?.content ?? '')
     setProposalStatus(proposal?.status ?? 'draft')
     setSubmissionUrl(proposal?.submission_url ?? '')
-  }, [proposal])
+  }
 
   async function handleSave() {
     try {
@@ -87,9 +89,9 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
                     'rounded-full px-2.5 py-0.5 text-[10px] font-medium capitalize transition-colors focus-visible:ring-2 focus-visible:ring-gray-400',
                     proposalStatus === s
                       ? s === 'draft' ? 'bg-gray-900 text-white'
-                      : s === 'submitted' ? 'bg-gray-900 text-white'
-                      : s === 'accepted' ? 'bg-gray-800 text-white'
-                      : 'bg-red-600 text-white'
+                        : s === 'submitted' ? 'bg-gray-900 text-white'
+                          : s === 'accepted' ? 'bg-gray-800 text-white'
+                            : 'bg-red-600 text-white'
                       : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   )}
                 >
@@ -139,10 +141,10 @@ export function ProposalEditor({ opportunityId, proposal }: Props) {
           <span className={cn(
             'inline-flex text-[10px] font-semibold rounded-full px-2 py-0.5',
             (proposal?.status ?? 'draft') === 'draft' ? 'bg-gray-100 text-gray-600' :
-            proposal?.status === 'submitted' ? 'bg-gray-200 text-gray-700' :
-            proposal?.status === 'accepted' ? 'bg-gray-200 text-gray-700' :
-            proposal?.status === 'rejected' ? 'bg-red-100 text-red-700' :
-            'bg-gray-100 text-gray-600'
+              proposal?.status === 'submitted' ? 'bg-gray-200 text-gray-700' :
+                proposal?.status === 'accepted' ? 'bg-gray-200 text-gray-700' :
+                  proposal?.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                    'bg-gray-100 text-gray-600'
           )}>
             {proposal?.status ?? 'draft'}
           </span>

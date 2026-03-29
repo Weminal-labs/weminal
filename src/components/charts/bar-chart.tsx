@@ -280,9 +280,10 @@ function ChartInner({
     [data, categoryAccessor]
   );
 
+  const [now] = useState(Date.now)
+
   // Create a fake time scale for compatibility with ChartContext
   const fakeTimeScale = useMemo(() => {
-    const now = Date.now();
     const start = now - data.length * 24 * 60 * 60 * 1000;
     const scale = {
       ...categoryScale,
