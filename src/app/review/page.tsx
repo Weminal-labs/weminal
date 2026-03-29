@@ -40,33 +40,33 @@ function ReviewContent() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 md:py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
-            <Link href="/hack" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
-              <Table2 className="size-4" /> Table
-            </Link>
-            <Link href="/hack?view=calendar" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
-              <Calendar className="size-4" /> Calendar
-            </Link>
-            <Link href="/charts" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
-              <BarChart3 className="size-4" /> Charts
-            </Link>
-            <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
-              <LayoutGrid className="size-4" /> Review
-            </span>
-          </nav>
-        </div>
+      <div className="flex items-center gap-3 mb-8 flex-wrap">
+        <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
+          <Link href="/hack" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <Table2 className="size-4" /> Table
+          </Link>
+          <Link href="/hack?view=calendar" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <Calendar className="size-4" /> Calendar
+          </Link>
+          <Link href="/charts" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <BarChart3 className="size-4" /> Charts
+          </Link>
+          <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
+            <LayoutGrid className="size-4" /> Review
+          </span>
+        </nav>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="size-8" onClick={() => navigate('prev')}>
-            <ChevronLeft className="size-4" />
+        <div className="hidden md:block h-5 w-px bg-gray-200" />
+
+        <div className="flex items-center gap-1.5">
+          <Button variant="outline" size="icon" className="size-7" onClick={() => navigate('prev')}>
+            <ChevronLeft className="size-3.5" />
           </Button>
-          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate('today')}>Today</Button>
-          <Button variant="outline" size="icon" className="size-8" onClick={() => navigate('next')}>
-            <ChevronRight className="size-4" />
+          <Button variant="outline" size="sm" className="text-xs h-7 px-2" onClick={() => navigate('today')}>Today</Button>
+          <Button variant="outline" size="icon" className="size-7" onClick={() => navigate('next')}>
+            <ChevronRight className="size-3.5" />
           </Button>
-          <span className="text-sm font-medium text-gray-700 tabular-nums">
+          <span className="text-sm font-medium text-gray-700 tabular-nums ml-0.5">
             {format(currentDate, 'MMM d')} – {format(weekEndDate, 'MMM d, yyyy')}
           </span>
         </div>
