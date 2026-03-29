@@ -29,10 +29,10 @@ export default function Home() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw]">
         <ParticleLogo
           src="/hero-frame.svg"
-          className="w-full max-w-3xl"
+          className="w-full"
         />
       </div>
 
