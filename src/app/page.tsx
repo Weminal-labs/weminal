@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { DitherCanvas } from '@/components/dither-canvas'
+import { ParticleLogo } from '@/components/particle-logo'
 
 export default function Home() {
   return (
     <main className="min-h-dvh flex flex-col items-center justify-center px-6">
-      <DitherCanvas
+      <ParticleLogo
         src="/hero-frame.svg"
         className="w-full max-w-3xl"
       />
