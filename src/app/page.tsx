@@ -9,11 +9,7 @@ export default function Home() {
     <main className="min-h-dvh flex flex-col items-center justify-center px-6">
       <DitherCanvas
         src="/hero-frame.svg"
-        className="w-full max-w-2xl"
-        particleScale={2}
-        dotSize={2.5}
-        repulsionRadius={60}
-        repulsionForce={6}
+        className="w-full max-w-3xl"
       />
 
       <Link
