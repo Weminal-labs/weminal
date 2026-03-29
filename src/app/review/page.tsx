@@ -4,10 +4,7 @@ import { Suspense, useState, useCallback } from 'react'
 import { format, startOfWeek, addWeeks, subWeeks } from 'date-fns'
 import { useWeeklyReview, useGenerateWeeklyReview } from '@/hooks/use-weekly-review'
 import { AreaChart, Area } from '@/components/charts/area-chart'
-import { FunnelChart } from '@/components/charts/funnel-chart'
-import { Grid } from '@/components/charts/grid'
 import { XAxis } from '@/components/charts/x-axis'
-import { ChartTooltip } from '@/components/charts/tooltip'
 import { HackDrawer } from '@/components/review/hack-drawer'
 import { CardStack } from '@/components/review/card-stack'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -204,27 +201,31 @@ function ReviewContent() {
             </div>
           </div>
 
-          {/* ── Pipeline Funnel (span 2) ── */}
+          {/* ── Pipeline Status (span 2) ── */}
           <div className="rounded-2xl border border-gray-100 bg-white p-4 md:col-span-2 flex flex-col">
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-3">
-              <TrendingUp className="size-3.5" /> Pipeline
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-4">
+              <TrendingUp className="size-3.5" /> Pipeline Status
             </div>
             {snap.stats.funnel.length > 0 ? (
-              <FunnelChart
-                data={snap.stats.funnel.map((f) => ({
-                  label: f.label,
-                  value: f.value,
-                  displayValue: String(f.value),
-                }))}
-                color="oklch(0.623 0.214 255)"
-                orientation="horizontal"
-                edges="curved"
-                layers={2}
-                gap={3}
-                showPercentage
-                showValues
-                showLabels
-              />
+              <div className="space-y-2.5">
+                {snap.stats.funnel.map((f) => {
+                  const maxVal = Math.max(...snap.stats.funnel.map((s) => s.value))
+                  const pct = maxVal > 0 ? (f.value / maxVal) * 100 : 0
+                  return (
+                    <div key={f.label} className="flex items-center gap-3">
+                      <span className="text-xs text-gray-500 w-24 shrink-0 text-right">{f.label}</span>
+                      <div className="flex-1 h-6 bg-gray-50 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gray-900 rounded-full flex items-center justify-end px-2 transition-all duration-500"
+                          style={{ width: `${Math.max(pct, 8)}%` }}
+                        >
+                          <span className="text-[10px] font-semibold text-white tabular-nums">{f.value}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             ) : (
               <div className="flex-1 flex items-center justify-center text-gray-300 text-sm py-8">No data</div>
             )}
