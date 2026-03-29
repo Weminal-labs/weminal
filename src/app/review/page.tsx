@@ -166,10 +166,10 @@ function ReviewContent() {
         <div className="grid gap-3 md:grid-cols-4">
 
           {/* ── Hero: KPIs + Activity (span 2 cols, 2 rows) ── */}
-          <div className="bg-gray-900 text-white rounded-2xl p-6 md:col-span-2 md:row-span-2 flex flex-col justify-between">
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 md:col-span-2 md:row-span-2 flex flex-col justify-between">
             <div>
               <p className="text-gray-400 text-[11px] font-medium tracking-wider uppercase mb-1">Weekly Snapshot</p>
-              <h2 className="text-xl font-semibold tracking-tight">
+              <h2 className="text-xl font-semibold text-gray-900 tracking-tight">
                 {format(currentDate, 'MMM d')} – {format(weekEndDate, 'MMM d')}
               </h2>
               <p className="text-gray-400 text-xs mt-1">
@@ -180,22 +180,22 @@ function ReviewContent() {
             {/* KPI row */}
             <div className="grid grid-cols-3 gap-4 my-5">
               <div>
-                <p className="text-3xl font-bold tabular-nums tracking-tight">{snap.stats.totalOpportunities}</p>
+                <p className="text-3xl font-bold text-gray-900 tabular-nums tracking-tight">{snap.stats.totalOpportunities}</p>
                 <p className="text-gray-400 text-[10px] mt-0.5">Total</p>
               </div>
               <div>
-                <p className="text-3xl font-bold tabular-nums tracking-tight">
+                <p className="text-3xl font-bold text-gray-900 tabular-nums tracking-tight">
                   {snap.stats.totalReward >= 1_000_000 ? `$${(snap.stats.totalReward / 1_000_000).toFixed(1)}M` : `$${(snap.stats.totalReward / 1_000).toFixed(0)}k`}
                 </p>
                 <p className="text-gray-400 text-[10px] mt-0.5">Rewards</p>
               </div>
               <div>
-                <p className="text-3xl font-bold tabular-nums tracking-tight">{snap.stats.totalNew}</p>
+                <p className="text-3xl font-bold text-gray-900 tabular-nums tracking-tight">{snap.stats.totalNew}</p>
                 <p className="text-gray-400 text-[10px] mt-0.5">New</p>
               </div>
             </div>
 
-            {/* Mini activity chart */}
+            {/* Activity chart */}
             {snap.stats.activityPerDay.length > 0 && (
               <div className="mt-auto">
                 <AreaChart
@@ -204,8 +204,8 @@ function ReviewContent() {
                   aspectRatio="3 / 1"
                   margin={{ top: 8, right: 4, bottom: 20, left: 4 }}
                 >
-                  <Area dataKey="created" fill="oklch(0.85 0 0)" fillOpacity={0.15} strokeWidth={1.5} stroke="oklch(0.75 0 0)" />
-                  <Area dataKey="updated" fill="oklch(0.65 0 0)" fillOpacity={0.08} strokeWidth={1} stroke="oklch(0.55 0 0)" />
+                  <Area dataKey="created" fill="var(--chart-line-primary)" fillOpacity={0.2} strokeWidth={2} />
+                  <Area dataKey="updated" fill="var(--chart-line-secondary)" fillOpacity={0.1} strokeWidth={1.5} />
                   <XAxis />
                 </AreaChart>
               </div>
