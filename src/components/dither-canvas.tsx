@@ -60,8 +60,8 @@ export function DitherCanvas({ src, className = '' }: Props) {
         gray[i] = val
       }
 
-      // Floyd-Steinberg dithering
-      const step = 2 // sample density
+      // Floyd-Steinberg dithering — scale 1.45, dotScale 1.5
+      const step = 2
       const particles: Particle[] = []
       const dithered = new Float32Array(gray)
 
@@ -80,9 +80,9 @@ export function DitherCanvas({ src, className = '' }: Props) {
             if (x + step < w) dithered[(y + step) * w + (x + step)] += error * 1 / 16
           }
 
-          // Create particle for dark pixels
+          // Create particle for dark pixels — dotScale 1.5
           if (newVal === 0) {
-            const dotSize = 1.8 + (1 - oldVal) * 0.7 // dot scale based on darkness
+            const dotSize = 3.0 + (1 - oldVal) * 1.2 // scale 1.45 * dotScale 1.5
             particles.push({
               tx: x, ty: y,
               x: w / 2 + (Math.random() - 0.5) * 40,
