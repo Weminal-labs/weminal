@@ -2,19 +2,43 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { ParticleLogo } from '@/components/particle-logo'
+
+const PixelBlast = dynamic(() => import('@/components/pixel-blast'), { ssr: false })
 
 export default function Home() {
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center px-6">
-      <ParticleLogo
-        src="/hero-frame.svg"
-        className="w-full max-w-3xl"
-      />
+    <main className="relative min-h-dvh flex flex-col items-center justify-center px-6 overflow-hidden">
+      {/* PixelBlast background */}
+      <div className="absolute inset-0 z-0">
+        <PixelBlast
+          variant="square"
+          pixelSize={3}
+          color="#d4d4d8"
+          patternScale={2}
+          patternDensity={1}
+          enableRipples
+          rippleSpeed={0.3}
+          rippleThickness={0.1}
+          rippleIntensityScale={1}
+          speed={0.5}
+          transparent
+          edgeFade={0.5}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <ParticleLogo
+          src="/hero-frame.svg"
+          className="w-full max-w-3xl"
+        />
+      </div>
 
       <Link
         href="/hack"
-        className="group mt-10 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/10"
+        className="relative z-10 group mt-10 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/10"
       >
         Explore Opportunities
         <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
