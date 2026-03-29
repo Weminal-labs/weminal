@@ -14,6 +14,7 @@ import { typeColors } from '@/lib/type-colors'
 import type { Opportunity, OpportunityType } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import MergedShape from '@/components/merged-shape'
 import {
   Table2, Calendar, BarChart3, LayoutGrid, ExternalLink,
   ChevronLeft, ChevronRight, Sparkles,
@@ -96,7 +97,8 @@ function ReviewContent() {
       ) : (
         <>
         {/* ── Weekly Notes — editorial long-form ── */}
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 mb-4">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 mb-4 flex flex-col md:flex-row gap-6">
+          <div className="flex-1 min-w-0">
           <div className="max-w-2xl space-y-5 text-base leading-relaxed text-gray-500">
             {/* Paragraph 1: Overview */}
             <p>
@@ -273,6 +275,12 @@ function ReviewContent() {
               </div>
             </div>
           )}
+          </div>
+
+          {/* Share Shape */}
+          <div className="hidden md:flex items-center justify-center shrink-0">
+            <MergedShape fill="#3c00ff" style={{ transform: 'scale(0.7)', transformOrigin: 'center center' }} />
+          </div>
         </div>
 
         <div className="grid gap-3 md:grid-cols-4">

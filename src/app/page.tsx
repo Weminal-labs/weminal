@@ -9,13 +9,13 @@ const PixelBlast = dynamic(() => import('@/components/pixel-blast'), { ssr: fals
 
 export default function Home() {
   return (
-    <main className="relative min-h-dvh flex flex-col items-center justify-center px-6 overflow-hidden">
+    <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-white">
       {/* PixelBlast background */}
       <div className="absolute inset-0 z-0">
         <PixelBlast
           variant="square"
           pixelSize={3}
-          color="#d4d4d8"
+          color="#3c00ff"
           patternScale={2}
           patternDensity={1}
           enableRipples
