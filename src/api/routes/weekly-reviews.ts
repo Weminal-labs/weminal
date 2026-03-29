@@ -129,6 +129,22 @@ weeklyReviews.post('/generate', async (c) => {
     .sort((a, b) => Number(b.reward_amount) - Number(a.reward_amount))
     .slice(0, 4)
 
+  // Insights: top chains, tags, formats
+  const chainCount: Record<string, number> = {}
+  const tagCount: Record<string, number> = {}
+  for (const o of newHacks) {
+    for (const c of o.blockchains ?? []) chainCount[c] = (chainCount[c] ?? 0) + 1
+    for (const t of o.tags ?? []) tagCount[t] = (tagCount[t] ?? 0) + 1
+  }
+  const topChains = Object.entries(chainCount).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count }))
+  const topTags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count }))
+
+  // Collect website links for new hacks
+  const resourceLinks = newHacks
+    .filter((o) => o.website_url)
+    .slice(0, 6)
+    .map((o) => ({ name: o.name, url: o.website_url, type: o.type }))
+
   const snapshot = {
     weekStart: week_start,
     weekEnd: weekEnd,
@@ -138,6 +154,11 @@ weeklyReviews.post('/generate', async (c) => {
     upcomingDeadlines,
     completedDeadlines,
     missingDeadlines,
+    insights: {
+      topChains,
+      topTags,
+      resourceLinks,
+    },
     stats: {
       totalNew: newHacks.length,
       totalOpportunities: opps.length,

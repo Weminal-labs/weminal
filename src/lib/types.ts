@@ -57,6 +57,11 @@ export type WeeklySnapshot = {
     upcomingDeadlines: Opportunity[]
     completedDeadlines: Opportunity[]
     missingDeadlines: Opportunity[]
+    insights: {
+      topChains: { name: string; count: number }[]
+      topTags: { name: string; count: number }[]
+      resourceLinks: { name: string; url: string | null; type: string }[]
+    }
     stats: {
       totalNew: number
       totalOpportunities: number
