@@ -19,14 +19,14 @@ type Props = {
   className?: string
 }
 
-const SPRING = 0.03
-const DAMPING = 0.88
-const REPEL_RADIUS = 80
-const REPEL_FORCE = 6
-const EXPLODE_RADIUS = 140
-const EXPLODE_FORCE = 25
-const PARTICLE_SIZE = 2.8
-const SAMPLE_STEP = 2
+const SPRING = 0.1
+const DAMPING = 0.82
+const REPEL_RADIUS = 60
+const REPEL_FORCE = 4
+const EXPLODE_RADIUS = 120
+const EXPLODE_FORCE = 18
+const PARTICLE_SIZE = 3.2
+const SAMPLE_STEP = 3
 const THRESHOLD = 0.36
 
 export function ParticleLogo({ src, className = '' }: Props) {
@@ -116,20 +116,16 @@ export function ParticleLogo({ src, className = '' }: Props) {
       const seed = new Float32Array(count)
       const size = new Float32Array(count)
 
-      // Initialize: start from center with velocity kick
-      const cx = w / 2
-      const cy = h / 2
+      // Initialize: start at target positions (already formed)
       for (let i = 0; i < count; i++) {
         tx[i] = targets[i].x
         ty[i] = targets[i].y
-        // Start from center with random spread
-        px[i] = cx + (Math.random() - 0.5) * 60
-        py[i] = cy + (Math.random() - 0.5) * 60
-        // Velocity kick for energetic entry
-        vx[i] = (Math.random() - 0.5) * 4
-        vy[i] = (Math.random() - 0.5) * 4
+        px[i] = targets[i].x
+        py[i] = targets[i].y
+        vx[i] = 0
+        vy[i] = 0
         seed[i] = Math.random() * Math.PI * 2
-        size[i] = PARTICLE_SIZE * (0.8 + targets[i].darkness * 0.6)
+        size[i] = PARTICLE_SIZE * (0.85 + targets[i].darkness * 0.4)
       }
 
       dataRef.current = { px, py, tx, ty, vx, vy, seed, size, count }
@@ -164,10 +160,10 @@ export function ParticleLogo({ src, className = '' }: Props) {
     const { px, py, tx, ty, vx, vy, seed, size, count } = data
 
     for (let i = 0; i < count; i++) {
-      // Idle oscillation (per-particle variance)
+      // Subtle idle oscillation
       const phase = seed[i]
-      const idleX = Math.sin(t * 0.8 + phase) * 0.3
-      const idleY = Math.cos(t * 0.6 + phase * 1.3) * 0.3
+      const idleX = Math.sin(t * 0.5 + phase) * 0.15
+      const idleY = Math.cos(t * 0.4 + phase * 1.3) * 0.15
 
       // Spring toward target + idle offset
       const dx = (tx[i] + idleX) - px[i]
