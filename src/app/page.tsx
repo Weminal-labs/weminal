@@ -10,7 +10,6 @@ export default function Home() {
       <DitherCanvas
         src="/hero-frame.svg"
         className="w-full max-w-2xl"
-        animationDuration={2000}
       />
 
       <Link
