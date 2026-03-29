@@ -69,9 +69,9 @@ weeklyReviews.post('/generate', async (c) => {
     ? grants.reduce((best, o) => (Number(o.reward_amount) > Number(best.reward_amount) ? o : best))
     : null
 
-  // 3. Upcoming deadlines — end_date within this week
+  // 3. Upcoming deadlines — end_date within this week (exclude completed)
   const upcomingDeadlines = opps
-    .filter((o) => o.end_date && o.end_date >= week_start && o.end_date <= weekEnd)
+    .filter((o) => o.end_date && o.end_date >= week_start && o.end_date <= weekEnd && o.status !== 'completed')
     .sort((a, b) => (a.end_date! > b.end_date! ? 1 : -1))
 
   // 4. Completed this week
