@@ -1,0 +1,5 @@
+-- No additional tables needed for the bot.
+-- The bot writes directly to the `opportunities` table
+-- defined in supabase/migrations/001_create_opportunities.sql.
+--
+-- Ensure the main migration has been applied before running the bot.
