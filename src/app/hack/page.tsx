@@ -23,7 +23,7 @@ import { McpUsageDialog } from '@/components/mcp-usage-dialog'
 import { Button } from '@/components/ui/button'
 import type { Opportunity } from '@/lib/types'
 import { SearchInput } from '@/components/filters/search-input'
-import { Calendar, Table2, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react'
+import { Calendar, Table2, ChevronLeft, ChevronRight, BarChart3, LayoutGrid } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -180,6 +180,12 @@ function OpportunitiesPage() {
                 >
                   <BarChart3 className="size-4" aria-hidden="true" /> Charts
                 </Link>
+                <Link
+                  href="/review"
+                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <LayoutGrid className="size-4" aria-hidden="true" /> Review
+                </Link>
               </nav>
               <div className="hidden md:block">
                 <h1 className="text-lg font-semibold text-gray-800 tracking-tight">Crypto Opportunities</h1>
@@ -264,6 +270,12 @@ function OpportunitiesPage() {
                     className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
                   >
                     <BarChart3 className="size-4" aria-hidden="true" /> Charts
+                  </Link>
+                  <Link
+                    href="/review"
+                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <LayoutGrid className="size-4" aria-hidden="true" /> Review
                   </Link>
                 </nav>
 

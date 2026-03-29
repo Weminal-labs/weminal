@@ -44,6 +44,31 @@ export type Opportunity = {
   updated_at: string
 }
 
+export type WeeklySnapshot = {
+  id: string
+  week_start: string
+  week_end: string
+  snapshot: {
+    weekStart: string
+    weekEnd: string
+    newHacks: Opportunity[]
+    bestGrant: Opportunity | null
+    topHacks: Opportunity[]
+    upcomingDeadlines: Opportunity[]
+    completedDeadlines: Opportunity[]
+    missingDeadlines: Opportunity[]
+    stats: {
+      totalNew: number
+      totalOpportunities: number
+      totalReward: number
+      byType: { type: string; count: number; totalReward: number }[]
+      activityPerDay: { date: string; created: number; updated: number }[]
+      funnel: { label: string; value: number }[]
+    }
+  }
+  created_at: string
+}
+
 export type PaginationMeta = {
   page: number
   per_page: number

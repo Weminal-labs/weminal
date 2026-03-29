@@ -8,7 +8,7 @@ import { XAxis } from '@/components/charts/x-axis'
 import { ChartTooltip } from '@/components/charts/tooltip'
 import { FunnelChart } from '@/components/charts/funnel-chart'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Table2, Calendar, BarChart3 } from 'lucide-react'
+import { Table2, Calendar, BarChart3, LayoutGrid } from 'lucide-react'
 import Link from 'next/link'
 
 const RANGE_OPTIONS = [
@@ -55,6 +55,9 @@ function ChartsContent() {
           <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
             <BarChart3 className="size-4" aria-hidden="true" /> Charts
           </span>
+          <Link href="/review" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <LayoutGrid className="size-4" aria-hidden="true" /> Review
+          </Link>
         </nav>
         <div className="hidden md:block">
           <h1 className="text-lg font-semibold text-gray-900 tracking-tight">Analytics</h1>
