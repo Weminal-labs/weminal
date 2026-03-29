@@ -81,16 +81,16 @@ export function DitherCanvas({
           const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
 
           // Only create particles for dark pixels (the logo)
-          if (gray < 128) {
+          if (gray < 140) {
             particles.push({
               tx: x,
               ty: y,
               // Start scattered randomly
-              x: x + (Math.random() - 0.5) * w * 0.8,
-              y: y + (Math.random() - 0.5) * h * 0.8,
+              x: x + (Math.random() - 0.5) * w * 0.6,
+              y: y + (Math.random() - 0.5) * h * 0.6,
               vx: 0,
               vy: 0,
-              size: dotSize + Math.random() * 0.5,
+              size: dotSize,
             })
           }
         }
@@ -119,7 +119,7 @@ export function DitherCanvas({
     ctx.clearRect(0, 0, w, h)
 
     // Update & draw particles
-    ctx.fillStyle = '#000000'
+    ctx.fillStyle = '#0a0a0a'
 
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i]
@@ -149,13 +149,10 @@ export function DitherCanvas({
       p.x += p.vx
       p.y += p.vy
 
-      // Draw
-      ctx.fillRect(
-        Math.round(p.x),
-        Math.round(p.y),
-        p.size,
-        p.size,
-      )
+      // Draw round dot
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2)
+      ctx.fill()
     }
 
     animRef.current = requestAnimationFrame(animate)

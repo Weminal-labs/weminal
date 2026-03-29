@@ -10,6 +10,10 @@ export default function Home() {
       <DitherCanvas
         src="/hero-frame.svg"
         className="w-full max-w-2xl"
+        particleScale={2}
+        dotSize={2.5}
+        repulsionRadius={60}
+        repulsionForce={6}
       />
 
       <Link
