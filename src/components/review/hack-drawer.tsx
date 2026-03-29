@@ -67,7 +67,7 @@ export function HackDrawer({ opportunity, open, onOpenChange }: Props) {
                 {opportunity.name}
               </DrawerTitle>
               {opportunity.description && (
-                <DrawerDescription className="text-sm text-gray-400 leading-relaxed mt-1">
+                <DrawerDescription className="text-sm text-gray-600 leading-relaxed mt-1">
                   {opportunity.description.slice(0, 200)}
                   {opportunity.description.length > 200 ? '...' : ''}
                 </DrawerDescription>
