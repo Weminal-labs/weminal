@@ -15,9 +15,10 @@ import { useRef, useEffect, useCallback } from 'react'
 type Props = {
   src: string
   className?: string
+  color?: string
 }
 
-export function ParticleLogo({ src, className = '' }: Props) {
+export function ParticleLogo({ src, className = '', color = '#0a0a0a' }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
   const animRef = useRef<number>(0)
@@ -140,7 +141,7 @@ export function ParticleLogo({ src, className = '' }: Props) {
       // Draw soft circle
       const s = sz[i]
       ctx.globalAlpha = 0.9
-      ctx.fillStyle = '#0a0a0a'
+      ctx.fillStyle = color
       ctx.beginPath()
       ctx.arc(px[i], py[i], s * 0.5, 0, Math.PI * 2)
       ctx.fill()

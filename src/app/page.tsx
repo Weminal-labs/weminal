@@ -9,13 +9,13 @@ const PixelBlast = dynamic(() => import('@/components/pixel-blast'), { ssr: fals
 
 export default function Home() {
   return (
-    <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-white">
+    <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-[#3c00ff]">
       {/* PixelBlast background */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 opacity-40">
         <PixelBlast
           variant="square"
           pixelSize={3}
-          color="#3c00ff"
+          color="#ffffff"
           patternScale={2}
           patternDensity={1}
           enableRipples
@@ -32,13 +32,14 @@ export default function Home() {
       <div className="relative z-10 mx-auto" style={{ width: 'min(92vw, 1100px)' }}>
         <ParticleLogo
           src="/hero-frame.svg"
+          color="#ffffff"
           className="w-full"
         />
       </div>
 
       <Link
         href="/hack"
-        className="relative z-10 group mt-10 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-[transform,background-color] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-gray-900/10"
+        className="relative z-10 group mt-10 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-[#3c00ff] hover:bg-gray-100 transition-[transform,background-color] duration-200 ease-out active:scale-[0.97] shadow-xl shadow-black/10"
       >
         Explore Opportunities
         <ArrowRight className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
