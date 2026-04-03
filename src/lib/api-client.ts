@@ -1,4 +1,4 @@
-import type { Opportunity, ApiResponse, PaginationMeta } from './types'
+import type { Opportunity, Idea, ApiResponse, PaginationMeta } from './types'
 
 const API_BASE = '/api/v1'
 
@@ -8,10 +8,16 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
   })
 
-  const data = await res.json()
+  let data: unknown
+  try {
+    data = await res.json()
+  } catch {
+    throw new Error(`Server error (${res.status})`)
+  }
 
   if (!res.ok) {
-    throw new Error(data?.error?.message ?? `API error: ${res.status}`)
+    const errData = data as { error?: { message?: string } } | null
+    throw new Error(errData?.error?.message ?? `API error: ${res.status}`)
   }
 
   return data as T
@@ -68,5 +74,45 @@ export async function deleteOpportunityApi(id: string) {
 }
 
 export async function fetchMeta(endpoint: string) {
+  return fetchApi<{ data: string[] }>(`/meta/${endpoint}`)
+}
+
+// ─── Ideas API ────────────────────────────────────────────────────────────────
+
+export type IdeaListParams = {
+  category?: string
+  track?: string
+  difficulty?: string
+  tag?: string
+  chain?: string
+  search?: string
+  featured?: boolean
+  sort_by?: string
+  sort_order?: string
+  page?: number
+  per_page?: number
+}
+
+export async function fetchIdeas(params: IdeaListParams = {}) {
+  const query = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== '' && value !== null) {
+      query.set(key, String(value))
+    }
+  }
+  return fetchApi<ApiResponse<Idea[]> & { pagination: PaginationMeta }>(
+    `/ideas?${query.toString()}`
+  )
+}
+
+export async function fetchIdea(slug: string) {
+  return fetchApi<{ data: Idea }>(`/ideas/${slug}`)
+}
+
+export async function voteIdeaApi(slug: string) {
+  return fetchApi<{ data: Idea }>(`/ideas/vote/${slug}`, { method: 'POST' })
+}
+
+export async function fetchIdeaMeta(endpoint: string) {
   return fetchApi<{ data: string[] }>(`/meta/${endpoint}`)
 }

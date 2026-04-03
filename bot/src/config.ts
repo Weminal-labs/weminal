@@ -1,22 +1,34 @@
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+// For local dev: reads from process.env (populated by dotenv in index.ts)
+// For CF Workers: call setConfig() with env bindings before first request
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Load .env from bot/ root, fall back to repo root .env.local
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
-dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
+let _cfg: Record<string, string> | null = null;
+
+export function setConfig(c: {
+  telegramToken: string;
+  supabaseUrl: string;
+  supabaseServiceKey: string;
+  firecrawlKey: string;
+  geminiKey: string;
+}): void {
+  _cfg = {
+    TELEGRAM_BOT_TOKEN: c.telegramToken,
+    SUPABASE_URL: c.supabaseUrl,
+    SUPABASE_SERVICE_ROLE_KEY: c.supabaseServiceKey,
+    FIRECRAWL_API_KEY: c.firecrawlKey,
+    GEMINI_API_KEY: c.geminiKey,
+  };
+}
 
 function required(key: string): string {
-  const val = process.env[key];
+  const val = _cfg?.[key] ?? (typeof process !== "undefined" ? process.env[key] : undefined);
   if (!val) throw new Error(`Missing env: ${key}`);
   return val;
 }
 
 export const config = {
-  telegramToken: required("TELEGRAM_BOT_TOKEN"),
-  supabaseUrl: required("SUPABASE_URL"),
-  supabaseServiceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
-  firecrawlKey: required("FIRECRAWL_API_KEY"),
-  geminiKey: required("GEMINI_API_KEY"),
+  get telegramToken(): string { return required("TELEGRAM_BOT_TOKEN"); },
+  get supabaseUrl(): string { return required("SUPABASE_URL"); },
+  get supabaseServiceKey(): string { return required("SUPABASE_SERVICE_ROLE_KEY"); },
+  get firecrawlKey(): string { return required("FIRECRAWL_API_KEY"); },
+  get geminiKey(): string { return required("GEMINI_API_KEY"); },
 };

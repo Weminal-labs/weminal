@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, Suspense } from 'react'
+import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
 import { useQueryStates, parseAsString, parseAsInteger } from 'nuqs'
 import type { SortingState } from '@tanstack/react-table'
 import { format, addWeeks, subWeeks, addMonths, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
@@ -23,7 +23,7 @@ import { McpUsageDialog } from '@/components/mcp-usage-dialog'
 import { Button } from '@/components/ui/button'
 import type { Opportunity } from '@/lib/types'
 import { SearchInput } from '@/components/filters/search-input'
-import { Calendar, Table2, ChevronLeft, ChevronRight, BarChart3, LayoutGrid } from 'lucide-react'
+import { Calendar, Table2, ChevronLeft, ChevronRight, BarChart3, LayoutGrid, Lightbulb } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -46,6 +46,12 @@ function OpportunitiesPage() {
   })
 
   const activeView = (params.view === 'calendar' ? 'calendar' : 'table') as ViewMode
+
+  const [contentVisible, setContentVisible] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setContentVisible(true), 800)
+    return () => clearTimeout(t)
+  }, [])
 
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [deleteOpp, setDeleteOpp] = useState<Opportunity | null>(null)
@@ -156,96 +162,127 @@ function OpportunitiesPage() {
   }, [createBlock, updateBlock])
 
   return (
-    <main className="min-h-dvh bg-white">
+    <main
+      className="min-h-dvh bg-zinc-950 relative"
+      style={{
+        backgroundImage: 'url(/hack-bg.gif)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      {/* Vignette — fades hard edges of GIF to black on left/right */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            'linear-gradient(to right, rgba(9,9,11,0.92) 0%, transparent 18%, transparent 82%, rgba(9,9,11,0.92) 100%)',
+        }}
+      />
       {activeView === 'table' ? (
         /* ===== TABLE VIEW ===== */
-        <div className="mx-auto max-w-7xl px-2 md:px-4 py-4 md:py-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4 md:mb-6 flex-wrap gap-2">
-            <div className="flex items-center gap-3 md:gap-4">
-              <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
-                <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
-                  <Table2 className="size-4" aria-hidden="true" /> Table
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setParams({ view: 'calendar' })}
-                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <Calendar className="size-4" aria-hidden="true" /> Calendar
-                </button>
-                <Link
-                  href="/charts"
-                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <BarChart3 className="size-4" aria-hidden="true" /> Charts
-                </Link>
-                <Link
-                  href="/review"
-                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <LayoutGrid className="size-4" aria-hidden="true" /> Review
-                </Link>
-              </nav>
-              <div className="hidden md:block">
-                <h1 className="text-lg font-semibold text-gray-800 tracking-tight">Crypto Opportunities</h1>
-                <p className="text-xs text-gray-400">Hackathons, grants, fellowships, and bounties</p>
+        <div className="relative z-10">
+          {/* Sticky nav header — floats over GIF */}
+          <div
+            className="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-md transition-all duration-700"
+            style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(-12px)' }}
+          >
+            <div className="mx-auto max-w-7xl px-2 md:px-4 py-2.5 flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-3 md:gap-4">
+                <nav className="flex items-center rounded-lg bg-white/10 p-0.5" aria-label="Main navigation">
+                  <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white/20 text-white shadow-sm" aria-current="page">
+                    <Table2 className="size-4" aria-hidden="true" /> Table
+                  </span>
+                  <Link
+                    href="/charts"
+                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
+                  >
+                    <BarChart3 className="size-4" aria-hidden="true" /> Charts
+                  </Link>
+                  <Link
+                    href="/review"
+                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
+                  >
+                    <LayoutGrid className="size-4" aria-hidden="true" /> Review
+                  </Link>
+                  <Link
+                    href="/ideas"
+                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
+                  >
+                    <Lightbulb className="size-4" aria-hidden="true" /> Ideas
+                  </Link>
+                </nav>
+                <div className="hidden md:block">
+                  <h1 className="text-sm font-semibold text-white tracking-tight">Crypto Opportunities</h1>
+                  <p className="text-xs text-white/50">Hackathons, grants, fellowships, and bounties</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <SearchInput
+                  value={params.search ?? ''}
+                  onChange={(v) => handleFilterChange('search', v || undefined)}
+                />
+                <McpUsageDialog />
+                <CreateOpportunityDialog />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <SearchInput
-                value={params.search ?? ''}
-                onChange={(v) => handleFilterChange('search', v || undefined)}
-              />
-              <McpUsageDialog />
-              <CreateOpportunityDialog />
-            </div>
           </div>
 
-          {/* Filters */}
-          <div className="mb-4">
-            <FilterBar
-              filters={{
-                type: params.type ?? undefined,
-                status: params.status ?? undefined,
-                format: params.format ?? undefined,
-                organization: params.organization ?? undefined,
-                blockchain: params.blockchain ?? undefined,
-                tag: params.tag ?? undefined,
-              }}
-              onFilterChange={handleFilterChange}
-              onClearAll={handleClearAll}
-            />
-          </div>
+          {/* GIF hero space */}
+          <div className="h-8 md:h-12" />
 
-          {/* Table */}
-          {isLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : isError ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
-              <p className="text-red-700">{error instanceof Error ? error.message : 'Failed to load opportunities'}</p>
-            </div>
-          ) : (
-            <>
-              <OpportunityTable
-                data={data?.data ?? []}
-                sorting={sorting}
-                onSortingChange={handleSortingChange}
-                onRowClick={setSelectedOpp}
-              />
-              {data?.pagination && (
-                <TablePagination
-                  pagination={data.pagination}
-                  onPageChange={handlePageChange}
+          {/* Content card */}
+          <div
+            className="mx-auto max-w-7xl px-2 md:px-4 pb-8 transition-all duration-700 delay-200"
+            style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(24px)' }}
+          >
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/40">
+              {/* Filters */}
+              <div className="mb-4">
+                <FilterBar
+                  filters={{
+                    type: params.type ?? undefined,
+                    status: params.status ?? undefined,
+                    format: params.format ?? undefined,
+                    organization: params.organization ?? undefined,
+                    blockchain: params.blockchain ?? undefined,
+                    tag: params.tag ?? undefined,
+                  }}
+                  onFilterChange={handleFilterChange}
+                  onClearAll={handleClearAll}
                 />
+              </div>
+
+              {/* Table */}
+              {isLoading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-10 w-full" />
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <Skeleton key={i} className="h-12 w-full" />
+                  ))}
+                </div>
+              ) : isError ? (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
+                  <p className="text-red-700">{error instanceof Error ? error.message : 'Failed to load opportunities'}</p>
+                </div>
+              ) : (
+                <>
+                  <OpportunityTable
+                    data={data?.data ?? []}
+                    sorting={sorting}
+                    onSortingChange={handleSortingChange}
+                    onRowClick={setSelectedOpp}
+                  />
+                  {data?.pagination && (
+                    <TablePagination
+                      pagination={data.pagination}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </>
               )}
-            </>
-          )}
+            </div>
+          </div>
         </div>
       ) : (
         /* ===== CALENDAR VIEW ===== */

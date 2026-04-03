@@ -13,6 +13,12 @@ import {
   updateOpportunity,
   deleteOpportunity,
 } from '../api/lib/query-builder'
+import {
+  queryIdeas,
+  getIdea,
+  createIdea,
+} from '../api/lib/idea-query-builder'
+import { ideaTracks, ideaCategories, ideaDifficulties } from '../api/schemas/idea'
 import { getSupabase } from '../api/lib/supabase'
 import { formatListResponse, formatSingleResponse, truncateResponse } from './format'
 
@@ -405,6 +411,154 @@ server.resource(
     return {
       contents: [{ uri: 'opportunity://meta/tags', text: JSON.stringify([...uniqueTags].sort(), null, 2), mimeType: 'application/json' }]
     }
+  }
+)
+
+// --- Ideas Tools ---
+
+server.tool(
+  'idea_list',
+  'List curated project ideas from the Weminal Ideas Pool. Filter by track, difficulty, chain, tags, or search. Returns paginated results.',
+  {
+    track: z.enum(ideaTracks).optional().describe('Filter by track: defi, dev-tools, infrastructure, ai, gaming, refi, consumer'),
+    difficulty: z.enum(ideaDifficulties).optional().describe('Filter by difficulty: beginner, intermediate, advanced'),
+    chain: z.string().optional().describe("Filter by supported blockchain (e.g. 'solana', 'ethereum')"),
+    tag: z.string().optional().describe('Filter by tag'),
+    search: z.string().optional().describe('Full-text search on title, tagline, problem, key points'),
+    sort_by: z.enum(['votes', 'created_at', 'title']).optional().default('votes'),
+    sort_order: z.enum(['asc', 'desc']).optional().default('desc'),
+    page: z.number().int().min(1).optional().default(1),
+    per_page: z.number().int().min(1).max(50).optional().default(20),
+  },
+  async (params) => {
+    const result = await queryIdeas({
+      ...params,
+      featured: undefined,
+      sort_by: params.sort_by ?? 'votes',
+      sort_order: params.sort_order ?? 'desc',
+      page: params.page ?? 1,
+      per_page: params.per_page ?? 20,
+    })
+    const items = result.data as Record<string, unknown>[]
+    const lines = [
+      `Found ${result.pagination.total} ideas (page ${result.pagination.page}/${result.pagination.total_pages})`,
+      '',
+    ]
+    for (const idea of items) {
+      lines.push(`• **${idea.title}** [${idea.track}/${idea.difficulty}] — ${idea.votes} votes`)
+      lines.push(`  slug: ${idea.slug}`)
+      lines.push(`  ${idea.tagline}`)
+      lines.push('')
+    }
+    return { content: [{ type: 'text' as const, text: truncateResponse(lines.join('\n'), MAX_RESPONSE_SIZE) }] }
+  }
+)
+
+server.tool(
+  'idea_get',
+  'Get a single project idea by slug. Returns full details including market signal, community signal, build guide, and chain overrides.',
+  {
+    slug: z.string().describe("Idea slug (e.g. 'dex-cli-web3-bloomberg')"),
+  },
+  async ({ slug }) => {
+    const data = await getIdea(slug)
+    if (!data) {
+      return { content: [{ type: 'text' as const, text: `Idea "${slug}" not found.` }], isError: true }
+    }
+    return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] }
+  }
+)
+
+server.tool(
+  'idea_create',
+  'Create a new project idea in the Weminal Ideas Pool. Minimum: slug, title, tagline.',
+  {
+    slug: z.string().describe('URL-safe slug (lowercase kebab-case, e.g. "my-dex-tool")'),
+    title: z.string().describe('Idea title'),
+    tagline: z.string().describe('One-line description'),
+    category: z.enum(ideaCategories).optional().default('dapp'),
+    track: z.enum(ideaTracks).optional().default('defi'),
+    difficulty: z.enum(ideaDifficulties).optional().default('intermediate'),
+    tags: z.array(z.string()).optional(),
+    key_points: z.array(z.string()).optional(),
+    problem: z.string().optional(),
+    source_type: z.enum(['telegram', 'web', 'mcp', 'manual']).optional().default('mcp'),
+    source_author: z.string().optional(),
+    source_url: z.string().optional(),
+    source_note: z.string().optional(),
+  },
+  async (params) => {
+    const data = await createIdea({
+      ...params,
+      tags: params.tags ?? [],
+      key_points: params.key_points ?? [],
+      market_signal: {},
+      community_signal: {},
+      build_guide: {},
+      supported_chains: [],
+      chain_overrides: {},
+      is_featured: false,
+    })
+    return {
+      content: [{
+        type: 'text' as const,
+        text: `Created idea: "${data.title}" (${data.slug})\n\n${JSON.stringify(data, null, 2)}`,
+      }],
+    }
+  }
+)
+
+server.tool(
+  'idea_fetch_md',
+  'Fetch a project idea as formatted markdown, optionally parametrized for a specific blockchain.',
+  {
+    slug: z.string().describe('Idea slug'),
+    chain: z.string().optional().default('ethereum').describe("Blockchain to parametrize for (e.g. 'solana', 'ethereum')"),
+  },
+  async ({ slug, chain }) => {
+    const idea = await getIdea(slug)
+    if (!idea) {
+      return { content: [{ type: 'text' as const, text: `Idea "${slug}" not found.` }], isError: true }
+    }
+
+    const bg = idea.build_guide as Record<string, unknown> | null
+    const co = (idea.chain_overrides as Record<string, { note?: string; stack_override?: string | null }> | null)?.[chain ?? 'ethereum']
+
+    const lines: string[] = [
+      `# ${idea.title}`,
+      '',
+      `> ${idea.tagline}`,
+      '',
+      `**Track:** ${idea.track} | **Difficulty:** ${idea.difficulty} | **Chain:** ${chain}`,
+      '',
+    ]
+
+    if ((idea.key_points as string[])?.length) {
+      lines.push('## Key Points', '')
+      for (const [i, p] of ((idea.key_points as string[]) ?? []).entries()) {
+        lines.push(`${i + 1}. ${p}`)
+      }
+      lines.push('')
+    }
+
+    if (idea.problem) {
+      lines.push('## Problem', '', idea.problem as string, '')
+    }
+
+    if (bg && bg.overview) {
+      lines.push('## Build Guide', '', String(bg.overview), '')
+    }
+
+    if (co?.note) {
+      lines.push(`> **${chain} note:** ${co.note}`, '')
+    }
+
+    const stack = co?.stack_override ?? (bg?.stack_suggestion as string | undefined)
+    if (stack) lines.push(`**Stack:** \`${stack}\``, '')
+    if (bg?.time_estimate) lines.push(`**Time:** ${bg.time_estimate}`, '')
+    if (bg?.hackathon_fit) lines.push(`**Hackathon fit:** ${bg.hackathon_fit}`, '')
+
+    return { content: [{ type: 'text' as const, text: lines.join('\n') }] }
   }
 )
 

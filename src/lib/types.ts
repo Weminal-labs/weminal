@@ -86,6 +86,67 @@ export type ApiResponse<T> = {
   pagination?: PaginationMeta
 }
 
+// ─── Ideas Pool ───────────────────────────────────────────────────────────────
+
+export type IdeaSignalItem = {
+  type: string
+  text: string
+}
+
+export type IdeaSignal = {
+  verdict?: string
+  reasoning?: string
+  signals?: IdeaSignalItem[]
+}
+
+export type BuildStep = {
+  order: number
+  title: string
+  description: string
+}
+
+export type BuildGuide = {
+  overview?: string
+  steps?: BuildStep[]
+  stack_suggestion?: string
+  time_estimate?: string
+  hackathon_fit?: string
+}
+
+export type ChainOverride = {
+  note?: string
+  stack_override?: string | null
+}
+
+export type Idea = {
+  id: string
+  slug: string
+  title: string
+  tagline: string
+  category: string
+  track: string
+  difficulty: string
+  tags: string[]
+  key_points: string[]
+  problem: string | null
+  market_signal: IdeaSignal
+  community_signal: IdeaSignal
+  build_guide: BuildGuide
+  supported_chains: string[]
+  chain_overrides: Record<string, ChainOverride>
+  source_type: string | null
+  source_url: string | null
+  source_author: string | null
+  source_note: string | null
+  is_featured: boolean
+  votes: number
+  created_at: string
+  updated_at: string
+}
+
+export type IdeaTrack = 'defi' | 'dev-tools' | 'infrastructure' | 'ai' | 'gaming' | 'refi' | 'consumer'
+export type IdeaDifficulty = 'beginner' | 'intermediate' | 'advanced'
+
 export type ApiError = {
   error: {
     code: string

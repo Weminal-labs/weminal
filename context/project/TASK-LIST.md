@@ -58,6 +58,25 @@ Tasks that are planned but not started yet. Ordered by priority.
 
 ### Phase 5: Hacker Calendar — Complete
 
+### Phase 7: Ideas Pool — In Progress
+
+| # | Status | Task | Feature | Notes |
+|---|--------|------|---------|-------|
+| T121 | `[x]` | SQL migration: ideas table + indexes + RLS + vote RPC | [ideas-pool](../features/ideas-pool.md) | Ready — run in Supabase dashboard |
+| T122 | `[x]` | Seed SQL: DEX CLI + 2 more ideas | [ideas-pool](../features/ideas-pool.md) | Ready — run after migration |
+| T123 | `[x]` | Zod schemas for ideas | [ideas-pool](../features/ideas-pool.md) | Done |
+| T124 | `[x]` | Query builder for ideas | [ideas-pool](../features/ideas-pool.md) | Done |
+| T125 | `[x]` | Hono routes for ideas | [ideas-pool](../features/ideas-pool.md) | Done |
+| T126 | `[x]` | Wire ideas route into API + meta endpoints | [ideas-pool](../features/ideas-pool.md) | Done |
+| T127 | `[x]` | Types + API client functions | [ideas-pool](../features/ideas-pool.md) | Done |
+| T128 | `[x]` | TanStack Query hooks | [ideas-pool](../features/ideas-pool.md) | Done |
+| T129 | `[x]` | IdeaCard component | [ideas-pool](../features/ideas-pool.md) | Done |
+| T130 | `[x]` | IdeaFilterBar component | [ideas-pool](../features/ideas-pool.md) | Done |
+| T131 | `[x]` | Ideas listing page /ideas | [ideas-pool](../features/ideas-pool.md) | Done |
+| T132 | `[x]` | Add Ideas nav link | [ideas-pool](../features/ideas-pool.md) | Done |
+| T133 | `[x]` | Bot /idea command | [ideas-pool](../features/ideas-pool.md) | Done |
+| T134 | `[x]` | MCP tools for ideas | [ideas-pool](../features/ideas-pool.md) | Done |
+
 ### Phase 6: Bootcamp Type — Upcoming
 
 | # | Status | Task | Feature | Notes |

@@ -1,0 +1,19 @@
+name = "weminal-hack-bot"
+main = "src/worker.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+# Runs daily at 09:00 UTC — sends 7d / 3d / 24h deadline reminders + auto-completes stale
+crons = ["0 9 * * *"]
+
+# All secrets are set via: wrangler secret put <KEY>
+# Never put actual values here — this file is committed to git.
+#
+# Required secrets:
+#   wrangler secret put TELEGRAM_BOT_TOKEN
+#   wrangler secret put SUPABASE_URL
+#   wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+#   wrangler secret put FIRECRAWL_API_KEY
+#   wrangler secret put GEMINI_API_KEY
+#   wrangler secret put BOT_SECRET

@@ -12,6 +12,7 @@ import milestones from './routes/milestones'
 import proposals from './routes/proposals'
 import stats from './routes/stats'
 import weeklyReviews from './routes/weekly-reviews'
+import ideas from './routes/ideas'
 
 const app = new Hono().basePath('/api/v1')
 
@@ -38,6 +39,7 @@ app.route('/milestones', milestones)
 app.route('/proposals', proposals)
 app.route('/stats', stats)
 app.route('/weekly-reviews', weeklyReviews)
+app.route('/ideas', ideas)
 
 // Health check
 app.get('/health', async (c) => {

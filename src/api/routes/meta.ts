@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import { supabase } from '../lib/supabase'
 import { opportunityTypes, opportunityStatuses } from '../schemas/opportunity'
+import { ideaTracks, ideaCategories, ideaDifficulties } from '../schemas/idea'
+import { getIdeaTags, getIdeaChains } from '../lib/idea-query-builder'
 
 const meta = new Hono()
 
@@ -57,6 +59,22 @@ meta.get('/organizations', async (c) => {
   )].sort()
 
   return c.json({ data: unique })
+})
+
+// ─── Ideas meta ──────────────────────────────────────────────────────────────
+
+meta.get('/idea-tracks', (c) => c.json({ data: [...ideaTracks] }))
+meta.get('/idea-categories', (c) => c.json({ data: [...ideaCategories] }))
+meta.get('/idea-difficulties', (c) => c.json({ data: [...ideaDifficulties] }))
+
+meta.get('/idea-tags', async (c) => {
+  const data = await getIdeaTags()
+  return c.json({ data })
+})
+
+meta.get('/idea-chains', async (c) => {
+  const data = await getIdeaChains()
+  return c.json({ data })
 })
 
 export default meta

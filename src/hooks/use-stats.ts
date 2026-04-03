@@ -16,8 +16,11 @@ export type OverviewData = {
   upcoming: { end_date: string; type: string; status: string }[]
 }
 
-async function fetchUpdatesPerDay(days: number): Promise<DailyStat[]> {
-  const res = await fetch(`/api/v1/stats/updates-per-day?days=${days}`)
+async function fetchUpdatesPerDay(days: number, from?: string, to?: string): Promise<DailyStat[]> {
+  const params = new URLSearchParams({ days: String(days) })
+  if (from) params.set('from', from)
+  if (to) params.set('to', to)
+  const res = await fetch(`/api/v1/stats/updates-per-day?${params}`)
   if (!res.ok) throw new Error('Failed to fetch stats')
   const json = await res.json()
   return json.data
@@ -30,10 +33,10 @@ async function fetchOverview(): Promise<OverviewData> {
   return json.data
 }
 
-export function useUpdatesPerDay(days = 30) {
+export function useUpdatesPerDay(days = 30, from?: string, to?: string) {
   return useQuery({
-    queryKey: ['stats', 'updates-per-day', days],
-    queryFn: () => fetchUpdatesPerDay(days),
+    queryKey: ['stats', 'updates-per-day', days, from, to],
+    queryFn: () => fetchUpdatesPerDay(days, from, to),
     staleTime: 60_000,
   })
 }

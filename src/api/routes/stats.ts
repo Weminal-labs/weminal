@@ -3,16 +3,21 @@ import { supabase } from '../lib/supabase'
 
 const stats = new Hono()
 
-// GET /api/v1/stats/updates-per-day?days=30
+// GET /api/v1/stats/updates-per-day?days=30&from=2024-01-01&to=2024-01-31
 stats.get('/updates-per-day', async (c) => {
+  const fromParam = c.req.query('from')
+  const toParam = c.req.query('to')
   const days = Math.min(Number(c.req.query('days') ?? 30), 365)
-  const since = new Date()
-  since.setDate(since.getDate() - days)
+
+  const since = fromParam ? new Date(fromParam) : new Date()
+  if (!fromParam) since.setDate(since.getDate() - days)
+  const until = toParam ? new Date(toParam) : new Date()
 
   const { data: opps, error: queryErr } = await supabase
     .from('opportunities')
     .select('created_at, updated_at')
     .gte('updated_at', since.toISOString())
+    .lte('updated_at', until.toISOString())
     .order('updated_at', { ascending: true })
 
   if (queryErr) {
@@ -36,10 +41,10 @@ stats.get('/updates-per-day', async (c) => {
 
   const result: { date: string; created: number; updated: number }[] = []
   const cursor = new Date(since)
-  const today = new Date()
-  today.setHours(23, 59, 59, 999)
+  const end = new Date(until)
+  end.setHours(23, 59, 59, 999)
 
-  while (cursor <= today) {
+  while (cursor <= end) {
     const day = cursor.toISOString().slice(0, 10)
     result.push({
       date: day,

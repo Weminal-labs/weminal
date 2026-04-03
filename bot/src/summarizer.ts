@@ -20,8 +20,10 @@ interface GeminiOpportunityResponse {
   summary?: string;
 }
 
-const genAI = new GoogleGenerativeAI(config.geminiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+function getModel() {
+  const genAI = new GoogleGenerativeAI(config.geminiKey);
+  return genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+}
 
 const EXTRACTION_SCHEMA = `Return a JSON object (no markdown fences) with these exact fields:
 {
@@ -43,7 +45,14 @@ const EXTRACTION_SCHEMA = `Return a JSON object (no markdown fences) with these 
 
 Rules:
 - If type is unclear, default to "hackathon"
-- Dates must be YYYY-MM-DD format or null
+- DATE EXTRACTION IS CRITICAL: Scan the ENTIRE content for deadline, submission deadline,
+  registration deadline, end date, closing date, application due date, last day to apply.
+  Check headers, footers, sidebars, FAQ, and any "Additional web search results" section.
+  end_date = final submission deadline (not judging date, not announcement date).
+  If only a month is given (e.g. "March 2026") → use the last day of that month (2026-03-31).
+  If a quarter (e.g. "Q1 2026") → last day of that quarter (2026-03-31).
+  If a year only → null.
+  If multiple deadline stages exist (registration, submission, judging), use the submission deadline.
 - reward_amount must be a number (no $ sign) or null
 - links should include the main URL and any registration/submission links found
 - Extract ALL relevant links from the content
@@ -53,7 +62,8 @@ Rules:
 function buildExtractionPrompt(
   userMessage: string,
   scrapedContext: string,
-  failedUrls: string
+  failedUrls: string,
+  searchContext?: string
 ): string {
   return `You extract structured data about crypto/tech opportunities from web content.
 
@@ -61,6 +71,7 @@ User message: "${userMessage}"
 
 ${scrapedContext ? `Scraped content:\n\n${scrapedContext}` : "No content scraped."}
 ${failedUrls ? `Failed to scrape:\n${failedUrls}` : ""}
+${searchContext ? `\nAdditional web search results for deadline info:\n\n${searchContext}` : ""}
 
 ${EXTRACTION_SCHEMA}`;
 }
@@ -122,10 +133,12 @@ function parseOpportunityResponse(
 
 export async function extractOpportunity(
   scrapeResults: ScrapeResult[],
-  userMessage: string
+  userMessage: string,
+  searchContext?: string
 ): Promise<{ opportunity: Opportunity; summary: string }> {
+  const model = getModel();
   const { scrapedContext, failedUrls, mainUrl } = prepareScrapeContext(scrapeResults);
-  const prompt = buildExtractionPrompt(userMessage, scrapedContext, failedUrls);
+  const prompt = buildExtractionPrompt(userMessage, scrapedContext, failedUrls, searchContext);
 
   const result = await model.generateContent(prompt);
   const text = result.response.text().trim();
@@ -139,6 +152,7 @@ export async function extractOpportunityFromImage(
   caption: string,
   scrapeResults: ScrapeResult[]
 ): Promise<{ opportunity: Opportunity; summary: string }> {
+  const model = getModel();
   const { scrapedContext, failedUrls, mainUrl } = prepareScrapeContext(scrapeResults);
   const prompt = buildExtractionPrompt(
     caption || "Analyze this image for opportunity details",
@@ -160,11 +174,12 @@ export async function extractOpportunityFromImage(
 }
 
 export async function analyzeMessage(userMessage: string): Promise<string> {
+  const model = getModel();
   const prompt = `You are an assistant for a hackathon team tracking crypto opportunities.
 
 User message: "${userMessage}"
 
-Provide a concise, helpful response. If the user is asking about opportunities, hackathons, or grants, give relevant advice. Reply in the same language as the user message.`;
+Provide a concise, helpful response. If the user is asking about opportunities, hackathons, or grants, give relevant advice. Always reply in English.`;
 
   const result = await model.generateContent(prompt);
   return result.response.text();

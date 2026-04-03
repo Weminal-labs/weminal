@@ -26,6 +26,18 @@
 - **Vercel deployment** — with environment variables, rate limiting, CORS, security headers
 - **Documentation** — README, API reference, MCP setup guide, deployment guide
 
+## In Scope — v1.5 (Ideas Pool)
+
+- **Ideas Pool** — curated library of project ideas for hackathons and grants at `/ideas`
+- **`ideas` table** — Supabase table with slug, title, tagline, category, track, difficulty, tags, key_points, market/community signals (JSONB), build guide (JSONB), chain overrides (JSONB), votes, featured flag
+- **Ideas API** — Hono routes: list (with filters), get by slug, vote; meta endpoints for tracks/tags/chains
+- **Ideas card grid** — dark card UI with 3 accordion panels (market signal, community signal, build guide)
+- **Chain parametrization** — build guide adapts to selected chain (Solana, Ethereum, etc.)
+- **Ideas filtering** — track pills, difficulty, category, tag, chain, search (debounced), sort (votes/newest)
+- **URL state** — nuqs-persisted filters on /ideas
+- **Bot /idea command** — submit minimal ideas from Telegram (`/idea Title | point 1 | point 2 #tag`)
+- **MCP tools** — `idea_list`, `idea_get`, `idea_create`, `idea_fetch_md`
+
 ## Out of Scope — v1 (possible later)
 
 - User authentication / multi-tenancy
