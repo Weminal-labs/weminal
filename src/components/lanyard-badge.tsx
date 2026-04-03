@@ -104,85 +104,6 @@ function Band({
   }
   const texture = useTexture('/lanyard.png')
 
-  // Custom Weminal badge face texture
-  const [badgeTexture] = useState(() => {
-    const c = document.createElement('canvas')
-    c.width = 512
-    c.height = 800
-    const ctx = c.getContext('2d')!
-
-    // Mirror horizontally to match GLB UV layout
-    ctx.translate(512, 0)
-    ctx.scale(-1, 1)
-
-    // Dark background
-    ctx.fillStyle = '#0a0a0a'
-    ctx.fillRect(0, 0, 512, 800)
-
-    // Notch at top center
-    ctx.fillStyle = '#1a1a1a'
-    ctx.beginPath()
-    ctx.ellipse(256, 12, 50, 20, 0, 0, Math.PI)
-    ctx.fill()
-
-    // Logo gradient circle
-    const grd = ctx.createRadialGradient(256, 280, 0, 256, 280, 60)
-    grd.addColorStop(0, '#c4b5fd')
-    grd.addColorStop(0.5, '#7c3aed')
-    grd.addColorStop(1, '#3c00ff')
-    ctx.fillStyle = grd
-    ctx.beginPath()
-    ctx.arc(256, 280, 55, 0, Math.PI * 2)
-    ctx.fill()
-
-    // W letter in circle
-    ctx.fillStyle = '#fff'
-    ctx.font = 'bold 52px system-ui, -apple-system, sans-serif'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText('W', 256, 284)
-
-    // WEMINAL title
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 42px system-ui, -apple-system, sans-serif'
-    ctx.fillText('WEMINAL', 256, 410)
-
-    // LABS subtitle
-    ctx.fillStyle = '#888888'
-    ctx.font = '600 22px system-ui, -apple-system, sans-serif'
-    ctx.fillText('LABS', 256, 455)
-
-    // Divider line
-    ctx.strokeStyle = '#2a2a2a'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(80, 500)
-    ctx.lineTo(432, 500)
-    ctx.stroke()
-
-    // Builder Pass text
-    ctx.fillStyle = '#555555'
-    ctx.font = '500 18px system-ui, -apple-system, sans-serif'
-    ctx.fillText('Builder Pass', 256, 545)
-
-    // Decorative purple dots
-    ctx.fillStyle = '#3c00ff'
-    for (let i = 0; i < 30; i++) {
-      const x = 60 + Math.random() * 392
-      const y = 590 + Math.random() * 140
-      ctx.globalAlpha = 0.15 + Math.random() * 0.25
-      ctx.beginPath()
-      ctx.arc(x, y, 1.5 + Math.random() * 3, 0, Math.PI * 2)
-      ctx.fill()
-    }
-    ctx.globalAlpha = 1
-
-    const tex = new THREE.CanvasTexture(c)
-    tex.anisotropy = 16
-    tex.flipY = true
-    return tex
-  })
-
   const [curve] = useState(() =>
     new THREE.CatmullRomCurve3([
       new THREE.Vector3(),
@@ -249,7 +170,7 @@ function Band({
 
   return (
     <>
-      <group position={[0, 6, 0]}>
+      <group position={[0, 4, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
         <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
@@ -283,16 +204,7 @@ function Band({
               )
             }}
           >
-            <mesh geometry={nodes.card.geometry}>
-              <meshPhysicalMaterial
-                map={materials.base.map}
-                map-anisotropy={16}
-                clearcoat={isMobile ? 0 : 1}
-                clearcoatRoughness={0.15}
-                roughness={0.9}
-                metalness={0.8}
-              />
-            </mesh>
+            <mesh geometry={nodes.card.geometry} visible={false} />
             <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />
             <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
           </group>
