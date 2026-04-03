@@ -236,7 +236,7 @@ function OpportunitiesPage() {
             className="mx-auto max-w-7xl px-2 md:px-4 pb-8 transition-all duration-700 delay-200"
             style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(24px)' }}
           >
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/40">
+            <div className="bg-white/25 backdrop-blur-2xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/20">
               {/* Filters */}
               <div className="mb-4">
                 <FilterBar

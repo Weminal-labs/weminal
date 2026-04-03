@@ -128,7 +128,7 @@ function ChartsContent() {
           className="mx-auto max-w-5xl px-4 pb-8 transition-all duration-700 delay-200"
           style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(24px)' }}
         >
-          <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-white/40">
+          <div className="bg-white/25 backdrop-blur-2xl rounded-2xl p-4 md:p-6 shadow-2xl border border-white/20">
             {isLoading ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
