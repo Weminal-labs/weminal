@@ -82,7 +82,8 @@ async function saveAndReply(
 ): Promise<string> {
   const isDuplicate = await checkDuplicate(opportunity.name, opportunity.website_url);
   if (isDuplicate) {
-    await html(ctx, `⚠️ <b>${h(opportunity.name)}</b> might already exist. Saving anyway...`);
+    await html(ctx, `⚠️ <b>${h(opportunity.name)}</b> already exists in the database. Skipped.`);
+    return "";
   }
 
   const saved = await saveOpportunity(opportunity);

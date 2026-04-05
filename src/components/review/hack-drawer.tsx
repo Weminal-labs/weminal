@@ -42,7 +42,7 @@ export function HackDrawer({ opportunity, open, onOpenChange }: Props) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="mx-auto max-w-lg rounded-t-2xl">
+      <DrawerContent className="mx-auto max-w-lg rounded-t-2xl bg-white border-t border-gray-200 shadow-2xl">
         <motion.div
           initial="hidden"
           animate="visible"
