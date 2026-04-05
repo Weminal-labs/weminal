@@ -39,13 +39,13 @@ function ReviewContent() {
   const snap = review?.snapshot
 
   return (
-    <main className="min-h-dvh bg-zinc-950 relative">
+    <main className="min-h-dvh relative">
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-cover object-top -z-10 pointer-events-none"
+        className="fixed inset-0 w-full h-full object-cover object-top z-0 pointer-events-none"
       >
         <source src="/hack-bg.webm" type="video/webm" />
       </video>

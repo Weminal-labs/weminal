@@ -162,20 +162,20 @@ function OpportunitiesPage() {
   }, [createBlock, updateBlock])
 
   return (
-    <main className="min-h-dvh bg-zinc-950 relative">
+    <main className="min-h-dvh relative">
       {/* Background video (replaces hack-bg.gif — WebM is 1MB vs 147MB) */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-cover object-top -z-10 pointer-events-none"
+        className="fixed inset-0 w-full h-full object-cover object-top z-0 pointer-events-none"
       >
         <source src="/hack-bg.webm" type="video/webm" />
       </video>
       {/* Vignette — fades hard edges of video to black on left/right */}
       <div
-        className="pointer-events-none fixed inset-0 z-0"
+        className="pointer-events-none fixed inset-0 z-[1]"
         style={{
           background:
             'linear-gradient(to right, rgba(9,9,11,0.92) 0%, transparent 18%, transparent 82%, rgba(9,9,11,0.92) 100%)',
