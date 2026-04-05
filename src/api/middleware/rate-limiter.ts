@@ -6,16 +6,6 @@ const MAX_REQUESTS = 100
 
 const clients = new Map<string, { count: number; resetAt: number }>()
 
-// Clean up expired entries periodically
-setInterval(() => {
-  const now = Date.now()
-  for (const [ip, entry] of clients) {
-    if (now > entry.resetAt) {
-      clients.delete(ip)
-    }
-  }
-}, WINDOW_MS)
-
 function getClientIp(req: Request): string {
   // Vercel / proxied environments
   const forwarded =
@@ -28,6 +18,13 @@ function getClientIp(req: Request): string {
 export const rateLimiter: MiddlewareHandler = async (c, next) => {
   const ip = getClientIp(c.req.raw)
   const now = Date.now()
+
+  // Lazy cleanup: evict one expired entry per request (safe in edge runtime)
+  const firstKey = clients.keys().next().value
+  if (firstKey !== undefined) {
+    const firstEntry = clients.get(firstKey)!
+    if (now > firstEntry.resetAt) clients.delete(firstKey)
+  }
 
   let entry = clients.get(ip)
 
