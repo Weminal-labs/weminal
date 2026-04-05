@@ -72,7 +72,7 @@ function AccordionSection({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between py-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+        className="flex w-full items-center justify-between py-1.5 text-xs text-white/50 hover:text-white/80 transition-colors"
       >
         <span className="flex items-center gap-1.5">
           {icon}
@@ -101,10 +101,10 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
 
   return (
     <div
-      className={`relative flex flex-col rounded-xl border bg-zinc-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/40 ${
+      className={`relative flex flex-col rounded-xl border bg-white/8 backdrop-blur-xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/40 hover:bg-white/12 ${
         idea.is_featured
           ? 'border-violet-500/30 shadow-md shadow-violet-900/20'
-          : 'border-zinc-800 hover:border-zinc-700'
+          : 'border-white/10 hover:border-white/20'
       }`}
     >
       {/* Badges */}
@@ -124,13 +124,13 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
 
       {/* Title + tagline */}
       <h3 className="text-sm font-semibold text-white mb-1 leading-snug">{idea.title}</h3>
-      <p className="text-xs text-zinc-400 mb-3 line-clamp-2 leading-relaxed">{idea.tagline}</p>
+      <p className="text-xs text-white/55 mb-3 line-clamp-2 leading-relaxed">{idea.tagline}</p>
 
       {/* Tags */}
       {idea.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {idea.tags.slice(0, 5).map((tag) => (
-            <span key={tag} className="rounded-md bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-500">
+            <span key={tag} className="rounded-md bg-white/8 px-1.5 py-0.5 text-[10px] text-white/40">
               {tag}
             </span>
           ))}
@@ -142,7 +142,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
 
       {/* Source */}
       {idea.source_author && (
-        <p className="text-[10px] text-zinc-600 mb-3">
+        <p className="text-[10px] text-white/30 mb-3">
           via {idea.source_author}
           {idea.source_url && (
             <a
@@ -158,7 +158,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
       )}
 
       {/* Accordion panels */}
-      <div className="flex-1 border-t border-zinc-800 pt-2 space-y-0.5">
+      <div className="flex-1 border-t border-white/10 pt-2 space-y-0.5">
         <AccordionSection
           icon={<TrendingUp className="size-3.5" />}
           label="Is this idea good?"
@@ -166,7 +166,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
           onToggle={() => togglePanel('market')}
         >
           {idea.market_signal?.verdict && (
-            <p className="text-xs font-medium text-zinc-300">
+            <p className="text-xs font-medium text-white/80">
               Verdict:{' '}
               <span className={verdictColor(idea.market_signal.verdict)}>
                 {idea.market_signal.verdict}
@@ -174,11 +174,11 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
             </p>
           )}
           {idea.market_signal?.reasoning && (
-            <p className="text-xs text-zinc-400 leading-relaxed">{idea.market_signal.reasoning}</p>
+            <p className="text-xs text-white/55 leading-relaxed">{idea.market_signal.reasoning}</p>
           )}
           {idea.market_signal?.signals?.map((s, i) => (
-            <p key={i} className="text-[11px] text-zinc-500 pl-2 border-l border-zinc-700">
-              <span className="text-zinc-400 font-medium">{s.type}:</span> {s.text}
+            <p key={i} className="text-[11px] text-white/35 pl-2 border-l border-white/15">
+              <span className="text-white/60 font-medium">{s.type}:</span> {s.text}
             </p>
           ))}
         </AccordionSection>
@@ -190,7 +190,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
           onToggle={() => togglePanel('community')}
         >
           {idea.community_signal?.verdict && (
-            <p className="text-xs font-medium text-zinc-300">
+            <p className="text-xs font-medium text-white/80">
               Demand:{' '}
               <span className={verdictColor(idea.community_signal.verdict)}>
                 {idea.community_signal.verdict}
@@ -198,11 +198,11 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
             </p>
           )}
           {idea.community_signal?.reasoning && (
-            <p className="text-xs text-zinc-400 leading-relaxed">{idea.community_signal.reasoning}</p>
+            <p className="text-xs text-white/55 leading-relaxed">{idea.community_signal.reasoning}</p>
           )}
           {idea.community_signal?.signals?.map((s, i) => (
-            <p key={i} className="text-[11px] text-zinc-500 pl-2 border-l border-zinc-700">
-              <span className="text-zinc-400 font-medium">{s.type}:</span> {s.text}
+            <p key={i} className="text-[11px] text-white/35 pl-2 border-l border-white/15">
+              <span className="text-white/60 font-medium">{s.type}:</span> {s.text}
             </p>
           ))}
         </AccordionSection>
@@ -224,7 +224,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
                   className={`rounded-md px-2 py-0.5 text-[10px] font-medium transition-colors ${
                     selectedChain === chain
                       ? 'bg-violet-600/20 text-violet-400 ring-1 ring-violet-500/30'
-                      : 'bg-zinc-800 text-zinc-500 hover:text-zinc-300'
+                      : 'bg-white/8 text-white/40 hover:text-white/70'
                   }`}
                 >
                   {chain}
@@ -234,7 +234,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
           )}
 
           {buildGuide?.overview && (
-            <p className="text-xs text-zinc-400 leading-relaxed">{buildGuide.overview}</p>
+            <p className="text-xs text-white/55 leading-relaxed">{buildGuide.overview}</p>
           )}
           {chainOverride?.note && (
             <p className="text-[11px] text-violet-400/80 italic">{chainOverride.note}</p>
@@ -243,14 +243,14 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
             <ol className="space-y-1.5">
               {buildGuide.steps.map((step) => (
                 <li key={step.order} className="text-[11px]">
-                  <span className="text-zinc-300 font-medium">{step.order}. {step.title}</span>
-                  <p className="text-zinc-500 pl-3 leading-relaxed">{step.description}</p>
+                  <span className="text-white/75 font-medium">{step.order}. {step.title}</span>
+                  <p className="text-white/40 pl-3 leading-relaxed">{step.description}</p>
                 </li>
               ))}
             </ol>
           )}
           {(chainOverride?.stack_override || buildGuide?.stack_suggestion) && (
-            <p className="text-[10px] text-zinc-500">
+            <p className="text-[10px] text-white/40">
               Stack:{' '}
               <span className="text-zinc-400 font-mono">
                 {chainOverride?.stack_override ?? buildGuide?.stack_suggestion}
@@ -258,7 +258,7 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
             </p>
           )}
           {buildGuide?.time_estimate && (
-            <p className="text-[10px] text-zinc-500">Time: {buildGuide.time_estimate}</p>
+            <p className="text-[10px] text-white/40">Time: {buildGuide.time_estimate}</p>
           )}
           {buildGuide?.hackathon_fit && (
             <p className="text-[10px] text-zinc-500 italic">{buildGuide.hackathon_fit}</p>
@@ -267,12 +267,12 @@ export function IdeaCard({ idea, selectedChain, onChainChange, onVote, isVoting 
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-800">
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onVote() }}
           disabled={isVoting}
-          className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-violet-400 transition-colors disabled:opacity-40"
+          className="flex items-center gap-1.5 text-xs text-white/40 hover:text-violet-400 transition-colors disabled:opacity-40"
           aria-label="Upvote idea"
         >
           <ThumbsUp className="size-3.5" />

@@ -53,20 +53,41 @@ function IdeasContent() {
   const pagination = data?.pagination
 
   return (
-    <main className="min-h-dvh bg-zinc-950">
-      <div className="mx-auto max-w-7xl px-3 md:px-6 py-6 md:py-10">
+    <main className="min-h-dvh relative">
+      {/* Background video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover object-top z-0 pointer-events-none"
+      >
+        <source src="/hack-bg.webm" type="video/webm" />
+      </video>
+      {/* Vignette */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[1]"
+        style={{
+          background:
+            'linear-gradient(to right, rgba(9,9,11,0.92) 0%, transparent 18%, transparent 82%, rgba(9,9,11,0.92) 100%)',
+        }}
+      />
+      {/* Dark overlay for readability */}
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-black/45" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-3 md:px-6 py-6 md:py-10">
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-2.5 mb-1.5">
             <Lightbulb className="size-6 text-violet-400 shrink-0" aria-hidden="true" />
             <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Ideas Pool</h1>
             {pagination && (
-              <span className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400 tabular-nums">
+              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-white/60 tabular-nums">
                 {pagination.total}
               </span>
             )}
           </div>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-white/50">
             Curated build ideas for your next hackathon or grant application — with market validation and a clear build path.
           </p>
         </div>
@@ -95,19 +116,19 @@ function IdeasContent() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-64 rounded-xl bg-zinc-800/50" />
+              <Skeleton key={i} className="h-64 rounded-xl bg-white/5" />
             ))}
           </div>
         ) : isError ? (
-          <div className="rounded-xl border border-red-900/40 bg-red-950/20 p-8 text-center">
+          <div className="rounded-xl border border-red-500/20 bg-red-950/20 backdrop-blur-sm p-8 text-center">
             <p className="text-sm text-red-400">
               {error instanceof Error ? error.message : 'Failed to load ideas'}
             </p>
           </div>
         ) : ideas.length === 0 ? (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-12 text-center">
-            <Lightbulb className="size-10 text-zinc-700 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-sm text-zinc-500">No ideas match your filters</p>
+          <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-12 text-center">
+            <Lightbulb className="size-10 text-white/20 mx-auto mb-3" aria-hidden="true" />
+            <p className="text-sm text-white/40">No ideas match your filters</p>
             {Object.values({ track: params.track, difficulty: params.difficulty, tag: params.tag, chain: params.chain, search: params.search }).some(Boolean) && (
               <button
                 type="button"
@@ -140,18 +161,18 @@ function IdeasContent() {
                   type="button"
                   onClick={() => setParams({ page: Math.max(1, params.page - 1) })}
                   disabled={params.page <= 1}
-                  className="rounded-md bg-zinc-800 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="rounded-md bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors border border-white/10"
                 >
                   Previous
                 </button>
-                <span className="text-xs text-zinc-500 tabular-nums">
+                <span className="text-xs text-white/40 tabular-nums">
                   {pagination.page} / {pagination.total_pages}
                 </span>
                 <button
                   type="button"
                   onClick={() => setParams({ page: Math.min(pagination.total_pages, params.page + 1) })}
                   disabled={params.page >= pagination.total_pages}
-                  className="rounded-md bg-zinc-800 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="rounded-md bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors border border-white/10"
                 >
                   Next
                 </button>
@@ -169,7 +190,7 @@ export default function IdeasPage() {
     <Suspense
       fallback={
         <div className="min-h-dvh bg-zinc-950 flex items-center justify-center">
-          <div className="text-sm text-zinc-500">Loading ideas...</div>
+          <div className="text-sm text-white/40">Loading ideas...</div>
         </div>
       }
     >
