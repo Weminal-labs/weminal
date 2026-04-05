@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { createMcpServer, isWriteTool } from '@/mcp/http-server'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'

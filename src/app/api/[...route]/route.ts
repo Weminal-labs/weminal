@@ -1,9 +1,10 @@
-import { handle } from 'hono/vercel'
+export const runtime = 'edge'
+
 import app from '@/api'
 
-export const GET = handle(app)
-export const POST = handle(app)
-export const PUT = handle(app)
-export const PATCH = handle(app)
-export const DELETE = handle(app)
-export const OPTIONS = handle(app)
+export const GET = app.fetch.bind(app)
+export const POST = app.fetch.bind(app)
+export const PUT = app.fetch.bind(app)
+export const PATCH = app.fetch.bind(app)
+export const DELETE = app.fetch.bind(app)
+export const OPTIONS = app.fetch.bind(app)

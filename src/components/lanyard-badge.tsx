@@ -17,6 +17,14 @@ import type { RapierRigidBody } from '@react-three/rapier'
 
 extend({ MeshLineGeometry, MeshLineMaterial })
 
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    meshLineGeometry: object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    meshLineMaterial: Record<string, any>
+  }
+}
+
 /* ── Main Export ── */
 
 type LanyardBadgeProps = {
@@ -161,7 +169,7 @@ function Band({
 
       const ang = card.current.angvel()
       const rot = card.current.rotation()
-      card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z })
+      card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z }, true)
     }
   })
 
