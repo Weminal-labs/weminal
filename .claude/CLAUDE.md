@@ -6,6 +6,23 @@
 
 ---
 
+## Commit message rules (HARD RULE — never violate)
+
+NEVER include any of the following in git commit messages:
+- `Co-Authored-By: Claude …`
+- `🤖 Generated with [Claude Code] …`
+- `Co-Authored-By: Claude Sonnet 4.x …` / `Co-Authored-By: Claude Opus 4.x …`
+- Any attribution line that mentions Claude, Anthropic, Sonnet, Opus, or AI
+
+The user is the sole author of every commit in this repo. Write commit messages
+as if you were them — plain, technical, no meta-commentary about who wrote the code.
+This applies to ALL commits and PRs in this project, no exceptions.
+
+If the default commit skill tries to append such a trailer, strip it before
+running `git commit`.
+
+---
+
 ## First Time Here?
 
 If the context/ folder is empty or missing files, stop and run the setup wizard first:

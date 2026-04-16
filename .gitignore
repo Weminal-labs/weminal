@@ -67,3 +67,4 @@ test-script.js
 
 # npm lockfile from bot/ (project uses pnpm)
 bot/package-lock.json
+.claude/scheduled_tasks.lock
