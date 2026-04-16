@@ -12,7 +12,7 @@ import {
   updateOpportunity,
   deleteOpportunity,
 } from '../api/lib/query-builder'
-import { getSupabase } from '../api/lib/supabase'
+import { db } from '../api/lib/db'
 import { formatListResponse, formatSingleResponse, truncateResponse } from './format'
 
 const MAX_RESPONSE_SIZE = 50_000
@@ -73,28 +73,6 @@ export function createMcpServer() {
   )
 
   server.tool(
-    'block_list',
-    'List calendar blocks (scheduled work sessions).',
-    {
-      date_from: z.string().optional(),
-      date_to: z.string().optional(),
-      opportunity_id: z.string().uuid().optional(),
-      status: z.enum(['planned', 'in_progress', 'done', 'skipped']).optional(),
-    },
-    async (params) => {
-      const client = getSupabase()
-      let query = client.from('calendar_blocks').select('*, opportunities(id, name, type, organization)').order('date', { ascending: true })
-      if (params.date_from) query = query.gte('date', params.date_from)
-      if (params.date_to) query = query.lte('date', params.date_to)
-      if (params.opportunity_id) query = query.eq('opportunity_id', params.opportunity_id)
-      if (params.status) query = query.eq('status', params.status)
-      const { data, error } = await query
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Found ${data?.length ?? 0} blocks\n\n${JSON.stringify(data, null, 2)}` }] }
-    }
-  )
-
-  server.tool(
     'milestone_list',
     'List milestones and deadlines.',
     {
@@ -104,15 +82,43 @@ export function createMcpServer() {
       type: z.enum(['deadline', 'office_hour', 'announcement', 'checkpoint', 'other']).optional(),
     },
     async (params) => {
-      const client = getSupabase()
-      let query = client.from('milestones').select('*, opportunities(id, name, type)').order('date', { ascending: true })
-      if (params.opportunity_id) query = query.eq('opportunity_id', params.opportunity_id)
-      if (params.date_from) query = query.gte('date', params.date_from)
-      if (params.date_to) query = query.lte('date', params.date_to)
-      if (params.type) query = query.eq('type', params.type)
-      const { data, error } = await query
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Found ${data?.length ?? 0} milestones\n\n${JSON.stringify(data, null, 2)}` }] }
+      try {
+        let query = db
+          .selectFrom('milestones')
+          .innerJoin('opportunities', 'opportunities.id', 'milestones.opportunity_id')
+          .select([
+            'milestones.id',
+            'milestones.opportunity_id',
+            'milestones.title',
+            'milestones.date',
+            'milestones.time',
+            'milestones.type',
+            'milestones.links',
+            'milestones.notes',
+            'milestones.completed',
+            'milestones.created_at',
+            'milestones.updated_at',
+            'opportunities.id as opp_id',
+            'opportunities.name as opp_name',
+            'opportunities.type as opp_type',
+          ])
+          .orderBy('milestones.date', 'asc')
+
+        if (params.opportunity_id) query = query.where('milestones.opportunity_id', '=', params.opportunity_id)
+        if (params.date_from) query = query.where('milestones.date', '>=', params.date_from)
+        if (params.date_to) query = query.where('milestones.date', '<=', params.date_to)
+        if (params.type) query = query.where('milestones.type', '=', params.type)
+
+        const rows = await query.execute()
+        const data = rows.map((r) => {
+          const { opp_id, opp_name, opp_type, ...rest } = r as Record<string, unknown>
+          return { ...rest, opportunities: { id: opp_id, name: opp_name, type: opp_type } }
+        })
+        return { content: [{ type: 'text' as const, text: `Found ${data.length} milestones\n\n${JSON.stringify(data, null, 2)}` }] }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Database error'
+        return { content: [{ type: 'text' as const, text: `Error: ${msg}` }], isError: true }
+      }
     }
   )
 
@@ -121,11 +127,18 @@ export function createMcpServer() {
     'Get the proposal for an opportunity.',
     { opportunity_id: z.string().uuid() },
     async ({ opportunity_id }) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('proposals').select('*').eq('opportunity_id', opportunity_id).maybeSingle()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      if (!data) return { content: [{ type: 'text' as const, text: `No proposal for ${opportunity_id}` }] }
-      return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] }
+      try {
+        const data = await db
+          .selectFrom('proposals')
+          .selectAll()
+          .where('opportunity_id', '=', opportunity_id)
+          .executeTakeFirst()
+        if (!data) return { content: [{ type: 'text' as const, text: `No proposal for ${opportunity_id}` }] }
+        return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Database error'
+        return { content: [{ type: 'text' as const, text: `Error: ${msg}` }], isError: true }
+      }
     }
   )
 
@@ -186,53 +199,6 @@ export function createMcpServer() {
   )
 
   server.tool(
-    'block_create',
-    'Create a calendar block. Requires API key.',
-    {
-      title: z.string(), date: z.string(),
-      slot: z.enum(['AM', 'PM', 'ALL_DAY']).optional().default('AM'),
-      hours: z.number().optional().default(4),
-      opportunity_id: z.string().uuid().optional(),
-      notes: z.string().optional(),
-      status: z.enum(['planned', 'in_progress', 'done', 'skipped']).optional().default('planned'),
-    },
-    async (params) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('calendar_blocks').insert(params).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Created block: "${params.title}" on ${params.date}\n\n${JSON.stringify(data, null, 2)}` }] }
-    }
-  )
-
-  server.tool(
-    'block_update',
-    'Update a calendar block. Requires API key.',
-    {
-      id: z.string().uuid(), title: z.string().optional(), date: z.string().optional(),
-      slot: z.enum(['AM', 'PM', 'ALL_DAY']).optional(), hours: z.number().optional(),
-      notes: z.string().optional(), status: z.enum(['planned', 'in_progress', 'done', 'skipped']).optional(),
-    },
-    async ({ id, ...updates }) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('calendar_blocks').update(updates).eq('id', id).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Updated block "${data.title}"\n\n${JSON.stringify(data, null, 2)}` }] }
-    }
-  )
-
-  server.tool(
-    'block_delete',
-    'Delete a calendar block. Requires API key.',
-    { id: z.string().uuid() },
-    async ({ id }) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('calendar_blocks').delete().eq('id', id).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Deleted block: "${data.title}" (${id})` }] }
-    }
-  )
-
-  server.tool(
     'milestone_create',
     'Add a milestone to an opportunity. Requires API key.',
     {
@@ -242,10 +208,17 @@ export function createMcpServer() {
       notes: z.string().optional(),
     },
     async (params) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('milestones').insert(params).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Created milestone: "${params.title}" on ${params.date}\n\n${JSON.stringify(data, null, 2)}` }] }
+      try {
+        const data = await db
+          .insertInto('milestones')
+          .values(params as never)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return { content: [{ type: 'text' as const, text: `Created milestone: "${params.title}" on ${params.date}\n\n${JSON.stringify(data, null, 2)}` }] }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Database error'
+        return { content: [{ type: 'text' as const, text: `Error: ${msg}` }], isError: true }
+      }
     }
   )
 
@@ -259,10 +232,18 @@ export function createMcpServer() {
       completed: z.boolean().optional(), notes: z.string().optional(),
     },
     async ({ id, ...updates }) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('milestones').update(updates).eq('id', id).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Updated milestone "${data.title}"\n\n${JSON.stringify(data, null, 2)}` }] }
+      try {
+        const data = await db
+          .updateTable('milestones')
+          .set(updates as never)
+          .where('id', '=', id)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return { content: [{ type: 'text' as const, text: `Updated milestone "${data.title}"\n\n${JSON.stringify(data, null, 2)}` }] }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Database error'
+        return { content: [{ type: 'text' as const, text: `Error: ${msg}` }], isError: true }
+      }
     }
   )
 
@@ -271,10 +252,17 @@ export function createMcpServer() {
     'Delete a milestone. Requires API key.',
     { id: z.string().uuid() },
     async ({ id }) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('milestones').delete().eq('id', id).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Deleted milestone: "${data.title}" (${id})` }] }
+      try {
+        const data = await db
+          .deleteFrom('milestones')
+          .where('id', '=', id)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return { content: [{ type: 'text' as const, text: `Deleted milestone: "${data.title}" (${id})` }] }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Database error'
+        return { content: [{ type: 'text' as const, text: `Error: ${msg}` }], isError: true }
+      }
     }
   )
 
@@ -289,10 +277,18 @@ export function createMcpServer() {
       links: z.array(z.object({ label: z.string(), url: z.string() })).optional(),
     },
     async ({ opportunity_id, ...input }) => {
-      const client = getSupabase()
-      const { data, error } = await client.from('proposals').upsert({ ...input, opportunity_id }, { onConflict: 'opportunity_id' }).select().single()
-      if (error) return { content: [{ type: 'text' as const, text: `Error: ${error.message}` }], isError: true }
-      return { content: [{ type: 'text' as const, text: `Proposal ${data.status}: ${opportunity_id}\n\n${JSON.stringify(data, null, 2)}` }] }
+      try {
+        const data = await db
+          .insertInto('proposals')
+          .values({ ...input, opportunity_id } as never)
+          .onConflict((oc) => oc.column('opportunity_id').doUpdateSet(input as never))
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return { content: [{ type: 'text' as const, text: `Proposal ${data.status}: ${opportunity_id}\n\n${JSON.stringify(data, null, 2)}` }] }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Database error'
+        return { content: [{ type: 'text' as const, text: `Error: ${msg}` }], isError: true }
+      }
     }
   )
 

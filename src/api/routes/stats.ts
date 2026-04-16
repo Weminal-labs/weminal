@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { supabase } from '../lib/supabase'
+import { db } from '../lib/db'
 
 const stats = new Hono()
 
@@ -13,66 +13,80 @@ stats.get('/updates-per-day', async (c) => {
   if (!fromParam) since.setDate(since.getDate() - days)
   const until = toParam ? new Date(toParam) : new Date()
 
-  const { data: opps, error: queryErr } = await supabase
-    .from('opportunities')
-    .select('created_at, updated_at')
-    .gte('updated_at', since.toISOString())
-    .lte('updated_at', until.toISOString())
-    .order('updated_at', { ascending: true })
+  try {
+    const opps = await db
+      .selectFrom('opportunities')
+      .select(['created_at', 'updated_at'])
+      .where('updated_at', '>=', since.toISOString())
+      .where('updated_at', '<=', until.toISOString())
+      .orderBy('updated_at', 'asc')
+      .execute()
 
-  if (queryErr) {
-    return c.json({ error: queryErr.message }, 500)
-  }
+    const createdMap: Record<string, number> = {}
+    const updatedMap: Record<string, number> = {}
 
-  const createdMap: Record<string, number> = {}
-  const updatedMap: Record<string, number> = {}
+    for (const opp of opps) {
+      const createdDay = (opp.created_at as string | null)?.slice(0, 10)
+      const updatedDay = (opp.updated_at as string | null)?.slice(0, 10)
 
-  for (const opp of opps ?? []) {
-    const createdDay = opp.created_at?.slice(0, 10)
-    const updatedDay = opp.updated_at?.slice(0, 10)
-
-    if (createdDay && createdDay >= since.toISOString().slice(0, 10)) {
-      createdMap[createdDay] = (createdMap[createdDay] ?? 0) + 1
+      if (createdDay && createdDay >= since.toISOString().slice(0, 10)) {
+        createdMap[createdDay] = (createdMap[createdDay] ?? 0) + 1
+      }
+      if (updatedDay) {
+        updatedMap[updatedDay] = (updatedMap[updatedDay] ?? 0) + 1
+      }
     }
-    if (updatedDay) {
-      updatedMap[updatedDay] = (updatedMap[updatedDay] ?? 0) + 1
+
+    const result: { date: string; created: number; updated: number }[] = []
+    const cursor = new Date(since)
+    const end = new Date(until)
+    end.setHours(23, 59, 59, 999)
+
+    while (cursor <= end) {
+      const day = cursor.toISOString().slice(0, 10)
+      result.push({
+        date: day,
+        created: createdMap[day] ?? 0,
+        updated: updatedMap[day] ?? 0,
+      })
+      cursor.setDate(cursor.getDate() + 1)
     }
+
+    return c.json({ data: result })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Database error'
+    return c.json({ error: msg }, 500)
   }
-
-  const result: { date: string; created: number; updated: number }[] = []
-  const cursor = new Date(since)
-  const end = new Date(until)
-  end.setHours(23, 59, 59, 999)
-
-  while (cursor <= end) {
-    const day = cursor.toISOString().slice(0, 10)
-    result.push({
-      date: day,
-      created: createdMap[day] ?? 0,
-      updated: updatedMap[day] ?? 0,
-    })
-    cursor.setDate(cursor.getDate() + 1)
-  }
-
-  return c.json({ data: result })
 })
 
 // GET /api/v1/stats/overview — all dashboard data in one call
 stats.get('/overview', async (c) => {
-  const { data: opps, error } = await supabase
-    .from('opportunities')
-    .select('type, status, organization, reward_amount, reward_currency, reward_token, blockchains, start_date, end_date, created_at')
-
-  if (error) {
-    return c.json({ error: error.message }, 500)
+  let all: Array<Record<string, unknown>>
+  try {
+    all = await db
+      .selectFrom('opportunities')
+      .select([
+        'type',
+        'status',
+        'organization',
+        'reward_amount',
+        'reward_currency',
+        'reward_token',
+        'blockchains',
+        'start_date',
+        'end_date',
+        'created_at',
+      ])
+      .execute() as Array<Record<string, unknown>>
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Database error'
+    return c.json({ error: msg }, 500)
   }
-
-  const all = opps ?? []
 
   // 1. By type with reward totals
   const byType: Record<string, { count: number; totalReward: number }> = {}
   for (const o of all) {
-    const t = o.type ?? 'unknown'
+    const t = (o.type as string) ?? 'unknown'
     if (!byType[t]) byType[t] = { count: 0, totalReward: 0 }
     byType[t].count++
     if (o.reward_amount) byType[t].totalReward += Number(o.reward_amount)
@@ -82,14 +96,14 @@ stats.get('/overview', async (c) => {
   const statusOrder = ['discovered', 'evaluating', 'applying', 'accepted', 'in_progress', 'submitted', 'completed', 'rejected', 'cancelled']
   const byStatus: Record<string, number> = {}
   for (const o of all) {
-    const s = o.status ?? 'unknown'
+    const s = (o.status as string) ?? 'unknown'
     byStatus[s] = (byStatus[s] ?? 0) + 1
   }
 
   // 3. Top blockchains
   const byChain: Record<string, number> = {}
   for (const o of all) {
-    for (const c of o.blockchains ?? []) {
+    for (const c of (o.blockchains as string[]) ?? []) {
       byChain[c] = (byChain[c] ?? 0) + 1
     }
   }
@@ -97,15 +111,15 @@ stats.get('/overview', async (c) => {
   // 4. Top organizations
   const byOrg: Record<string, number> = {}
   for (const o of all) {
-    const org = o.organization
+    const org = o.organization as string | null
     if (org) byOrg[org] = (byOrg[org] ?? 0) + 1
   }
 
   // 5. Upcoming deadlines (end_date in the future)
   const today = new Date().toISOString().slice(0, 10)
   const upcoming = all
-    .filter((o) => o.end_date && o.end_date >= today)
-    .sort((a, b) => (a.end_date! > b.end_date! ? 1 : -1))
+    .filter((o) => o.end_date && (o.end_date as string) >= today)
+    .sort((a, b) => ((a.end_date as string) > (b.end_date as string) ? 1 : -1))
     .slice(0, 10)
     .map((o) => ({ end_date: o.end_date, type: o.type, status: o.status }))
 

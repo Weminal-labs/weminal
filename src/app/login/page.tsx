@@ -1,123 +1,139 @@
 'use client'
 
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-import { ArrowRight } from 'lucide-react'
-import { ParticleLogo } from '@/components/particle-logo'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { signIn } from '@/lib/auth-client'
+import { sanitizeNext } from '@/lib/pure-helpers'
 
-const PixelBlast = dynamic(() => import('@/components/pixel-blast'), { ssr: false })
+function LoginForm() {
+  const params = useSearchParams()
+  const rawNext = params.get('next')
+  const next = sanitizeNext(rawNext)
+  const error = params.get('error')
+  const [signingIn, setSigningIn] = useState(false)
+  const [clientError, setClientError] = useState<string | null>(null)
 
-export default function LoginPage() {
+  async function handleGitHub() {
+    setSigningIn(true)
+    setClientError(null)
+    try {
+      const result = (await signIn.social({ provider: 'github', callbackURL: next })) as
+        | { error?: { message?: string } | string | null }
+        | undefined
+      if (result?.error) {
+        const msg = typeof result.error === 'string' ? result.error : result.error.message
+        setClientError(msg || 'Sign-in failed. Check server config (GitHub OAuth credentials).')
+      }
+    } catch (e) {
+      setClientError(e instanceof Error ? e.message : 'Sign-in failed — see console')
+    } finally {
+      setSigningIn(false)
+    }
+  }
+
   return (
-    <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-[#fafafa] selection:bg-[#3c00ff]/20">
-      <style>{`
-        @keyframes revealUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px) scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .animate-reveal {
-          animation: revealUp 800ms cubic-bezier(0.19, 1, 0.22, 1) both;
-        }
-      `}</style>
+    <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden">
+      {/* Background video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover object-top z-0 pointer-events-none"
+      >
+        <source src="/hack-bg.webm" type="video/webm" />
+      </video>
 
-      {/* Dynamic Background matching homepage */}
-      <div className="absolute inset-0 z-0">
-        <PixelBlast
-          variant="square"
-          pixelSize={3}
-          color="#3c00ff"
-          patternScale={2}
-          patternDensity={1}
-          enableRipples
-          rippleSpeed={0.3}
-          rippleThickness={0.1}
-          rippleIntensityScale={1}
-          speed={0.5}
-          transparent
-          edgeFade={0.5}
-        />
-      </div>
+      {/* Vignette */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[1]"
+        style={{
+          background:
+            'linear-gradient(to right, rgba(9,9,11,0.92) 0%, transparent 18%, transparent 82%, rgba(9,9,11,0.92) 100%)',
+        }}
+      />
+      {/* Center darken for card legibility */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[1]"
+        style={{ background: 'rgba(9,9,11,0.45)' }}
+      />
 
-      {/* Frame Logo Effect behind the login card */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-auto">
-         <div style={{ width: 'min(92vw, 1100px)' }}>
-            <ParticleLogo src="/hero-frame.svg" className="w-full opacity-40 mix-blend-multiply" color="#0a0a0a" />
-         </div>
-      </div>
+      {/* Login card */}
+      <div className="relative z-10 w-full max-w-[420px] mx-auto px-6">
+        <div className="rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/15 p-10 shadow-2xl">
 
-      {/* Sleek, Modern Login Card */}
-      <div className="relative z-10 w-full max-w-[420px] mx-auto px-6 animate-reveal">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-white/70 backdrop-blur-2xl border border-white/80 p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,1)] group hover:bg-white/80 transition-all duration-500">
-          
-          {/* Subtle noise texture overlay */}
-          <div 
-            className="absolute inset-0 opacity-[0.02] mix-blend-multiply pointer-events-none" 
-            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}
-          />
+          {/* Logo mark */}
+          <div className="mb-8 flex items-center justify-center">
+            <img
+              src="/weminal_logo/Logo-white.svg"
+              alt="Weminal"
+              className="h-12 w-auto"
+              draggable={false}
+            />
+          </div>
 
-          <div className="relative z-10">
-            {/* Minimalist Logo Mark */}
-            <div className="mb-10 flex items-center justify-center">
-              <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-[#5b21ff] to-[#3c00ff] text-white flex items-center justify-center shadow-lg shadow-[#3c00ff]/20 ring-1 ring-black/5">
-                <span className="font-bold text-xl leading-none -tracking-widest pr-0.5">W</span>
-              </div>
-            </div>
-
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-semibold tracking-[-0.03em] leading-[1.2] text-gray-900 mb-2">
-                Start Building
-              </h1>
-              <p className="text-gray-500/90 text-[15px] font-medium tracking-tight">Access your Weminal console</p>
-            </div>
-
-            <div className="space-y-3">
-              <button type="button" className="w-full group relative flex items-center justify-center gap-3 rounded-2xl bg-white px-4 py-4 text-[15px] font-semibold text-gray-900 transition-all duration-300 hover:bg-gray-50 hover:scale-[1.01] border border-gray-200/80 hover:border-gray-300 shadow-sm hover:shadow-md hover:shadow-black/5 active:scale-[0.99]">
-                <GoogleIcon />
-                Continue with Google
-                <ArrowRight className="absolute right-4 w-4 h-4 opacity-0 -translate-x-2 text-gray-400 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
-              </button>
-              
-              <button type="button" className="w-full relative flex items-center justify-center gap-3 rounded-2xl bg-[#0a0a0a] px-4 py-4 text-[15px] font-semibold text-white transition-all duration-300 hover:bg-[#1a1a1a] hover:scale-[1.01] hover:shadow-lg hover:shadow-[#0a0a0a]/20 active:scale-[0.99]">
-                <MailIcon />
-                Continue with Email
-              </button>
-            </div>
-
-            <p className="mt-8 text-center text-[13px] text-gray-400 font-medium tracking-tight">
-              By continuing, you agree to our{' '}
-              <Link href="#" className="text-gray-600 hover:text-[#3c00ff] underline decoration-gray-300 underline-offset-4 transition-colors">Terms</Link>{' '}
-              and{' '}
-              <Link href="#" className="text-gray-600 hover:text-[#3c00ff] underline decoration-gray-300 underline-offset-4 transition-colors">Privacy</Link>
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight text-white mb-2">
+              Sign in to Weminal
+            </h1>
+            <p className="text-white/55 text-sm leading-relaxed">
+              Track crypto opportunities. Use your account to create, update, and manage your pipeline.
             </p>
           </div>
+
+          {/* Error banner */}
+          {(error === 'oauth_failed' || clientError) && (
+            <div className="mb-5 rounded-xl border border-red-400/30 bg-red-500/15 p-3">
+              <p className="text-sm text-red-300 text-center font-medium">
+                {clientError ?? 'Sign-in failed. Please try again.'}
+              </p>
+            </div>
+          )}
+
+          {/* GitHub sign-in */}
+          <button
+            type="button"
+            onClick={handleGitHub}
+            disabled={signingIn}
+            className="w-full flex items-center justify-center gap-3 rounded-xl bg-white/90 px-4 py-3.5 text-sm font-semibold text-gray-900 transition-all duration-200 hover:bg-white hover:scale-[1.01] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <GitHubIcon />
+            {signingIn ? 'Redirecting to GitHub…' : 'Continue with GitHub'}
+          </button>
+
+          <p className="mt-7 text-center text-xs text-white/30">
+            By continuing you agree to our terms of use.
+          </p>
         </div>
       </div>
     </main>
   )
 }
 
-function GoogleIcon() {
+function GitHubIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4" />
-      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853" />
-      <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
-      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23A11.51 11.51 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.29-1.552 3.297-1.23 3.297-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z" />
     </svg>
   )
 }
 
-function MailIcon() {
+export default function LoginPage() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7" />
-    </svg>
+    <Suspense fallback={
+      <main className="min-h-dvh flex items-center justify-center bg-zinc-950">
+        <div className="w-full max-w-[420px] mx-auto px-6">
+          <div className="rounded-2xl bg-white/10 border border-white/15 p-10 h-72 animate-pulse" />
+        </div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

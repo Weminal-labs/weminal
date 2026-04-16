@@ -4,7 +4,7 @@
 
 ## Branch Strategy
 
-- `main` — production, auto-deploys to Vercel
+- `main` — production, auto-deploys to Cloudflare Pages via GitHub Actions
 - `dev` — integration branch (optional for solo)
 - Feature branches: `feat/opportunity-crud`, `feat/mcp-tools`, `feat/type-filter`, etc.
 - PR required for merging to `main` (can be self-merged for solo dev)
@@ -32,7 +32,7 @@ Keep commits focused — one logical change per commit.
 
 - Use code-reviewer agent before merging significant features
 - Self-merge for solo work after review pass
-- Vercel preview deploys auto-trigger on PRs for visual testing
+- Test PRs locally (`pnpm dev`) before merging — no automatic preview deploys
 
 ## Local Development
 

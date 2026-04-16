@@ -1,4 +1,6 @@
-export const runtime = 'edge'
+// Node runtime — authMiddleware imports better-auth which needs node:crypto.
+// Production uses @cloudflare/next-on-pages with nodejs_compat.
+export const runtime = 'nodejs'
 
 import app from '@/api'
 

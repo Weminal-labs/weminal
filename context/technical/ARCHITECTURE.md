@@ -46,26 +46,29 @@
 ### Deployment View
 
 ```
- +-------------------+       +-------------------+
- |  Vercel           |       |  Local Dev        |
- |                   |       |                   |
- |  Next.js App      |       |  Claude Code      |
- |  +-------------+  |       |  +-------------+  |
- |  | React UI    |  |       |  | MCP Server  |  |
- |  +-------------+  |       |  | (stdio)     |  |
- |  | Hono API    |  |       |  +------+------+  |
- |  | (catch-all) |  |       |         |         |
- |  +------+------+  |       +---------+---------+
- |         |         |                 |
- +---------+---------+                 |
-           |                           |
-           +-------------+-------------+
-                         |
-                         v
-               +---------+---------+
-               |  Supabase Cloud   |
-               |  (hosted PG)      |
-               +-------------------+
+ +-------------------------+       +-------------------+
+ |  Cloudflare Pages       |       |  Local Dev        |
+ |  (edge runtime)         |       |                   |
+ |  Next.js App            |       |  Claude Code      |
+ |  +-------------------+  |       |  +-------------+  |
+ |  | React UI          |  |       |  | MCP Server  |  |
+ |  +-------------------+  |       |  | (stdio)     |  |
+ |  | Hono API          |  |       |  +------+------+  |
+ |  | (catch-all)       |  |       |         |         |
+ |  +-------------------+  |       +---------+---------+
+ |  | Better Auth       |  |                 |
+ |  | /api/auth/[...all]|  |                 |
+ |  +--------+----------+  |                 |
+ |           |             |                 |
+ +-----------+-------------+                 |
+             |                               |
+             +---------------+---------------+
+                             |
+                             v (Transaction pooler, port 6543)
+                   +---------+---------+
+                   |  Supabase Cloud   |
+                   |  (hosted PG)      |
+                   +-------------------+
 ```
 
 ## Data Flow
@@ -103,7 +106,7 @@ Request
 ## Key Design Decisions
 
 - **Single table design** — one `opportunities` table with `type` enum covers all 4 types. No joins needed.
-- **Hono in Next.js** — API and frontend in single Vercel deployment via catch-all route.
+- **Hono in Next.js** — API and frontend in single Cloudflare Pages deployment via catch-all route.
 - **Server-side filtering & pagination** — API handles all query logic. Client sends params, receives paginated results.
 - **Shared code** — Supabase client, Zod schemas, and query builder shared between API and MCP server.
 - **service_role only** — no anon access. All DB queries go through server-side code.

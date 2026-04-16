@@ -54,3 +54,16 @@ skills-lock.json
 # supabase local
 supabase/.temp/
 public/hack-bg.gif
+
+# bot secrets — never commit
+bot/.env
+
+# pnpm build approval cache — machine-specific
+.pnpm-approve-builds.json
+
+# scratch / test files
+public/test.html
+test-script.js
+
+# npm lockfile from bot/ (project uses pnpm)
+bot/package-lock.json

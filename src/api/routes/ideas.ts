@@ -3,11 +3,12 @@ import { createIdeaSchema, updateIdeaSchema, listIdeasQuerySchema } from '../sch
 import {
   queryIdeas,
   getIdea,
-  createIdea,
   updateIdea,
   voteIdea,
 } from '../lib/idea-query-builder'
 import { handleError } from '../middleware/error-handler'
+import { authMiddleware } from '../middleware/auth'
+import { db } from '../lib/db'
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
@@ -39,23 +40,45 @@ ideas.get('/:slug', async (c) => {
   return c.json({ data })
 })
 
-// POST /ideas
-ideas.post('/', async (c) => {
+// POST /ideas — requires auth; records created_by from session/key
+ideas.post('/', authMiddleware, async (c) => {
   let body: unknown
   try { body = await c.req.json() } catch {
     return c.json({ error: { code: 'VALIDATION_ERROR', message: 'Invalid JSON' } }, 400)
   }
   const input = createIdeaSchema.parse(body)
-  const data = await createIdea(input)
+  const userId = c.get('userId')
+
+  const data = await db
+    .insertInto('ideas')
+    .values({ ...input, created_by: userId } as never)
+    .returningAll()
+    .executeTakeFirstOrThrow()
+
   return c.json({ data }, 201)
 })
 
-// PATCH /ideas/:slug
-ideas.patch('/:slug', async (c) => {
+// PATCH /ideas/:slug — requires auth; members can only edit own records
+ideas.patch('/:slug', authMiddleware, async (c) => {
   const slug = c.req.param('slug')
   if (!isValidSlug(slug)) {
     return c.json({ error: { code: 'VALIDATION_ERROR', message: 'Invalid slug' } }, 400)
   }
+
+  const userId = c.get('userId')
+  const role = c.get('userRole')
+
+  // Non-admins must own the record
+  if (role !== 'admin') {
+    const existing = await getIdea(slug)
+    if (!existing) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'Idea not found' } }, 404)
+    }
+    if ((existing as Record<string, unknown>).created_by !== userId) {
+      return c.json({ error: { code: 'FORBIDDEN', message: 'You do not own this record' } }, 403)
+    }
+  }
+
   let body: unknown
   try { body = await c.req.json() } catch {
     return c.json({ error: { code: 'VALIDATION_ERROR', message: 'Invalid JSON' } }, 400)
@@ -69,8 +92,8 @@ ideas.patch('/:slug', async (c) => {
   return c.json({ data })
 })
 
-// POST /ideas/vote/:slug
-ideas.post('/vote/:slug', async (c) => {
+// POST /ideas/vote/:slug — requires auth (any logged-in user can vote)
+ideas.post('/vote/:slug', authMiddleware, async (c) => {
   const slug = c.req.param('slug')
   if (!isValidSlug(slug)) {
     return c.json({ error: { code: 'VALIDATION_ERROR', message: 'Invalid slug' } }, 400)

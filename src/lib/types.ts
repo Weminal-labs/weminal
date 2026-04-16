@@ -40,6 +40,7 @@ export type Opportunity = {
   thumbnail_url: string | null
   parent_hackathon_id: string | null
   parent_hackathon_name: string | null
+  creator: { id: string; name: string; image: string | null } | null
   created_at: string
   updated_at: string
 }

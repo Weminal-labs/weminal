@@ -1,37 +1,42 @@
 import { Hono } from 'hono'
-import { supabase } from '../lib/supabase'
+import { db } from '../lib/db'
 import { generateWeekSchema } from '../schemas/weekly-review'
 
 const weeklyReviews = new Hono()
 
 // GET /api/v1/weekly-reviews — list all snapshots
 weeklyReviews.get('/', async (c) => {
-  const { data, error } = await supabase
-    .from('weekly_snapshots')
-    .select('id, week_start, week_end, created_at')
-    .order('week_start', { ascending: false })
-    .limit(52)
-
-  if (error) return c.json({ error: error.message }, 500)
-  return c.json({ data })
+  try {
+    const data = await db
+      .selectFrom('weekly_snapshots')
+      .select(['id', 'week_start', 'week_end', 'created_at'])
+      .orderBy('week_start', 'desc')
+      .limit(52)
+      .execute()
+    return c.json({ data })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Database error'
+    return c.json({ error: msg }, 500)
+  }
 })
 
 // GET /api/v1/weekly-reviews/:week_start — get a specific week
 weeklyReviews.get('/:week_start', async (c) => {
   const weekStart = c.req.param('week_start')
 
-  const { data, error } = await supabase
-    .from('weekly_snapshots')
-    .select('*')
-    .eq('week_start', weekStart)
-    .single()
+  try {
+    const data = await db
+      .selectFrom('weekly_snapshots')
+      .selectAll()
+      .where('week_start', '=', weekStart)
+      .executeTakeFirst()
 
-  if (error) {
-    if (error.code === 'PGRST116') return c.json({ data: null })
-    return c.json({ error: error.message }, 500)
+    if (!data) return c.json({ data: null })
+    return c.json({ data })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Database error'
+    return c.json({ error: msg }, 500)
   }
-
-  return c.json({ data })
 })
 
 // POST /api/v1/weekly-reviews/generate — compute & upsert a snapshot
@@ -48,18 +53,17 @@ weeklyReviews.post('/generate', async (c) => {
   weekEndDate.setDate(weekEndDate.getDate() + 6)
   const weekEnd = weekEndDate.toISOString().slice(0, 10)
 
-  // Fetch all opportunities
-  const { data: allOpps, error: fetchErr } = await supabase
-    .from('opportunities')
-    .select('*')
-
-  if (fetchErr) return c.json({ error: fetchErr.message }, 500)
-
-  const opps = allOpps ?? []
+  let opps: Array<Record<string, unknown>>
+  try {
+    opps = await db.selectFrom('opportunities').selectAll().execute() as Array<Record<string, unknown>>
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Database error'
+    return c.json({ error: msg }, 500)
+  }
 
   // 1. New hacks — created this week
   const newHacks = opps.filter((o) => {
-    const created = o.created_at?.slice(0, 10)
+    const created = (o.created_at as string | null)?.slice(0, 10)
     return created && created >= week_start && created <= weekEnd
   })
 
@@ -71,13 +75,13 @@ weeklyReviews.post('/generate', async (c) => {
 
   // 3. Upcoming deadlines — end_date within this week (exclude completed)
   const upcomingDeadlines = opps
-    .filter((o) => o.end_date && o.end_date >= week_start && o.end_date <= weekEnd && o.status !== 'completed')
-    .sort((a, b) => (a.end_date! > b.end_date! ? 1 : -1))
+    .filter((o) => o.end_date && (o.end_date as string) >= week_start && (o.end_date as string) <= weekEnd && o.status !== 'completed')
+    .sort((a, b) => ((a.end_date as string) > (b.end_date as string) ? 1 : -1))
 
   // 4. Completed this week
   const completedDeadlines = opps.filter((o) => {
     if (o.status !== 'completed') return false
-    const updated = o.updated_at?.slice(0, 10)
+    const updated = (o.updated_at as string | null)?.slice(0, 10)
     return updated && updated >= week_start && updated <= weekEnd
   })
 
@@ -90,10 +94,10 @@ weeklyReviews.post('/generate', async (c) => {
   const byType: Record<string, { count: number; totalReward: number }> = {}
 
   for (const o of opps) {
-    const s = o.status ?? 'unknown'
+    const s = (o.status as string) ?? 'unknown'
     byStatus[s] = (byStatus[s] ?? 0) + 1
 
-    const t = o.type ?? 'unknown'
+    const t = (o.type as string) ?? 'unknown'
     if (!byType[t]) byType[t] = { count: 0, totalReward: 0 }
     byType[t].count++
     if (o.reward_amount) byType[t].totalReward += Number(o.reward_amount)
@@ -117,8 +121,8 @@ weeklyReviews.post('/generate', async (c) => {
     const day = cursor.toISOString().slice(0, 10)
     activityPerDay.push({
       date: day,
-      created: opps.filter((o) => o.created_at?.slice(0, 10) === day).length,
-      updated: opps.filter((o) => o.updated_at?.slice(0, 10) === day).length,
+      created: opps.filter((o) => (o.created_at as string | null)?.slice(0, 10) === day).length,
+      updated: opps.filter((o) => (o.updated_at as string | null)?.slice(0, 10) === day).length,
     })
     cursor.setDate(cursor.getDate() + 1)
   }
@@ -133,8 +137,8 @@ weeklyReviews.post('/generate', async (c) => {
   const chainCount: Record<string, number> = {}
   const tagCount: Record<string, number> = {}
   for (const o of newHacks) {
-    for (const c of o.blockchains ?? []) chainCount[c] = (chainCount[c] ?? 0) + 1
-    for (const t of o.tags ?? []) tagCount[t] = (tagCount[t] ?? 0) + 1
+    for (const c of (o.blockchains as string[]) ?? []) chainCount[c] = (chainCount[c] ?? 0) + 1
+    for (const t of (o.tags as string[]) ?? []) tagCount[t] = (tagCount[t] ?? 0) + 1
   }
   const topChains = Object.entries(chainCount).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count }))
   const topTags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count }))
@@ -170,17 +174,20 @@ weeklyReviews.post('/generate', async (c) => {
   }
 
   // Upsert
-  const { data, error } = await supabase
-    .from('weekly_snapshots')
-    .upsert(
-      { week_start, week_end: weekEnd, snapshot },
-      { onConflict: 'week_start' }
-    )
-    .select()
-    .single()
-
-  if (error) return c.json({ error: error.message }, 500)
-  return c.json({ data })
+  try {
+    const data = await db
+      .insertInto('weekly_snapshots')
+      .values({ week_start, week_end: weekEnd, snapshot: snapshot as never })
+      .onConflict((oc) =>
+        oc.column('week_start').doUpdateSet({ week_end: weekEnd, snapshot: snapshot as never })
+      )
+      .returningAll()
+      .executeTakeFirstOrThrow()
+    return c.json({ data })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Database error'
+    return c.json({ error: msg }, 500)
+  }
 })
 
 export default weeklyReviews

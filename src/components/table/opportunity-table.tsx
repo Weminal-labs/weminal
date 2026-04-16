@@ -143,11 +143,11 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
                     <th
                       key={header.id}
                       style={{ width: header.getSize() }}
-                      className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-wider text-gray-300"
+                      className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-900"
                       aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : undefined}
                     >
                       <div
-                        className={cn('flex items-center gap-1', canSort && 'cursor-pointer select-none hover:text-gray-500')}
+                        className={cn('flex items-center gap-1', canSort && 'cursor-pointer select-none hover:text-gray-600')}
                         role={canSort ? 'button' : undefined}
                         tabIndex={canSort ? 0 : undefined}
                         onClick={header.column.getToggleSortingHandler()}
@@ -157,7 +157,7 @@ export function OpportunityTable({ data, sorting, onSortingChange, onRowClick }:
                         {canSort && (
                           sorted === 'asc' ? <ArrowUp className="size-3" aria-hidden="true" /> :
                           sorted === 'desc' ? <ArrowDown className="size-3" aria-hidden="true" /> :
-                          <ArrowUpDown className="size-3 text-gray-300" aria-hidden="true" />
+                          <ArrowUpDown className="size-3 text-gray-500" aria-hidden="true" />
                         )}
                       </div>
                     </th>

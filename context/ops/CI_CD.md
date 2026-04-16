@@ -6,29 +6,28 @@
 
 ### On PR
 
-- **GitHub Actions:** `pnpm install` -> `pnpm lint` -> `pnpm tsc --noEmit`
-- **Vercel:** Automatic preview deploy
+- **GitHub Actions:** `pnpm install` → `pnpm lint` → `pnpm tsc --noEmit`
+- No automatic preview deploy on PRs (test locally with `pnpm dev`)
 
 ### On Push to Main
 
-- **Vercel:** Automatic production deploy
-  - `pnpm install` -> `pnpm build` -> deploy to edge
+- **GitHub Actions:** `pnpm install` → `pnpm run build:cf` → `cloudflare/wrangler-action` deploys to Cloudflare Pages
 
 ## Deploy Process
 
 ### Staging
 
-No dedicated staging environment in v1. Use Vercel preview deploys for testing.
+No dedicated staging environment. Use local dev (`pnpm dev`) for testing before pushing to main.
 
 ### Production
 
-Push to `main` triggers automatic Vercel deployment. No manual steps needed.
+Push to `main` triggers automatic deployment to Cloudflare Pages via GitHub Actions and `wrangler-action`.
 
 ### MCP Server
 
 Manual build and distribution:
 ```
-pnpm mcp:build  # esbuild bundle -> dist/mcp-server.js
+pnpm mcp:build  # esbuild bundle -> dist/mcp-server.mjs
 ```
 
 Users configure their own Claude Code setup with the bundled file.
@@ -37,7 +36,12 @@ Users configure their own Claude Code setup with the bundled file.
 
 | Secret | Location | Used By |
 |--------|----------|---------|
-| `SUPABASE_URL` | Vercel env vars | API routes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Vercel env vars | API routes |
+| `SUPABASE_URL` | Cloudflare Pages env vars | API routes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Cloudflare Pages env vars | API routes |
+| `DATABASE_URL` | Cloudflare Pages env vars | Better Auth (Transaction pooler URL, port 6543) |
+| `BETTER_AUTH_SECRET` | Cloudflare Pages env vars | Better Auth session signing |
+| `GITHUB_CLIENT_ID` | Cloudflare Pages env vars | OAuth login |
+| `GITHUB_CLIENT_SECRET` | Cloudflare Pages env vars | OAuth login |
+| `CLOUDFLARE_API_TOKEN` | GitHub Actions secrets | `wrangler-action` deploy |
 
-GitHub Actions doesn't need Supabase secrets — it only runs lint and typecheck.
+GitHub Actions only needs `CLOUDFLARE_API_TOKEN` for deployment — Supabase secrets stay in Cloudflare Pages env vars, not GitHub.

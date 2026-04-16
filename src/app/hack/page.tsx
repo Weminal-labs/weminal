@@ -1,38 +1,24 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useQueryStates, parseAsString, parseAsInteger } from 'nuqs'
 import type { SortingState } from '@tanstack/react-table'
-import { format, addWeeks, subWeeks, addMonths, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
 import { useOpportunities } from '@/hooks/use-opportunities'
-import { useBlocks, useCreateBlock, useUpdateBlock, useMilestones, type CalendarBlock } from '@/hooks/use-calendar'
 import { OpportunityTable } from '@/components/table/opportunity-table'
 import { TablePagination } from '@/components/table/table-pagination'
 import { FilterBar } from '@/components/filters/filter-bar'
 import { CreateOpportunityDialog } from '@/components/forms/create-opportunity-dialog'
 import { DeleteConfirmDialog } from '@/components/forms/delete-confirm-dialog'
 import { OpportunityDetail } from '@/components/detail/opportunity-detail'
-import { WeekView } from '@/components/calendar/week-view'
-import { MonthView } from '@/components/calendar/month-view'
-import { OpportunitySidebar } from '@/components/calendar/opportunity-sidebar'
-import { MilestoneTimeline } from '@/components/calendar/milestone-timeline'
-import { BlockDetailPanel } from '@/components/calendar/block-detail-panel'
-import { MonthlySummary } from '@/components/calendar/monthly-summary'
 import { Skeleton } from '@/components/ui/skeleton'
 import { McpUsageDialog } from '@/components/mcp-usage-dialog'
-import { Button } from '@/components/ui/button'
 import type { Opportunity } from '@/lib/types'
 import { SearchInput } from '@/components/filters/search-input'
-import { Calendar, Table2, ChevronLeft, ChevronRight, BarChart3, LayoutGrid, Lightbulb } from 'lucide-react'
+import { Table2, BarChart3, LayoutGrid, Lightbulb } from 'lucide-react'
 import Link from 'next/link'
-import { toast } from 'sonner'
-
-type ViewMode = 'table' | 'calendar'
-type CalendarViewMode = 'week' | 'month'
 
 function OpportunitiesPage() {
   const [params, setParams] = useQueryStates({
-    view: parseAsString.withDefault('table'),
     type: parseAsString,
     status: parseAsString,
     format: parseAsString,
@@ -45,8 +31,6 @@ function OpportunitiesPage() {
     page: parseAsInteger.withDefault(1),
   })
 
-  const activeView = (params.view === 'calendar' ? 'calendar' : 'table') as ViewMode
-
   const [contentVisible, setContentVisible] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setContentVisible(true), 800)
@@ -56,7 +40,6 @@ function OpportunitiesPage() {
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [deleteOpp, setDeleteOpp] = useState<Opportunity | null>(null)
 
-  // --- Table state ---
   const sorting: SortingState = params.sort_by
     ? [{ id: params.sort_by, desc: params.sort_order === 'desc' }]
     : []
@@ -100,70 +83,9 @@ function OpportunitiesPage() {
     setParams({ page })
   }, [setParams])
 
-  // --- Calendar state ---
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [calendarView, setCalendarView] = useState<CalendarViewMode>('week')
-  const [selectedBlock, setSelectedBlock] = useState<CalendarBlock | null>(null)
-  const dragOppRef = useRef<Opportunity | null>(null)
-  const dragBlockRef = useRef<CalendarBlock | null>(null)
-
-  const weekStart = format(startOfWeek(currentDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
-  const weekEnd = format(endOfWeek(currentDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
-  const monthStart = format(startOfMonth(currentDate), 'yyyy-MM-dd')
-  const monthEnd = format(endOfMonth(currentDate), 'yyyy-MM-dd')
-
-  const dateFrom = calendarView === 'week' ? weekStart : monthStart
-  const dateTo = calendarView === 'week' ? weekEnd : monthEnd
-
-  const { data: blocksData, isLoading: blocksLoading } = useBlocks(dateFrom, dateTo)
-  const { data: milestonesData } = useMilestones(dateFrom, dateTo)
-
-  // Fetch opportunities with dates for calendar overlay
-  const { data: calOppsData } = useOpportunities({ per_page: 100, sort_by: 'start_date', sort_order: 'asc' })
-  const calendarOpportunities = calOppsData?.data ?? []
-  const createBlock = useCreateBlock()
-  const updateBlock = useUpdateBlock()
-
-  const blocks = blocksData?.data ?? []
-  const milestones = milestonesData?.data ?? []
-
-  const navigateCalendar = useCallback((dir: 'prev' | 'next' | 'today') => {
-    if (dir === 'today') setCurrentDate(new Date())
-    else if (calendarView === 'week') setCurrentDate(d => dir === 'next' ? addWeeks(d, 1) : subWeeks(d, 1))
-    else setCurrentDate(d => dir === 'next' ? addMonths(d, 1) : subMonths(d, 1))
-  }, [calendarView])
-
-  const handleSlotDrop = useCallback(async (date: string, slot: 'AM' | 'PM' | 'ALL_DAY') => {
-    if (dragOppRef.current) {
-      const opp = dragOppRef.current
-      try {
-        await createBlock.mutateAsync({
-          opportunity_id: opp.id,
-          title: opp.name,
-          date,
-          slot,
-          hours: 4,
-        })
-        toast.success(`Added "${opp.name}" to ${date} ${slot}`)
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to create block')
-      }
-      dragOppRef.current = null
-    } else if (dragBlockRef.current) {
-      const block = dragBlockRef.current
-      try {
-        await updateBlock.mutateAsync({ id: block.id, date, slot })
-        toast.success(`Moved "${block.title}" to ${date} ${slot}`)
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to move block')
-      }
-      dragBlockRef.current = null
-    }
-  }, [createBlock, updateBlock])
-
   return (
     <main className="min-h-dvh relative">
-      {/* Background video (replaces hack-bg.gif — WebM is 1MB vs 147MB) */}
+      {/* Background video */}
       <video
         autoPlay
         loop
@@ -173,7 +95,7 @@ function OpportunitiesPage() {
       >
         <source src="/hack-bg.webm" type="video/webm" />
       </video>
-      {/* Vignette — fades hard edges of video to black on left/right */}
+      {/* Vignette */}
       <div
         className="pointer-events-none fixed inset-0 z-[1]"
         style={{
@@ -181,246 +103,107 @@ function OpportunitiesPage() {
             'linear-gradient(to right, rgba(9,9,11,0.92) 0%, transparent 18%, transparent 82%, rgba(9,9,11,0.92) 100%)',
         }}
       />
-      {activeView === 'table' ? (
-        /* ===== TABLE VIEW ===== */
-        <div className="relative z-10">
-          {/* Sticky nav header — floats over GIF */}
-          <div
-            className="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-md transition-all duration-700"
-            style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(-12px)' }}
-          >
-            <div className="mx-auto max-w-7xl px-2 md:px-4 py-2.5 flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-3 md:gap-4">
-                <nav className="flex items-center rounded-lg bg-white/10 p-0.5" aria-label="Main navigation">
-                  <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white/20 text-white shadow-sm" aria-current="page">
-                    <Table2 className="size-4" aria-hidden="true" /> Table
-                  </span>
-                  <Link
-                    href="/charts"
-                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    <BarChart3 className="size-4" aria-hidden="true" /> Charts
-                  </Link>
-                  <Link
-                    href="/review"
-                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    <LayoutGrid className="size-4" aria-hidden="true" /> Review
-                  </Link>
-                  <Link
-                    href="/ideas"
-                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    <Lightbulb className="size-4" aria-hidden="true" /> Ideas
-                  </Link>
-                </nav>
-                <div className="hidden md:block">
-                  <h1 className="text-sm font-semibold text-white tracking-tight">Crypto Opportunities</h1>
-                  <p className="text-xs text-white/50">Hackathons, grants, fellowships, and bounties</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <SearchInput
-                  value={params.search ?? ''}
-                  onChange={(v) => handleFilterChange('search', v || undefined)}
-                />
-                <McpUsageDialog />
-                <CreateOpportunityDialog />
+
+      <div className="relative z-10">
+        {/* Sticky nav header */}
+        <div
+          className="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-md transition-all duration-700"
+          style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(-12px)' }}
+        >
+          <div className="mx-auto max-w-7xl px-2 md:px-4 py-2.5 flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-3 md:gap-4">
+              <nav className="flex items-center rounded-lg bg-white/10 p-0.5" aria-label="Main navigation">
+                <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white/20 text-white shadow-sm" aria-current="page">
+                  <Table2 className="size-4" aria-hidden="true" /> Table
+                </span>
+                <Link
+                  href="/charts"
+                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
+                >
+                  <BarChart3 className="size-4" aria-hidden="true" /> Charts
+                </Link>
+                <Link
+                  href="/review"
+                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
+                >
+                  <LayoutGrid className="size-4" aria-hidden="true" /> Review
+                </Link>
+                <Link
+                  href="/ideas"
+                  className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/70 hover:text-white transition-colors"
+                >
+                  <Lightbulb className="size-4" aria-hidden="true" /> Ideas
+                </Link>
+              </nav>
+              <div className="hidden md:block">
+                <h1 className="text-sm font-semibold text-white tracking-tight">Crypto Opportunities</h1>
+                <p className="text-xs text-white/50">Hackathons, grants, fellowships, and bounties</p>
               </div>
             </div>
-          </div>
-
-          {/* GIF hero space */}
-          <div className="h-8 md:h-12" />
-
-          {/* Content card */}
-          <div
-            className="mx-auto max-w-7xl px-2 md:px-4 pb-8 transition-all duration-700 delay-200"
-            style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(24px)' }}
-          >
-            <div className="bg-white/25 backdrop-blur-2xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/20">
-              {/* Filters */}
-              <div className="mb-4">
-                <FilterBar
-                  filters={{
-                    type: params.type ?? undefined,
-                    status: params.status ?? undefined,
-                    format: params.format ?? undefined,
-                    organization: params.organization ?? undefined,
-                    blockchain: params.blockchain ?? undefined,
-                    tag: params.tag ?? undefined,
-                  }}
-                  onFilterChange={handleFilterChange}
-                  onClearAll={handleClearAll}
-                />
-              </div>
-
-              {/* Table */}
-              {isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-10 w-full" />
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full" />
-                  ))}
-                </div>
-              ) : isError ? (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
-                  <p className="text-red-700">{error instanceof Error ? error.message : 'Failed to load opportunities'}</p>
-                </div>
-              ) : (
-                <>
-                  <OpportunityTable
-                    data={data?.data ?? []}
-                    sorting={sorting}
-                    onSortingChange={handleSortingChange}
-                    onRowClick={setSelectedOpp}
-                  />
-                  {data?.pagination && (
-                    <TablePagination
-                      pagination={data.pagination}
-                      onPageChange={handlePageChange}
-                    />
-                  )}
-                </>
-              )}
+            <div className="flex items-center gap-2">
+              <SearchInput
+                value={params.search ?? ''}
+                onChange={(v) => handleFilterChange('search', v || undefined)}
+              />
+              <McpUsageDialog />
+              <CreateOpportunityDialog />
             </div>
           </div>
         </div>
-      ) : (
-        /* ===== CALENDAR VIEW ===== */
-        <div className="flex flex-col min-h-dvh">
-          {/* Calendar Header */}
-          <header className="border-b border-gray-200/80 bg-white/95 backdrop-blur-sm px-4 py-2.5 sticky top-0 z-20">
-            <div className="mx-auto max-w-7xl flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-3 md:gap-5">
-                <nav className="flex items-center rounded-lg bg-gray-100/80 p-0.5" aria-label="Main navigation">
-                  <button
-                    type="button"
-                    onClick={() => setParams({ view: 'table' })}
-                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <Table2 className="size-4" aria-hidden="true" /> Table
-                  </button>
-                  <span className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm font-semibold bg-white text-gray-900 shadow-sm" aria-current="page">
-                    <Calendar className="size-4" aria-hidden="true" /> Calendar
-                  </span>
-                  <Link
-                    href="/charts"
-                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <BarChart3 className="size-4" aria-hidden="true" /> Charts
-                  </Link>
-                  <Link
-                    href="/review"
-                    className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <LayoutGrid className="size-4" aria-hidden="true" /> Review
-                  </Link>
-                </nav>
 
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" onClick={() => navigateCalendar('prev')} aria-label="Previous">
-                    <ChevronLeft className="size-4" aria-hidden="true" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => navigateCalendar('today')}>Today</Button>
-                  <Button variant="outline" size="icon" onClick={() => navigateCalendar('next')} aria-label="Next">
-                    <ChevronRight className="size-4" aria-hidden="true" />
-                  </Button>
-                  <h1 className="text-lg font-semibold text-gray-900 tabular-nums text-balance">
-                    {calendarView === 'week'
-                      ? `${format(new Date(weekStart), 'MMM d')} – ${format(new Date(weekEnd), 'MMM d, yyyy')}`
-                      : format(currentDate, 'MMMM yyyy')
-                    }
-                  </h1>
-                </div>
-              </div>
+        <div className="h-8 md:h-12" />
 
-              <div className="flex items-center rounded-lg bg-gray-100/80 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setCalendarView('week')}
-                  className={`rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${calendarView === 'week' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  Week
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCalendarView('month')}
-                  className={`rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${calendarView === 'month' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  Month
-                </button>
-              </div>
-            </div>
-          </header>
-
-          {/* Calendar Body */}
-          <div className="flex flex-1 overflow-hidden">
-            <div className="hidden md:block">
-              <OpportunitySidebar onDragStart={opp => { dragOppRef.current = opp }} />
+        <div
+          className="mx-auto max-w-7xl px-2 md:px-4 pb-8 transition-all duration-700 delay-200"
+          style={{ opacity: contentVisible ? 1 : 0, transform: contentVisible ? 'translateY(0)' : 'translateY(24px)' }}
+        >
+          <div className="bg-white/25 backdrop-blur-2xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/20">
+            <div className="mb-4">
+              <FilterBar
+                filters={{
+                  type: params.type ?? undefined,
+                  status: params.status ?? undefined,
+                  format: params.format ?? undefined,
+                  organization: params.organization ?? undefined,
+                  blockchain: params.blockchain ?? undefined,
+                  tag: params.tag ?? undefined,
+                }}
+                onFilterChange={handleFilterChange}
+                onClearAll={handleClearAll}
+              />
             </div>
 
-            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-              <div className="p-2 md:p-4 overflow-auto flex-1">
-                {blocksLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <Skeleton key={i} className="h-20 w-full" />
-                    ))}
-                  </div>
-                ) : calendarView === 'week' ? (
-                  <WeekView
-                    currentDate={currentDate}
-                    blocks={blocks}
-                    milestones={milestones}
-                    onBlockClick={setSelectedBlock}
-                    onSlotDrop={handleSlotDrop}
-                    onBlockDragStart={block => { dragBlockRef.current = block }}
-                  />
-                ) : (
-                  <MonthView
-                    currentDate={currentDate}
-                    blocks={blocks}
-                    milestones={milestones}
-                    opportunities={calendarOpportunities}
-                    selectedDate={selectedBlock?.date}
-                    onDayClick={(date) => {
-                      const dateStr = format(date, 'yyyy-MM-dd')
-                      const dayBlocks = blocks.filter(b => b.date === dateStr)
-                      if (dayBlocks.length > 0) {
-                        setSelectedBlock(dayBlocks[0])
-                      } else {
-                        setCurrentDate(date)
-                        setCalendarView('week')
-                      }
-                    }}
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : isError ? (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
+                <p className="text-red-700">{error instanceof Error ? error.message : 'Failed to load opportunities'}</p>
+              </div>
+            ) : (
+              <>
+                <OpportunityTable
+                  data={data?.data ?? []}
+                  sorting={sorting}
+                  onSortingChange={handleSortingChange}
+                  onRowClick={setSelectedOpp}
+                />
+                {data?.pagination && (
+                  <TablePagination
+                    pagination={data.pagination}
+                    onPageChange={handlePageChange}
                   />
                 )}
-              </div>
-
-              <MilestoneTimeline milestones={milestones} />
-
-              {calendarView === 'month' && (
-                <MonthlySummary
-                  blocks={blocks}
-                  milestones={milestones}
-                  monthLabel={format(currentDate, 'MMMM yyyy')}
-                />
-              )}
-            </div>
-
-            {selectedBlock && (
-              <BlockDetailPanel
-                block={selectedBlock}
-                onClose={() => setSelectedBlock(null)}
-              />
+              </>
             )}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Detail Panel */}
       {selectedOpp && (
         <OpportunityDetail
           opportunity={selectedOpp}
@@ -429,7 +212,6 @@ function OpportunitiesPage() {
         />
       )}
 
-      {/* Delete Dialog */}
       <DeleteConfirmDialog
         opportunity={deleteOpp}
         open={!!deleteOpp}

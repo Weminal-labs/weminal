@@ -2,10 +2,31 @@ export const runtime = 'edge'
 
 import { NextRequest } from 'next/server'
 
+function isSafeUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw)
+    if (u.protocol !== 'https:') return false
+    const host = u.hostname
+    // Block localhost and private/loopback ranges
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1') return false
+    if (/^10\./.test(host)) return false
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return false
+    if (/^192\.168\./.test(host)) return false
+    if (/^169\.254\./.test(host)) return false
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get('url')
   if (!url) {
     return Response.json({ error: 'url param required' }, { status: 400 })
+  }
+
+  if (!isSafeUrl(url)) {
+    return Response.json({ error: 'invalid url' }, { status: 400 })
   }
 
   try {

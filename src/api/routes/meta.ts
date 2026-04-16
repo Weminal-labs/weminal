@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { supabase } from '../lib/supabase'
+import { db } from '../lib/db'
 import { opportunityTypes, opportunityStatuses } from '../schemas/opportunity'
 import { ideaTracks, ideaCategories, ideaDifficulties } from '../schemas/idea'
 import { getIdeaTags, getIdeaChains } from '../lib/idea-query-builder'
@@ -15,50 +15,59 @@ meta.get('/statuses', (c) => {
 })
 
 meta.get('/blockchains', async (c) => {
-  const { data: rows, error } = await supabase
-    .from('opportunities')
-    .select('blockchains')
+  try {
+    const rows = await db
+      .selectFrom('opportunities')
+      .select('blockchains')
+      .execute()
 
-  if (error) return c.json({ data: [] })
-
-  const unique = new Set<string>()
-  for (const row of rows ?? []) {
-    for (const chain of (row.blockchains as string[]) ?? []) {
-      unique.add(chain)
+    const unique = new Set<string>()
+    for (const row of rows) {
+      for (const chain of (row.blockchains as string[]) ?? []) {
+        unique.add(chain)
+      }
     }
+    return c.json({ data: [...unique].sort() })
+  } catch {
+    return c.json({ data: [] })
   }
-  return c.json({ data: [...unique].sort() })
 })
 
 meta.get('/tags', async (c) => {
-  const { data: rows, error } = await supabase
-    .from('opportunities')
-    .select('tags')
+  try {
+    const rows = await db
+      .selectFrom('opportunities')
+      .select('tags')
+      .execute()
 
-  if (error) return c.json({ data: [] })
-
-  const unique = new Set<string>()
-  for (const row of rows ?? []) {
-    for (const tag of (row.tags as string[]) ?? []) {
-      unique.add(tag)
+    const unique = new Set<string>()
+    for (const row of rows) {
+      for (const tag of (row.tags as string[]) ?? []) {
+        unique.add(tag)
+      }
     }
+    return c.json({ data: [...unique].sort() })
+  } catch {
+    return c.json({ data: [] })
   }
-  return c.json({ data: [...unique].sort() })
 })
 
 meta.get('/organizations', async (c) => {
-  const { data, error } = await supabase
-    .from('opportunities')
-    .select('organization')
-    .not('organization', 'is', null)
+  try {
+    const rows = await db
+      .selectFrom('opportunities')
+      .select('organization')
+      .where('organization', 'is not', null)
+      .execute()
 
-  if (error) return c.json({ data: [] })
+    const unique = [...new Set(
+      rows.map((r) => r.organization as string)
+    )].sort()
 
-  const unique = [...new Set(
-    (data ?? []).map((r) => r.organization as string)
-  )].sort()
-
-  return c.json({ data: unique })
+    return c.json({ data: unique })
+  } catch {
+    return c.json({ data: [] })
+  }
 })
 
 // ─── Ideas meta ──────────────────────────────────────────────────────────────

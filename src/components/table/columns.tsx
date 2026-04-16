@@ -7,6 +7,7 @@ import { StatusBadge } from './status-badge'
 import { Badge } from '@/components/ui/badge'
 import { ExternalLink } from 'lucide-react'
 import type { OpportunityType } from '@/lib/types'
+import { sizedAvatarUrl } from '@/lib/pure-helpers'
 
 const col = createColumnHelper<Opportunity>()
 
@@ -22,6 +23,50 @@ export const columns = [
     header: 'Type',
     size: 100,
     cell: (info) => <TypeBadge type={info.getValue() as OpportunityType} />,
+  }),
+  col.accessor('creator', {
+    id: 'creator',
+    header: 'By',
+    size: 68,
+    enableSorting: false,
+    cell: (info) => {
+      const creator = info.getValue()
+      if (!creator) {
+        return (
+          <div
+            className="flex items-center justify-center w-7 h-7 mx-auto rounded-full bg-gray-100 text-gray-300 text-[11px]"
+            title="No creator recorded"
+          >
+            —
+          </div>
+        )
+      }
+      const initials = creator.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+      const sized = sizedAvatarUrl(creator.image, 28)
+      return (
+        <div
+          className="group relative flex items-center justify-center w-7 h-7 mx-auto rounded-full transition-transform duration-150 hover:scale-110"
+          title={`Added by ${creator.name}`}
+        >
+          {sized ? (
+            <img
+              src={sized}
+              alt={creator.name}
+              className="w-7 h-7 rounded-full object-cover ring-1 ring-black/5 shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
+              referrerPolicy="no-referrer"
+              loading="lazy"
+              decoding="async"
+              width={28}
+              height={28}
+            />
+          ) : (
+            <span className="w-7 h-7 rounded-full bg-gradient-to-br from-[#5b21ff] to-[#3c00ff] text-white flex items-center justify-center text-[11px] font-semibold ring-1 ring-white/60">
+              {initials}
+            </span>
+          )}
+        </div>
+      )
+    },
   }),
   col.accessor('status', {
     header: 'Status',

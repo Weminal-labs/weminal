@@ -92,6 +92,32 @@ Tasks that are planned but not started yet. Ordered by priority.
 | T119 | `[ ]` | Add ParentHackathonChip to table rows + togglable column | [bootcamp-type](../features/bootcamp-type.md) | —— |
 | T120 | `[ ]` | Update MCP Usage dialog / docs for bootcamp | [bootcamp-type](../features/bootcamp-type.md) | —— |
 
+### Phase 8: Auth — Better Auth Integration
+
+| # | Status | Task | Feature | Notes |
+|---|--------|------|---------|-------|
+| T135 | `[x]` | Install better-auth and Cloudflare adapter; configure auth instance at `src/lib/auth.ts` | [auth-better-auth](../features/auth-better-auth.md) | Phase A |
+| T136 | `[x]` | SQL migration: create users, sessions, accounts, verifications, api_keys, user_profiles tables | [auth-better-auth](../features/auth-better-auth.md) | Phase A |
+| T137 | `[x]` | Add Better Auth Next.js route handler at `src/app/api/auth/[...all]/route.ts` | [auth-better-auth](../features/auth-better-auth.md) | Phase A |
+| T138 | `[x]` | Add all required env vars to .env.example and ENVIRONMENT.md (BETTER_AUTH_SECRET, BETTER_AUTH_URL, DATABASE_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET) | [auth-better-auth](../features/auth-better-auth.md) | Phase A |
+| T139 | `[~]` | Test GitHub OAuth flow end-to-end (login → session cookie → /hack redirect) | [auth-better-auth](../features/auth-better-auth.md) | Phase A — migration applied, pending UI for test |
+| T140 | `[x]` | Build Hono auth middleware at `src/api/middleware/auth.ts` (API key + session cookie validation) | [auth-better-auth](../features/auth-better-auth.md) | Phase B |
+| T141 | `[x]` | Apply auth middleware to opportunity write routes (POST, PATCH, DELETE) | [auth-better-auth](../features/auth-better-auth.md) | Phase B |
+| T142 | `[x]` | Apply auth middleware to ideas write routes (vote, create) and milestone/proposal write routes | [auth-better-auth](../features/auth-better-auth.md) | Phase B |
+| T143 | `[x]` | Upgrade MCP HTTP route to validate per-user API keys via database lookup (replace static MCP_API_KEY) | [auth-better-auth](../features/auth-better-auth.md) | Phase B |
+| T144 | `[x]` | Build API key generation logic: random key, wem_ prefix, sha256 hashing, insert to api_keys table | [auth-better-auth](../features/auth-better-auth.md) | Phase C |
+| T145 | `[x]` | Add Hono routes for API key management: POST /api/v1/me/keys, GET /api/v1/me/keys, DELETE /api/v1/me/keys/:id | [auth-better-auth](../features/auth-better-auth.md) | Phase C |
+| T146 | `[x]` | Add user profile routes: GET /api/v1/me/profile, PATCH /api/v1/me/profile (wallet address update) | [auth-better-auth](../features/auth-better-auth.md) | Phase C |
+| T147 | `[x]` | Wire key validation into auth middleware (hash lookup against api_keys with constant-time comparison) | [auth-better-auth](../features/auth-better-auth.md) | Phase C |
+| T148 | `[~]` | Build /login page: GitHub OAuth button, error state for failed OAuth | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T149 | `[~]` | Build /profile page: Account section (avatar, name, email, sign out) | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T150 | `[~]` | Build /profile page: Wallet linking section (Solana + EVM inputs with validation) | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T151 | `[~]` | Build /profile page: API keys section (table, generate dialog, revoke confirmation) | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T152 | `[~]` | Update nav menu: "Sign in" link when unauthenticated, user avatar + "Profile" link when authenticated | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T153 | `[~]` | Add route protection to /profile (redirect to /login if no session); post-login redirect to intended page | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T154 | `[~]` | Add GET /api/v1/me/activity route — returns builder's created opportunities, submitted ideas, and hackathon entries (opportunities of type hackathon created_by user) | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+| T155 | `[~]` | Build /profile page: Builder Activity section — opportunities created (count + list), ideas submitted (count + list), hackathons entered (hackathon-type opportunities) | [auth-better-auth](../features/auth-better-auth.md) | Phase D |
+
 ---
 
 ## Blocked

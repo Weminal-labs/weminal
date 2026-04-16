@@ -7,28 +7,30 @@
 | Environment | URL | Purpose |
 |------------|-----|---------|
 | Local | `http://localhost:3000` | Development |
-| Production | `weminal.vercel.app` | Live |
+| Production | `https://weminal.pages.dev` | Live (Cloudflare Pages) |
 
 ## Hosting
 
-**Vercel** — zero-config Next.js hosting.
-- Manual deployments with `npx vercel --prod` (not auto-deploy from git)
-- Environment variables encrypted at rest
-- Serverless functions for API routes + MCP HTTP endpoint
-- One-click rollback available
+**Cloudflare Pages** — edge-native deployment via `@cloudflare/next-on-pages`.
+- Deployment command: `pnpm run build:cf && npx wrangler pages deploy .vercel/output/static --project-name weminal`
+- Environment variables set in Cloudflare Pages dashboard → Settings → Environment Variables
+- Edge Workers runtime — no persistent TCP connections (use Supabase Transaction pooler)
+- Rollback via Cloudflare Pages dashboard deployment history
 
 ### Deployment Process
 
 1. Commit and push to `main` (GitHub)
-2. Run `npx vercel --prod` locally or from CI
-3. Vercel rebuilds and deploys to weminal.vercel.app
-4. No automatic deploys from git — explicit manual deploy required
+2. GitHub Actions runs build + deploy via `cloudflare/wrangler-action`
+3. Wrangler deploys to Cloudflare Pages
+4. No manual deploy step required after CI is set up
 
 ## Database Hosting
 
 **Supabase Cloud** — managed PostgreSQL.
 - Free tier: 500MB storage, 2GB bandwidth
-- Connection pooler in transaction mode
+- **Edge runtime requires Transaction pooler** — port 6543, `?pgbouncer=true`
+  - Get URL from Supabase dashboard → Settings → Database → "Transaction" pooler tab
+  - Use this URL as `DATABASE_URL` in Cloudflare Pages env vars
 - Dashboard for SQL queries, schema inspection, logs
 
 ## MCP Server
@@ -41,20 +43,20 @@ Two deployment options:
 - Users clone repo, run `pnpm mcp:build`, and configure in Claude Code
 
 ### HTTP Transport (Remote)
-- HTTP endpoint at `https://weminal.vercel.app/api/mcp`
-- Serverless function on Vercel, no separate hosting needed
+- HTTP endpoint at `https://weminal.pages.dev/api/mcp`
+- Cloudflare Pages edge function — no separate hosting needed
 - JSON-RPC 2.0 protocol
 - Public read tools (no auth), authenticated write tools (Bearer token required)
-- Token: set `MCP_API_KEY` in Vercel environment variables
+- Token: per-user delegate API keys (`wem_` prefix) set from the `/profile` page
 
 ## DNS & Domains
 
-Optional custom domain via Vercel. Low priority for v1.
+Optional custom domain via Cloudflare Pages. Low priority.
 
 ## Cost
 
 | Service | Tier | Monthly Cost |
 |---------|------|-------------|
-| Vercel | Hobby / Pro | $0-$20 |
+| Cloudflare Pages | Free | $0 |
 | Supabase | Free | $0 |
 | Domain | Optional | ~$1/mo |

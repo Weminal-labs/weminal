@@ -22,8 +22,17 @@
 **Date:** 2026-03-24
 **Context:** Need a REST API that deploys alongside the frontend.
 **Options Considered:** (A) Hono in Next.js catch-all, (B) Separate Express server, (C) Next.js API routes directly
-**Rationale:** Single deployment to Vercel. Hono is lightweight, edge-compatible, and has better middleware than raw Next.js API routes. Well-documented pattern.
-**Consequences:** API and frontend share the same Vercel project and domain. Hono handles all `/api/v1/*` routing.
+**Rationale:** Single deployment to Cloudflare Pages. Hono is lightweight, edge-compatible (critical for Cloudflare Workers runtime), and has better middleware than raw Next.js API routes. Well-documented pattern.
+**Consequences:** API and frontend share the same Cloudflare Pages project and domain. Hono handles all `/api/v1/*` routing.
+
+## D2a: Cloudflare Pages over Vercel
+
+**Decision:** Deploy to Cloudflare Pages instead of Vercel.
+**Date:** 2026-04-08 (migrated)
+**Context:** Project started targeting Vercel but migrated to Cloudflare Pages for edge performance and cost.
+**Options Considered:** (A) Cloudflare Pages + `@cloudflare/next-on-pages`, (B) Vercel
+**Rationale:** Cloudflare Pages free tier is more generous, edge runtime is globally distributed, and aligns with the crypto/Web3 audience. Uses `@cloudflare/next-on-pages` adapter.
+**Consequences:** All API routes must use edge-compatible APIs (no Node.js built-ins). Supabase connection must use Transaction pooler (port 6543, `?pgbouncer=true`) not the default 5432.
 
 ---
 

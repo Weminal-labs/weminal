@@ -1,9 +1,59 @@
-import { supabase } from './supabase'
+import { sql, type SqlBool } from 'kysely'
+import { db } from './db'
 import type {
   ListQueryInput,
   CreateOpportunityInput,
   UpdateOpportunityInput,
 } from '../schemas/opportunity'
+
+const OPP_COLS = [
+  'opportunities.id',
+  'opportunities.name',
+  'opportunities.type',
+  'opportunities.description',
+  'opportunities.status',
+  'opportunities.organization',
+  'opportunities.website_url',
+  'opportunities.start_date',
+  'opportunities.end_date',
+  'opportunities.reward_amount',
+  'opportunities.reward_currency',
+  'opportunities.reward_token',
+  'opportunities.blockchains',
+  'opportunities.tags',
+  'opportunities.links',
+  'opportunities.notes',
+  'opportunities.format',
+  'opportunities.location',
+  'opportunities.parent_hackathon_id',
+  'opportunities.created_by',
+  'opportunities.created_at',
+  'opportunities.updated_at',
+] as const
+
+type OppRow = Record<string, unknown> & {
+  parent_hackathon_name?: string | null
+  creator_id?: string | null
+  creator_name?: string | null
+  creator_image?: string | null
+}
+
+function shape(row: OppRow): Record<string, unknown> {
+  const {
+    parent_hackathon_name,
+    creator_id,
+    creator_name,
+    creator_image,
+    ...rest
+  } = row
+  return {
+    ...rest,
+    parent_hackathon_name: parent_hackathon_name ?? null,
+    creator: creator_id
+      ? { id: creator_id, name: creator_name ?? 'Unknown', image: creator_image ?? null }
+      : null,
+  }
+}
 
 export async function queryOpportunities(params: ListQueryInput) {
   const {
@@ -23,155 +73,99 @@ export async function queryOpportunities(params: ListQueryInput) {
     per_page,
   } = params
 
-  let query = supabase
-    .from('opportunities')
-    .select('*, parent_hackathon:parent_hackathon_id(id, name)', { count: 'exact' })
+  let base = db
+    .selectFrom('opportunities')
+    .leftJoin('opportunities as parent', 'parent.id', 'opportunities.parent_hackathon_id')
+    .leftJoin('users as creator', 'creator.id', 'opportunities.created_by')
 
-  // Filters
-  if (type) {
-    query = query.eq('type', type)
-  }
+  if (type) base = base.where('opportunities.type', '=', type)
+  if (status) base = base.where('opportunities.status', '=', status)
+  if (organization) base = base.where('opportunities.organization', '=', organization)
+  if (blockchain) base = base.where(sql<SqlBool>`opportunities.blockchains @> ARRAY[${sql.lit(blockchain)}]::text[]`)
+  if (tag) base = base.where(sql<SqlBool>`opportunities.tags @> ARRAY[${sql.lit(tag)}]::text[]`)
+  if (start_date_gte) base = base.where('opportunities.start_date', '>=', start_date_gte)
+  if (end_date_lte) base = base.where('opportunities.end_date', '<=', end_date_lte)
+  if (format) base = base.where('opportunities.format', '=', format)
+  if (parent_hackathon_id) base = base.where('opportunities.parent_hackathon_id', '=', parent_hackathon_id)
+  if (search) base = base.where(sql<SqlBool>`opportunities.fts @@ websearch_to_tsquery('english', ${search})`)
 
-  if (status) {
-    query = query.eq('status', status)
-  }
+  const countResult = await base
+    .select(db.fn.countAll<string>().as('count'))
+    .executeTakeFirstOrThrow()
+  const total = Number(countResult.count)
 
-  if (organization) {
-    query = query.eq('organization', organization)
-  }
-
-  if (blockchain) {
-    query = query.contains('blockchains', [blockchain])
-  }
-
-  if (tag) {
-    query = query.contains('tags', [tag])
-  }
-
-  if (start_date_gte) {
-    query = query.gte('start_date', start_date_gte)
-  }
-
-  if (end_date_lte) {
-    query = query.lte('end_date', end_date_lte)
-  }
-
-  if (format) {
-    query = query.eq('format', format)
-  }
-
-  if (parent_hackathon_id) {
-    query = query.eq('parent_hackathon_id', parent_hackathon_id)
-  }
-
-  if (search) {
-    query = query.textSearch('fts', search, {
-      type: 'websearch',
-      config: 'english',
-    })
-  }
-
-  // Sorting
-  query = query.order(sort_by, { ascending: sort_order === 'asc' })
-
-  // Pagination
   const from = (page - 1) * per_page
-  const to = from + per_page - 1
-  query = query.range(from, to)
+  const rows = await base
+    .select([
+      ...OPP_COLS,
+      'parent.name as parent_hackathon_name',
+      'creator.id as creator_id',
+      'creator.name as creator_name',
+      'creator.image as creator_image',
+    ])
+    .orderBy(`opportunities.${sort_by}`, sort_order === 'asc' ? 'asc' : 'desc')
+    .limit(per_page)
+    .offset(from)
+    .execute()
 
-  const { data, error, count } = await query
-
-  if (error) {
-    throw error
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const flattened = (data ?? []).map((row: any) => {
-    const { parent_hackathon, ...rest } = row
-    const ph = parent_hackathon as { id: string; name: string } | null
-    return { ...rest, parent_hackathon_name: ph?.name ?? null }
-  }) as Record<string, unknown>[]
+  const data = rows.map((r) => shape(r as OppRow))
 
   return {
-    data: flattened,
+    data,
     pagination: {
       page,
       per_page,
-      total: count ?? 0,
-      total_pages: Math.ceil((count ?? 0) / per_page),
+      total,
+      total_pages: Math.ceil(total / per_page),
     },
   }
 }
 
 export async function getOpportunity(id: string) {
-  const { data, error } = await supabase
-    .from('opportunities')
-    .select('*, parent_hackathon:parent_hackathon_id(id, name)')
-    .eq('id', id)
-    .single()
+  const row = await db
+    .selectFrom('opportunities')
+    .leftJoin('opportunities as parent', 'parent.id', 'opportunities.parent_hackathon_id')
+    .leftJoin('users as creator', 'creator.id', 'opportunities.created_by')
+    .select([
+      ...OPP_COLS,
+      'parent.name as parent_hackathon_name',
+      'creator.id as creator_id',
+      'creator.name as creator_name',
+      'creator.image as creator_image',
+    ])
+    .where('opportunities.id', '=', id)
+    .executeTakeFirst()
 
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return null
-    }
-    throw error
-  }
-
-  if (!data) return null
-  const { parent_hackathon, ...rest } = data as Record<string, unknown>
-  const ph = parent_hackathon as { id: string; name: string } | null
-  return { ...rest, parent_hackathon_name: ph?.name ?? null }
+  if (!row) return null
+  return shape(row as OppRow)
 }
 
 export async function createOpportunity(input: CreateOpportunityInput) {
-  const { data, error } = await supabase
-    .from('opportunities')
-    .insert(input)
-    .select()
-    .single()
-
-  if (error) {
-    throw error
-  }
-
-  return data
+  return await db
+    .insertInto('opportunities')
+    .values(input as never)
+    .returningAll()
+    .executeTakeFirstOrThrow()
 }
 
 export async function updateOpportunity(
   id: string,
   input: UpdateOpportunityInput
 ) {
-  const { data, error } = await supabase
-    .from('opportunities')
-    .update(input)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return null
-    }
-    throw error
-  }
-
-  return data
+  const row = await db
+    .updateTable('opportunities')
+    .set(input as never)
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+  return row ?? null
 }
 
 export async function deleteOpportunity(id: string) {
-  const { data, error } = await supabase
-    .from('opportunities')
-    .delete()
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return null
-    }
-    throw error
-  }
-
-  return data
+  const row = await db
+    .deleteFrom('opportunities')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+  return row ?? null
 }

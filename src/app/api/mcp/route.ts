@@ -1,18 +1,31 @@
-export const runtime = 'edge'
+// Node runtime — auth middleware chain requires node:crypto via better-auth.
+// Production uses @cloudflare/next-on-pages with nodejs_compat.
+export const runtime = 'nodejs'
 
 import { createMcpServer, isWriteTool } from '@/mcp/http-server'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { validateApiKey } from '@/api/lib/api-key'
 
-const API_KEY = process.env.MCP_API_KEY
-
-function checkAuth(request: Request, toolName?: string): { ok: boolean; error?: string } {
+async function checkAuth(
+  request: Request,
+  toolName?: string
+): Promise<{ ok: boolean; userId?: string; error?: string }> {
   if (!toolName || !isWriteTool(toolName)) return { ok: true }
-  if (!API_KEY) return { ok: false, error: 'MCP_API_KEY not configured' }
-  const auth = request.headers.get('authorization')
-  if (!auth?.startsWith('Bearer ')) return { ok: false, error: 'Authorization: Bearer <key> required for write operations' }
-  if (auth.slice(7) !== API_KEY) return { ok: false, error: 'Invalid API key' }
-  return { ok: true }
+
+  const authHeader = request.headers.get('authorization')
+  if (!authHeader?.startsWith('Bearer ')) {
+    return { ok: false, error: 'Authorization: Bearer <key> required for write operations' }
+  }
+
+  const raw = authHeader.slice(7)
+  const key = await validateApiKey(raw)
+
+  if (!key) {
+    return { ok: false, error: 'Invalid or revoked API key' }
+  }
+
+  return { ok: true, userId: key.userId }
 }
 
 async function getMcpClient() {
@@ -33,7 +46,7 @@ export async function POST(request: Request) {
 
     // Route JSON-RPC methods
     if (method === 'initialize') {
-      const result = await client.getServerVersion()
+      await client.getServerVersion()
       return Response.json({ jsonrpc: '2.0', id, result: { protocolVersion: '2024-11-05', capabilities: { tools: {}, resources: {} }, serverInfo: { name: 'crypto-opportunities', version: '1.0.0' } } })
     }
 
@@ -53,7 +66,7 @@ export async function POST(request: Request) {
     }
 
     if (method === 'tools/call') {
-      const auth = checkAuth(request, params.name)
+      const auth = await checkAuth(request, params.name)
       if (!auth.ok) {
         return Response.json({
           jsonrpc: '2.0', id,
@@ -84,11 +97,11 @@ export async function GET() {
     auth: {
       read: 'Public — no auth required for list/get tools',
       write: 'Bearer token required for create/update/delete tools',
-      header: 'Authorization: Bearer <MCP_API_KEY>',
+      header: 'Authorization: Bearer <your-wem_key>',
     },
     tools: {
-      public: ['opportunity_list', 'opportunity_get', 'block_list', 'milestone_list', 'proposal_get'],
-      authenticated: ['opportunity_create', 'opportunity_update', 'opportunity_delete', 'block_create', 'block_update', 'block_delete', 'milestone_create', 'milestone_update', 'milestone_delete', 'proposal_update'],
+      public: ['opportunity_list', 'opportunity_get', 'milestone_list', 'proposal_get'],
+      authenticated: ['opportunity_create', 'opportunity_update', 'opportunity_delete', 'milestone_create', 'milestone_update', 'milestone_delete', 'proposal_update'],
     },
     setup: {
       claude_desktop: {

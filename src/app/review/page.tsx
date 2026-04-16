@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import MergedShape from '@/components/merged-shape'
 import {
-  Table2, Calendar, BarChart3, LayoutGrid, ExternalLink,
+  Table2, BarChart3, LayoutGrid, ExternalLink,
   ChevronLeft, ChevronRight, Sparkles,
   Trophy, Clock, CheckCircle2, AlertTriangle, TrendingUp,
 } from 'lucide-react'
@@ -64,9 +64,6 @@ function ReviewContent() {
         <nav className="flex items-center rounded-lg bg-white/10 backdrop-blur-md p-0.5" aria-label="Main navigation">
           <Link href="/hack" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/60 hover:text-white transition-colors">
             <Table2 className="size-4" /> Table
-          </Link>
-          <Link href="/hack?view=calendar" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/60 hover:text-white transition-colors">
-            <Calendar className="size-4" /> Calendar
           </Link>
           <Link href="/charts" className="inline-flex items-center gap-1 md:gap-1.5 rounded-md px-2.5 md:px-3.5 py-1.5 text-xs md:text-sm text-white/60 hover:text-white transition-colors">
             <BarChart3 className="size-4" /> Charts

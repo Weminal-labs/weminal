@@ -32,15 +32,22 @@
 
 ## Auth
 
-No authentication in v1 — single-tenant, trusted access. Planned for v2 with Supabase Auth (GitHub OAuth) + RLS per user.
+**Better Auth** (`better-auth` + Cloudflare adapter) — role-based:
+- `admin` (Weminal team): full read/write/delete on all records
+- `member` (Weminal community): can create records and edit/delete their own
+- Anonymous: read-only; CTAs prompt login for write actions
+
+Session management via Better Auth. Delegate API keys (`wem_` prefix, sha256-hashed) for agent/service access. See `context/features/auth-better-auth.md`.
 
 ## Infrastructure
 
 | Service | Purpose | Tier |
 |---------|---------|------|
-| **Vercel** | Hosting (Next.js + API) | Hobby / Pro ($0-$20/mo) |
+| **Cloudflare Pages** | Hosting (Next.js + API, edge runtime) | Free |
 | **Supabase** | Database | Free tier (500MB storage, 2GB bandwidth) |
 | **GitHub** | Source control + CI | Free |
+
+> Edge runtime note: Cloudflare Workers requires edge-compatible APIs. Supabase connection must use the Transaction pooler URL (port 6543, `?pgbouncer=true`) — not the default 5432.
 
 ## Key Third-Party Services
 

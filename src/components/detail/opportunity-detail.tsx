@@ -6,6 +6,23 @@ import { StatusBadge } from '@/components/table/status-badge'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ExternalLink, X, Trash2 } from 'lucide-react'
+import { sizedAvatarUrl } from '@/lib/pure-helpers'
+
+function formatRelative(iso: string): string {
+  const then = new Date(iso).getTime()
+  const diff = Date.now() - then
+  const secs = Math.floor(diff / 1000)
+  if (secs < 60) return 'just now'
+  const mins = Math.floor(secs / 60)
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days}d ago`
+  if (days < 30) return `${Math.floor(days / 7)}w ago`
+  if (days < 365) return `${Math.floor(days / 30)}mo ago`
+  return `${Math.floor(days / 365)}y ago`
+}
 
 type Props = {
   opportunity: Opportunity
@@ -128,10 +145,48 @@ export function OpportunityDetail({ opportunity: opp, onClose, onDelete }: Props
           </a>
         )}
 
-        <div className="pt-4 border-t text-xs text-gray-400">
-          <p>Created: {new Date(opp.created_at).toLocaleString()}</p>
-          <p>Updated: {new Date(opp.updated_at).toLocaleString()}</p>
-          <p className="mt-1 font-mono">{opp.id}</p>
+        <div className="pt-4 mt-2 border-t border-gray-100">
+          {opp.creator ? (
+            <div className="flex items-center gap-2.5">
+              {(() => {
+                const sized = sizedAvatarUrl(opp.creator.image, 28)
+                return sized ? (
+                  <img
+                    src={sized}
+                    alt={opp.creator.name}
+                    className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200"
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
+                    width={28}
+                    height={28}
+                  />
+                ) : (
+                  <span className="w-7 h-7 rounded-full bg-gradient-to-br from-[#5b21ff] to-[#3c00ff] text-white flex items-center justify-center text-[11px] font-semibold">
+                    {opp.creator.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}
+                  </span>
+                )
+              })()}
+              <div className="flex flex-col leading-tight">
+                <span className="text-sm text-gray-700">
+                  Added by <span className="font-medium text-gray-900">{opp.creator.name}</span>
+                </span>
+                <span className="text-[11px] text-gray-400" title={new Date(opp.created_at).toLocaleString()}>
+                  {formatRelative(opp.created_at)}
+                  {opp.updated_at !== opp.created_at && (
+                    <> · updated {formatRelative(opp.updated_at)}</>
+                  )}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[11px] text-gray-400" title={new Date(opp.created_at).toLocaleString()}>
+              Added {formatRelative(opp.created_at)}
+              {opp.updated_at !== opp.created_at && (
+                <> · updated {formatRelative(opp.updated_at)}</>
+              )}
+            </p>
+          )}
         </div>
       </div>
     </div>

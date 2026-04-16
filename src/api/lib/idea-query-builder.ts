@@ -1,102 +1,98 @@
-import { supabase } from './supabase'
+import { sql, type SqlBool } from 'kysely'
+import { db } from './db'
 import type { CreateIdeaInput, UpdateIdeaInput, ListIdeasQuery } from '../schemas/idea'
 
 export async function queryIdeas(params: ListIdeasQuery) {
   const { category, track, difficulty, tag, chain, search, featured, sort_by, sort_order, page, per_page } = params
 
-  let query = supabase.from('ideas').select('*', { count: 'exact' })
+  let base = db.selectFrom('ideas')
 
-  if (category) query = query.eq('category', category)
-  if (track) query = query.eq('track', track)
-  if (difficulty) query = query.eq('difficulty', difficulty)
-  if (tag) query = query.contains('tags', [tag])
-  if (chain) query = query.contains('supported_chains', [chain])
-  if (featured !== undefined) query = query.eq('is_featured', featured)
+  if (category) base = base.where('category', '=', category)
+  if (track) base = base.where('track', '=', track)
+  if (difficulty) base = base.where('difficulty', '=', difficulty)
+  if (tag) base = base.where(sql<SqlBool>`tags @> ARRAY[${sql.lit(tag)}]::text[]`)
+  if (chain) base = base.where(sql<SqlBool>`supported_chains @> ARRAY[${sql.lit(chain)}]::text[]`)
+  if (featured !== undefined) base = base.where('is_featured', '=', featured)
+  if (search) base = base.where(sql<SqlBool>`fts @@ websearch_to_tsquery('english', ${search})`)
 
-  if (search) {
-    query = query.textSearch('fts', search, { type: 'websearch', config: 'english' })
-  }
-
-  query = query.order(sort_by, { ascending: sort_order === 'asc' })
+  const countResult = await base
+    .select(db.fn.countAll<string>().as('count'))
+    .executeTakeFirstOrThrow()
+  const total = Number(countResult.count)
 
   const from = (page - 1) * per_page
-  const to = from + per_page - 1
-  query = query.range(from, to)
-
-  const { data, error, count } = await query
-  if (error) throw error
+  const rows = await base
+    .selectAll()
+    .orderBy(sort_by, sort_order === 'asc' ? 'asc' : 'desc')
+    .limit(per_page)
+    .offset(from)
+    .execute()
 
   return {
-    data: data ?? [],
+    data: rows,
     pagination: {
       page,
       per_page,
-      total: count ?? 0,
-      total_pages: Math.ceil((count ?? 0) / per_page),
+      total,
+      total_pages: Math.ceil(total / per_page),
     },
   }
 }
 
 export async function getIdea(slug: string) {
-  const { data, error } = await supabase
-    .from('ideas')
-    .select('*')
-    .eq('slug', slug)
-    .single()
-
-  if (error) {
-    if (error.code === 'PGRST116') return null
-    throw error
-  }
-  return data
+  const row = await db
+    .selectFrom('ideas')
+    .selectAll()
+    .where('slug', '=', slug)
+    .executeTakeFirst()
+  return row ?? null
 }
 
 export async function createIdea(input: CreateIdeaInput) {
-  const { data, error } = await supabase.from('ideas').insert(input).select().single()
-  if (error) throw error
-  return data
+  return await db
+    .insertInto('ideas')
+    .values(input as never)
+    .returningAll()
+    .executeTakeFirstOrThrow()
 }
 
 export async function updateIdea(slug: string, input: UpdateIdeaInput) {
-  const { data, error } = await supabase
-    .from('ideas')
-    .update(input)
-    .eq('slug', slug)
-    .select()
-    .single()
-
-  if (error) {
-    if (error.code === 'PGRST116') return null
-    throw error
-  }
-  return data
+  const row = await db
+    .updateTable('ideas')
+    .set(input as never)
+    .where('slug', '=', slug)
+    .returningAll()
+    .executeTakeFirst()
+  return row ?? null
 }
 
 export async function voteIdea(slug: string) {
-  const { error } = await supabase.rpc('increment_idea_votes', { idea_slug: slug })
-  if (error) {
-    console.error(`increment_idea_votes RPC failed for "${slug}":`, error.message)
-    throw error
-  }
+  await sql`SELECT increment_idea_votes(${slug})`.execute(db)
   return await getIdea(slug)
 }
 
 export async function getIdeaTags(): Promise<string[]> {
-  const { data, error } = await supabase.from('ideas').select('tags')
-  if (error) return []
-  const unique = new Set<string>()
-  for (const row of data ?? []) {
-    for (const tag of (row.tags as string[]) ?? []) unique.add(tag)
+  try {
+    const rows = await db.selectFrom('ideas').select('tags').execute()
+    const unique = new Set<string>()
+    for (const row of rows) {
+      for (const tag of (row.tags as string[]) ?? []) unique.add(tag)
+    }
+    return [...unique].sort()
+  } catch {
+    return []
   }
-  return [...unique].sort()
 }
 
 export async function getIdeaChains(): Promise<string[]> {
-  const { data, error } = await supabase.from('ideas').select('supported_chains')
-  if (error) return []
-  const unique = new Set<string>()
-  for (const row of data ?? []) {
-    for (const chain of (row.supported_chains as string[]) ?? []) unique.add(chain)
+  try {
+    const rows = await db.selectFrom('ideas').select('supported_chains').execute()
+    const unique = new Set<string>()
+    for (const row of rows) {
+      for (const chain of (row.supported_chains as string[]) ?? []) unique.add(chain)
+    }
+    return [...unique].sort()
+  } catch {
+    return []
   }
-  return [...unique].sort()
 }

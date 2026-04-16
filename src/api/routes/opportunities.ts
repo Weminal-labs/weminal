@@ -7,11 +7,12 @@ import {
 import {
   queryOpportunities,
   getOpportunity,
-  createOpportunity,
   updateOpportunity,
   deleteOpportunity,
 } from '../lib/query-builder'
 import { formatError } from '../middleware/error-handler'
+import { authMiddleware } from '../middleware/auth'
+import { db } from '../lib/db'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -56,24 +57,45 @@ opportunities.get('/:id', async (c) => {
   return c.json({ data })
 })
 
-// POST /opportunities
-opportunities.post('/', async (c) => {
+// POST /opportunities — requires auth; records created_by from session/key
+opportunities.post('/', authMiddleware, async (c) => {
   const { data: body, error: jsonError } = await parseJsonBody(c)
   if (jsonError) {
     return c.json(formatError('VALIDATION_ERROR', jsonError), 400)
   }
 
   const parsed = createOpportunitySchema.parse(body)
-  const data = await createOpportunity(parsed)
+  const userId = c.get('userId')
+
+  const data = await db
+    .insertInto('opportunities')
+    .values({ ...parsed, created_by: userId } as never)
+    .returningAll()
+    .executeTakeFirstOrThrow()
+
   return c.json({ data }, 201)
 })
 
-// PATCH /opportunities/:id
-opportunities.patch('/:id', async (c) => {
+// PATCH /opportunities/:id — requires auth; members can only edit own records
+opportunities.patch('/:id', authMiddleware, async (c) => {
   const id = c.req.param('id')
 
   if (!validateId(id)) {
     return c.json(formatError('VALIDATION_ERROR', 'Invalid opportunity ID'), 400)
+  }
+
+  const userId = c.get('userId')
+  const role = c.get('userRole')
+
+  // Non-admins must own the record
+  if (role !== 'admin') {
+    const existing = await getOpportunity(id)
+    if (!existing) {
+      return c.json(formatError('NOT_FOUND', 'Opportunity not found'), 404)
+    }
+    if ((existing as Record<string, unknown>).created_by !== userId) {
+      return c.json(formatError('FORBIDDEN', 'You do not own this record'), 403)
+    }
   }
 
   const { data: body, error: jsonError } = await parseJsonBody(c)
@@ -96,12 +118,26 @@ opportunities.patch('/:id', async (c) => {
   return c.json({ data })
 })
 
-// DELETE /opportunities/:id
-opportunities.delete('/:id', async (c) => {
+// DELETE /opportunities/:id — requires auth; members can only delete own records
+opportunities.delete('/:id', authMiddleware, async (c) => {
   const id = c.req.param('id')
 
   if (!validateId(id)) {
     return c.json(formatError('VALIDATION_ERROR', 'Invalid opportunity ID'), 400)
+  }
+
+  const userId = c.get('userId')
+  const role = c.get('userRole')
+
+  // Non-admins must own the record
+  if (role !== 'admin') {
+    const existing = await getOpportunity(id)
+    if (!existing) {
+      return c.json(formatError('NOT_FOUND', 'Opportunity not found'), 404)
+    }
+    if ((existing as Record<string, unknown>).created_by !== userId) {
+      return c.json(formatError('FORBIDDEN', 'You do not own this record'), 403)
+    }
   }
 
   const data = await deleteOpportunity(id)
@@ -112,7 +148,7 @@ opportunities.delete('/:id', async (c) => {
 
   return c.json({
     success: true,
-    deleted_id: data.id,
+    deleted_id: (data as Record<string, unknown>).id,
   })
 })
 
