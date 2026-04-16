@@ -54,6 +54,7 @@
     "kysely": "^0.28.15",
     "kysely-neon": "^2.0.2",
     "kysely-postgres-js": "^3.0.0",
+    "landing-effects": "^0.1.1",
     "lucide-react": "^1.6.0",
     "meshline": "^3.3.1",
     "motion": "^12.38.0",

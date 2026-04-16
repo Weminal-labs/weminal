@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+import { createPixelReveal } from 'landing-effects'
 import { useRevealOnScroll } from '@/hooks/use-reveal-on-scroll'
 
 const MCP_SNIPPET = `// In your Claude config:
@@ -23,7 +25,29 @@ opportunity_create({
 })`
 
 export function McpDemo() {
-  const { ref, revealed } = useRevealOnScroll<HTMLDivElement>({ threshold: 0.25 })
+  const { ref, revealed, reducedMotion } = useRevealOnScroll<HTMLDivElement>({ threshold: 0.25 })
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const disposedRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    if (!revealed || reducedMotion) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    // Tear down any prior instance
+    disposedRef.current?.()
+    disposedRef.current = createPixelReveal({
+      canvas,
+      imageSrc: '/weminal_logo/Logo-white.svg',
+      blockSize: 6,
+      pixelsPerFrame: 60,
+      glitchRegion: 0.25,
+      delay: 120,
+    })
+    return () => {
+      disposedRef.current?.()
+      disposedRef.current = null
+    }
+  }, [revealed, reducedMotion])
 
   return (
     <div
@@ -48,14 +72,25 @@ export function McpDemo() {
         </pre>
       </div>
 
-      {/* Logo with fade-in animation */}
+      {/* Pixel-reveal mark */}
       <div className="flex items-center justify-center">
         <div className="relative aspect-square w-48 md:w-64">
-          <img
-            src="/weminal_logo/Logo-white.svg"
-            alt="Weminal"
-            className="mcp-logo w-full h-full object-contain"
-          />
+          {reducedMotion ? (
+            // Static fallback for reduced-motion users
+            <img
+              src="/weminal_logo/Logo-white.svg"
+              alt="Weminal"
+              className="w-full h-full object-contain opacity-80"
+            />
+          ) : (
+            <canvas
+              ref={canvasRef}
+              width={512}
+              height={512}
+              className="w-full h-full"
+              aria-hidden="true"
+            />
+          )}
         </div>
       </div>
 
@@ -63,28 +98,17 @@ export function McpDemo() {
         .mcp-line {
           opacity: 0;
           transform: translateX(-8px);
-        }
-        .mcp-logo {
-          opacity: 0;
-          transform: scale(0.95);
+          transition: opacity .5s ease-out, transform .5s ease-out;
         }
         [data-revealed='true'] .mcp-line {
           animation: mcp-line-in .55s ease-out forwards;
-        }
-        [data-revealed='true'] .mcp-logo {
-          animation: mcp-logo-in 1s ease-out 0.3s forwards;
         }
         @keyframes mcp-line-in {
           from { opacity: 0; transform: translateX(-8px); }
           to   { opacity: 1; transform: translateX(0); }
         }
-        @keyframes mcp-logo-in {
-          from { opacity: 0; transform: scale(0.95); }
-          to   { opacity: 0.8; transform: scale(1); }
-        }
         @media (prefers-reduced-motion: reduce) {
           .mcp-line { opacity: 1 !important; transform: none !important; animation: none !important; }
-          .mcp-logo { opacity: 0.8 !important; transform: none !important; animation: none !important; }
         }
       `}</style>
     </div>

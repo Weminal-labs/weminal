@@ -122,6 +122,9 @@ importers:
       kysely-postgres-js:
         specifier: ^3.0.0
         version: 3.0.0(kysely@0.28.15)(postgres@3.4.9)
+      landing-effects:
+        specifier: ^0.1.1
+        version: 0.1.1
       lucide-react:
         specifier: ^1.6.0
         version: 1.6.0(react@19.2.4)
@@ -3674,6 +3677,9 @@ packages:
   kysely@0.28.15:
     resolution: {integrity: sha512-r2clcf7HLWvDXaVUEvQymXJY4i3bSOIV3xsL/Upy3ZfSv5HeKsk9tsqbBptLvth5qHEIhxeHTA2jNLyQABkLBA==}
     engines: {node: '>=20.0.0'}
+
+  landing-effects@0.1.1:
+    resolution: {integrity: sha512-racPwT7CZurXXiznWm/N3uilL7svF2xfP65XJONuc5PTBRiACX0JyxeiEMfaia7wqwE7xaKg6e/V40dHUX++dw==}
 
   language-subtag-registry@0.3.23:
     resolution: {integrity: sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==}
@@ -8182,6 +8188,8 @@ snapshots:
       postgres: 3.4.9
 
   kysely@0.28.15: {}
+
+  landing-effects@0.1.1: {}
 
   language-subtag-registry@0.3.23: {}
 
