@@ -22,10 +22,14 @@ export function PillarCard({ glyph, title, description, href, cta, index = 0 }: 
     <div
       ref={ref}
       data-revealed={revealed}
-      className="group relative flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-7 transition-all duration-500 ease-out hover:border-white/25 hover:bg-white/[0.06] data-[revealed=false]:opacity-0 data-[revealed=false]:translate-y-6 data-[revealed=true]:opacity-100 data-[revealed=true]:translate-y-0"
+      className="group relative flex flex-col gap-5 rounded-2xl border border-purple-500/15 p-7 transition-all duration-500 ease-out hover:border-purple-500/35 hover:-translate-y-0.5 data-[revealed=false]:opacity-0 data-[revealed=false]:translate-y-6 data-[revealed=true]:opacity-100 data-[revealed=true]:translate-y-0"
+      style={{
+        background: 'linear-gradient(135deg, rgba(82, 39, 255, 0.08) 0%, rgba(177, 158, 239, 0.04) 100%)',
+        backdropFilter: 'blur(12px)',
+      }}
       style={{ transitionDelay: delay }}
     >
-      <div className="text-white/80 group-hover:text-white transition-colors">
+      <div className="text-purple-400/70 group-hover:text-purple-300 transition-colors">
         {glyph}
       </div>
 
@@ -36,7 +40,7 @@ export function PillarCard({ glyph, title, description, href, cta, index = 0 }: 
 
       <Link
         href={href}
-        className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-white/75 hover:text-white transition-colors"
+        className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors"
       >
         {cta}
         <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />

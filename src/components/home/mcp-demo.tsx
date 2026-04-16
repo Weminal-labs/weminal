@@ -56,7 +56,14 @@ export function McpDemo() {
       className="grid md:grid-cols-[1.4fr_1fr] gap-8 items-center"
     >
       {/* Code block — line-staggered fade-in */}
-      <div className="mcp-code rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md overflow-hidden">
+      <div
+        className="mcp-code rounded-2xl overflow-hidden"
+        style={{
+          background: 'linear-gradient(145deg, rgba(0, 0, 0, 0.7) 0%, rgba(10, 8, 18, 0.9) 100%)',
+          border: '1px solid rgba(82, 39, 255, 0.2)',
+          boxShadow: '0 0 40px rgba(82, 39, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
+        }}
+      >
         <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5">
           <span className="size-2.5 rounded-full bg-red-500/70" />
           <span className="size-2.5 rounded-full bg-yellow-500/70" />
@@ -72,9 +79,14 @@ export function McpDemo() {
         </pre>
       </div>
 
-      {/* Pixel-reveal mark */}
+      {/* Pixel-reveal mark with purple glow */}
       <div className="flex items-center justify-center">
-        <div className="relative aspect-square w-48 md:w-64">
+        <div
+          className="relative aspect-square w-48 md:w-64"
+          style={{
+            boxShadow: '0 0 80px rgba(82, 39, 255, 0.15)',
+          }}
+        >
           {reducedMotion ? (
             // Static fallback for reduced-motion users
             <img

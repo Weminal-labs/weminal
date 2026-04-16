@@ -13,6 +13,15 @@
 }
 
 :root {
+  /* Weminal Brand Colors */
+  --wm-purple: #5227FF;
+  --wm-purple-deep: #370edd;
+  --wm-purple-electric: #3c00ff;
+  --wm-lavender: #B19EEF;
+  --wm-bg-features: #0f0d17;
+  --wm-bg-mcp: #0a0812;
+  --wm-bg-footer: #080610;
+
   --chart-1: oklch(0.32 0 none);
   --chart-2: oklch(0.41 0 none);
   --chart-3: oklch(0.54 0 none);
