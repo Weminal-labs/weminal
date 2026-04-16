@@ -1,6 +1,6 @@
-// Node runtime — auth middleware chain requires node:crypto via better-auth.
-// Production uses @cloudflare/next-on-pages with nodejs_compat.
-export const runtime = 'nodejs'
+// Edge runtime required by @cloudflare/next-on-pages. Auth chain is now on
+// @neondatabase/serverless + Web Crypto, edge-compatible.
+export const runtime = 'edge'
 
 import { createMcpServer, isWriteTool } from '@/mcp/http-server'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'

@@ -23,9 +23,12 @@ jobs:
       - name: Build for Cloudflare Pages
         run: pnpm run build:cf
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          MCP_API_KEY: ${{ secrets.MCP_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.BETTER_AUTH_URL }}
+          GITHUB_CLIENT_ID: ${{ secrets.GH_OAUTH_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GH_OAUTH_CLIENT_SECRET }}
 
       - name: Remove oversized assets
         run: rm -f .vercel/output/static/hack-bg.gif

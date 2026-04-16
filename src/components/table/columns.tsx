@@ -78,16 +78,6 @@ export const columns = [
     size: 150,
     cell: (info) => info.getValue() ?? <span className="text-gray-400">—</span>,
   }),
-  col.accessor('parent_hackathon_name', {
-    header: 'Parent Hackathon',
-    size: 160,
-    enableSorting: false,
-    cell: (info) => {
-      const name = info.getValue()
-      if (!name) return <span className="text-gray-400">—</span>
-      return <span className="text-gray-400 text-xs font-medium">↳ {name}</span>
-    },
-  }),
   col.accessor('reward_amount', {
     header: 'Reward',
     size: 120,

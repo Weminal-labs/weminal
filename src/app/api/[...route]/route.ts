@@ -1,6 +1,6 @@
-// Node runtime — authMiddleware imports better-auth which needs node:crypto.
-// Production uses @cloudflare/next-on-pages with nodejs_compat.
-export const runtime = 'nodejs'
+// Edge runtime required by @cloudflare/next-on-pages. Auth middleware uses
+// @neondatabase/serverless + Web Crypto, edge-compatible.
+export const runtime = 'edge'
 
 import app from '@/api'
 

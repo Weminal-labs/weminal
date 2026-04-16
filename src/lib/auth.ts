@@ -1,26 +1,21 @@
 /**
  * Better Auth server instance
  *
- * Uses postgres.js (edge-compatible) via kysely-postgres-js dialect.
- * This avoids the node pg Pool which requires persistent TCP connections
- * incompatible with Cloudflare Workers.
+ * Uses @neondatabase/serverless via kysely-neon dialect — edge-runtime
+ * compatible (Web Crypto, no node:crypto). Required for Cloudflare Pages
+ * deployment via @cloudflare/next-on-pages.
  *
- * DATABASE_URL must point to the Supabase Transaction pooler (port 6543)
- * with ?pgbouncer=true appended.
+ * DATABASE_URL points to the Neon pooled connection string.
  */
 import { betterAuth } from 'better-auth'
-import { dash } from '@better-auth/infra'
 import { Kysely } from 'kysely'
-import { PostgresJSDialect } from 'kysely-postgres-js'
-import postgres from 'postgres'
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  // Disable prepared statements — required for pgBouncer transaction mode
-  prepare: false,
-})
+import { NeonDialect } from 'kysely-neon'
+import { neon } from '@neondatabase/serverless'
 
 const db = new Kysely<Record<string, unknown>>({
-  dialect: new PostgresJSDialect({ postgres: sql }),
+  dialect: new NeonDialect({
+    neon: neon(process.env.DATABASE_URL!),
+  }),
 })
 
 export const auth = betterAuth({
@@ -84,7 +79,4 @@ export const auth = betterAuth({
       updatedAt: 'updated_at',
     },
   },
-  plugins: [
-    dash(),
-  ],
 })

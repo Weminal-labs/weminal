@@ -7,7 +7,6 @@ import { useOpportunities } from '@/hooks/use-opportunities'
 import { OpportunityTable } from '@/components/table/opportunity-table'
 import { TablePagination } from '@/components/table/table-pagination'
 import { FilterBar } from '@/components/filters/filter-bar'
-import { CreateOpportunityDialog } from '@/components/forms/create-opportunity-dialog'
 import { DeleteConfirmDialog } from '@/components/forms/delete-confirm-dialog'
 import { OpportunityDetail } from '@/components/detail/opportunity-detail'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -146,7 +145,6 @@ function OpportunitiesPage() {
                 onChange={(v) => handleFilterChange('search', v || undefined)}
               />
               <McpUsageDialog />
-              <CreateOpportunityDialog />
             </div>
           </div>
         </div>
