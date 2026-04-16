@@ -98,56 +98,26 @@ export default function Home() {
             <ChevronDown className="size-5" aria-hidden="true" />
           </div>
 
-          {/* Bottom gradient fade into transition zone */}
+          {/* Bottom gradient fade */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-[200px] z-[5] pointer-events-none"
+            className="absolute bottom-0 left-0 right-0 h-32 z-[5] pointer-events-none"
             style={{
-              background: 'linear-gradient(to bottom, transparent 0%, rgba(248, 247, 255, 0.3) 40%, rgba(248, 247, 255, 0.7) 70%, #f8f7ff 100%)'
+              background: 'linear-gradient(to bottom, transparent 0%, #f8f7ff 100%)'
             }}
           />
         </section>
 
-        {/* ── Transition Zone — Bridge between hero and features ────────── */}
-        <section
-          className="relative h-[150px] md:h-[250px] overflow-hidden"
+        {/* ── Subtle gradient transition ────────────────────────────────── */}
+        <div
+          className="h-24 md:h-32"
           style={{
-            background: 'linear-gradient(to bottom, #f8f7ff 0%, #e8e4f8 20%, #2d2440 60%, #0f0d17 100%)'
+            background: 'linear-gradient(to bottom, #f8f7ff 0%, #0f0d17 100%)'
           }}
-        >
-          {/* Faded dither pattern echo */}
-          <div className="absolute inset-0 opacity-10">
-            <PixelBlast
-              variant="square"
-              pixelSize={8}
-              color="#5227FF"
-              patternScale={1}
-              patternDensity={0.5}
-              enableRipples={false}
-              speed={0.2}
-              transparent
-              edgeFade={0.8}
-            />
-          </div>
-
-          {/* Narrative text */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p
-              className="text-sm font-medium uppercase tracking-[0.2em] transition-colors"
-              style={{
-                background: 'linear-gradient(to bottom, #5227FF 0%, rgba(255,255,255,0.4) 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Built for crypto builders who ship.
-            </p>
-          </div>
-        </section>
+        />
 
         {/* ── Features Section ─────────────────────────────────────────── */}
         <section
-          className="relative mx-auto w-full px-6 py-20 md:py-28"
+          className="relative mx-auto w-full px-6 py-16 md:py-24"
           style={{ backgroundColor: 'var(--wm-bg-features)' }}
         >
           <div className="max-w-6xl mx-auto">
