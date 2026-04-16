@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "siteName": "Weminal",
+    "tagline": "The operating system for crypto builders",
+    "description": "Track hackathons, grants, fellowships, and bounties in the crypto ecosystem. Manage your opportunity pipeline with a Notion-like table interface."
+  },
+  "nav": {
+    "opportunities": "Opportunities",
+    "ideas": "Ideas",
+    "review": "Weekly Review",
+    "signIn": "Sign in",
+    "profile": "Profile",
+    "signOut": "Sign out",
+    "language": "Language"
+  },
+  "home": {
+    "hero": {
+      "tagline": "The operating system for crypto builders.",
+      "subTagline": "Track hackathons, grants, fellowships, and bounties — all in one pipeline.",
+      "primaryCta": "Explore Opportunities",
+      "secondaryCta": "Sign in with GitHub"
+    }
+  },
+  "hack": {
+    "title": "Crypto Opportunities",
+    "subtitle": "Hackathons, grants, fellowships, and bounties",
+    "search": "Search…",
+    "filters": {
+      "status": "Status",
+      "format": "Format",
+      "organization": "Organization",
+      "chain": "Chain",
+      "tag": "Tag"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "by": "By",
+      "status": "Status",
+      "organization": "Organization",
+      "reward": "Reward",
+      "chains": "Chains",
+      "start": "Start",
+      "end": "End",
+      "link": "Link"
+    },
+    "empty": "No opportunities found",
+    "resultsCount": "{count, plural, =0 {0 results} =1 {1 result} other {# results}}"
+  },
+  "ideas": {
+    "title": "Ideas Pool",
+    "subtitle": "Product ideas worth building",
+    "empty": "No ideas yet",
+    "submit": "Submit an idea"
+  },
+  "review": {
+    "title": "Weekly Review",
+    "emptyTitle": "No review for this week",
+    "emptyHint": "Generate a snapshot to see your weekly summary",
+    "generate": "Generate Review"
+  },
+  "login": {
+    "title": "Sign in to Weminal",
+    "subtitle": "Track crypto opportunities. Use your account to create, update, and manage your pipeline.",
+    "continueWithGithub": "Continue with GitHub",
+    "redirecting": "Redirecting to GitHub…",
+    "failed": "Sign-in failed. Please try again.",
+    "terms": "By continuing you agree to our terms of use."
+  },
+  "profile": {
+    "title": "Profile",
+    "accountSection": "Account",
+    "apiKeysSection": "API Keys",
+    "activitySection": "Builder Activity",
+    "signOut": "Sign out"
+  },
+  "common": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "close": "Close",
+    "today": "Today"
+  },
+  "opportunityType": {
+    "hackathon": "Hackathon",
+    "grant": "Grant",
+    "fellowship": "Fellowship",
+    "bounty": "Bounty",
+    "bootcamp": "Bootcamp"
+  },
+  "opportunityStatus": {
+    "discovered": "Discovered",
+    "evaluating": "Evaluating",
+    "applying": "Applying",
+    "accepted": "Accepted",
+    "in_progress": "In Progress",
+    "submitted": "Submitted",
+    "completed": "Completed",
+    "rejected": "Rejected",
+    "cancelled": "Cancelled"
+  }
+}

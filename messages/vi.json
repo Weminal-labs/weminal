@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "siteName": "Weminal",
+    "tagline": "Hệ điều hành cho builder crypto",
+    "description": "Theo dõi hackathon, grant, fellowship và bounty trong hệ sinh thái crypto. Quản lý pipeline cơ hội của bạn với giao diện bảng kiểu Notion."
+  },
+  "nav": {
+    "opportunities": "Cơ hội",
+    "ideas": "Ý tưởng",
+    "review": "Tổng kết tuần",
+    "signIn": "Đăng nhập",
+    "profile": "Hồ sơ",
+    "signOut": "Đăng xuất",
+    "language": "Ngôn ngữ"
+  },
+  "home": {
+    "hero": {
+      "tagline": "Hệ điều hành cho builder crypto.",
+      "subTagline": "Theo dõi hackathon, grant, fellowship và bounty — tất cả trong một pipeline.",
+      "primaryCta": "Khám phá Cơ hội",
+      "secondaryCta": "Đăng nhập bằng GitHub"
+    }
+  },
+  "hack": {
+    "title": "Cơ hội Crypto",
+    "subtitle": "Hackathon, grant, fellowship và bounty",
+    "search": "Tìm kiếm…",
+    "filters": {
+      "status": "Trạng thái",
+      "format": "Hình thức",
+      "organization": "Tổ chức",
+      "chain": "Chain",
+      "tag": "Thẻ"
+    },
+    "columns": {
+      "name": "Tên",
+      "type": "Loại",
+      "by": "Bởi",
+      "status": "Trạng thái",
+      "organization": "Tổ chức",
+      "reward": "Phần thưởng",
+      "chains": "Chains",
+      "start": "Bắt đầu",
+      "end": "Kết thúc",
+      "link": "Liên kết"
+    },
+    "empty": "Không có cơ hội nào",
+    "resultsCount": "{count, plural, =0 {0 kết quả} =1 {1 kết quả} other {# kết quả}}"
+  },
+  "ideas": {
+    "title": "Kho Ý tưởng",
+    "subtitle": "Những ý tưởng sản phẩm đáng để xây dựng",
+    "empty": "Chưa có ý tưởng nào",
+    "submit": "Gửi ý tưởng"
+  },
+  "review": {
+    "title": "Tổng kết Tuần",
+    "emptyTitle": "Chưa có tổng kết cho tuần này",
+    "emptyHint": "Tạo snapshot để xem bản tóm tắt tuần của bạn",
+    "generate": "Tạo Tổng kết"
+  },
+  "login": {
+    "title": "Đăng nhập vào Weminal",
+    "subtitle": "Theo dõi cơ hội crypto. Dùng tài khoản để tạo, cập nhật và quản lý pipeline của bạn.",
+    "continueWithGithub": "Tiếp tục với GitHub",
+    "redirecting": "Đang chuyển đến GitHub…",
+    "failed": "Đăng nhập thất bại. Vui lòng thử lại.",
+    "terms": "Khi tiếp tục bạn đồng ý với điều khoản sử dụng."
+  },
+  "profile": {
+    "title": "Hồ sơ",
+    "accountSection": "Tài khoản",
+    "apiKeysSection": "API Keys",
+    "activitySection": "Hoạt động Builder",
+    "signOut": "Đăng xuất"
+  },
+  "common": {
+    "edit": "Sửa",
+    "delete": "Xoá",
+    "save": "Lưu",
+    "cancel": "Huỷ",
+    "loading": "Đang tải…",
+    "error": "Đã xảy ra lỗi",
+    "retry": "Thử lại",
+    "close": "Đóng",
+    "today": "Hôm nay"
+  },
+  "opportunityType": {
+    "hackathon": "Hackathon",
+    "grant": "Grant",
+    "fellowship": "Fellowship",
+    "bounty": "Bounty",
+    "bootcamp": "Bootcamp"
+  },
+  "opportunityStatus": {
+    "discovered": "Đã phát hiện",
+    "evaluating": "Đang đánh giá",
+    "applying": "Đang đăng ký",
+    "accepted": "Đã được chấp nhận",
+    "in_progress": "Đang thực hiện",
+    "submitted": "Đã nộp",
+    "completed": "Hoàn thành",
+    "rejected": "Bị từ chối",
+    "cancelled": "Đã huỷ"
+  }
+}

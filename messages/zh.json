@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "siteName": "Weminal",
+    "tagline": "加密开发者的操作系统",
+    "description": "追踪加密生态系统中的黑客松、资助金、奖学金和悬赏任务。用 Notion 式表格界面管理你的机会管道。"
+  },
+  "nav": {
+    "opportunities": "机会",
+    "ideas": "创意池",
+    "review": "周报",
+    "signIn": "登录",
+    "profile": "个人资料",
+    "signOut": "退出",
+    "language": "语言"
+  },
+  "home": {
+    "hero": {
+      "tagline": "加密开发者的操作系统。",
+      "subTagline": "追踪黑客松、资助金、奖学金和悬赏任务 — 全部在一个管道中。",
+      "primaryCta": "浏览机会",
+      "secondaryCta": "使用 GitHub 登录"
+    }
+  },
+  "hack": {
+    "title": "加密机会",
+    "subtitle": "黑客松、资助金、奖学金和悬赏任务",
+    "search": "搜索…",
+    "filters": {
+      "status": "状态",
+      "format": "形式",
+      "organization": "组织",
+      "chain": "链",
+      "tag": "标签"
+    },
+    "columns": {
+      "name": "名称",
+      "type": "类型",
+      "by": "创建者",
+      "status": "状态",
+      "organization": "组织",
+      "reward": "奖励",
+      "chains": "链",
+      "start": "开始",
+      "end": "结束",
+      "link": "链接"
+    },
+    "empty": "未找到机会",
+    "resultsCount": "{count, plural, other {# 个结果}}"
+  },
+  "ideas": {
+    "title": "创意池",
+    "subtitle": "值得构建的产品创意",
+    "empty": "暂无创意",
+    "submit": "提交创意"
+  },
+  "review": {
+    "title": "周报",
+    "emptyTitle": "本周暂无回顾",
+    "emptyHint": "生成快照以查看你的每周总结",
+    "generate": "生成周报"
+  },
+  "login": {
+    "title": "登录 Weminal",
+    "subtitle": "追踪加密机会。用你的账户创建、更新和管理你的管道。",
+    "continueWithGithub": "使用 GitHub 继续",
+    "redirecting": "正在跳转到 GitHub…",
+    "failed": "登录失败。请重试。",
+    "terms": "继续即表示你同意我们的使用条款。"
+  },
+  "profile": {
+    "title": "个人资料",
+    "accountSection": "账户",
+    "apiKeysSection": "API 密钥",
+    "activitySection": "Builder 活动",
+    "signOut": "退出"
+  },
+  "common": {
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消",
+    "loading": "加载中…",
+    "error": "出错了",
+    "retry": "重试",
+    "close": "关闭",
+    "today": "今天"
+  },
+  "opportunityType": {
+    "hackathon": "黑客松",
+    "grant": "资助金",
+    "fellowship": "奖学金",
+    "bounty": "悬赏",
+    "bootcamp": "训练营"
+  },
+  "opportunityStatus": {
+    "discovered": "已发现",
+    "evaluating": "评估中",
+    "applying": "申请中",
+    "accepted": "已接受",
+    "in_progress": "进行中",
+    "submitted": "已提交",
+    "completed": "已完成",
+    "rejected": "已拒绝",
+    "cancelled": "已取消"
+  }
+}
