@@ -26,8 +26,8 @@ export function PillarCard({ glyph, title, description, href, cta, index = 0 }: 
       style={{
         background: 'linear-gradient(135deg, rgba(82, 39, 255, 0.08) 0%, rgba(177, 158, 239, 0.04) 100%)',
         backdropFilter: 'blur(12px)',
+        transitionDelay: delay,
       }}
-      style={{ transitionDelay: delay }}
     >
       <div className="text-purple-400/70 group-hover:text-purple-300 transition-colors">
         {glyph}
