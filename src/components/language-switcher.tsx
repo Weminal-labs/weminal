@@ -1,7 +1,7 @@
 'use client'
 
 import { useLocale } from 'next-intl'
-import { usePathname, useRouter } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import { routing, type Locale } from '@/i18n/routing'
 import { Globe } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
@@ -26,7 +26,6 @@ type Props = {
 export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Props) {
   const locale = useLocale() as Locale
   const pathname = usePathname()
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -42,18 +41,14 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Props
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
 
-  const handleSwitch = (newLocale: Locale) => {
-    router.replace(pathname, { locale: newLocale })
-    setOpen(false)
-  }
-
   if (variant === 'inline') {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         {routing.locales.map((l) => (
-          <button
+          <Link
             key={l}
-            onClick={() => handleSwitch(l)}
+            href={pathname}
+            locale={l}
             className={`px-2 py-1 text-sm rounded transition-colors ${
               l === locale
                 ? 'bg-purple-500/20 text-purple-300'
@@ -61,7 +56,7 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Props
             }`}
           >
             {LOCALE_FLAGS[l]}
-          </button>
+          </Link>
         ))}
       </div>
     )
@@ -81,9 +76,11 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Props
       {open && (
         <div className="absolute right-0 top-full mt-2 py-1 min-w-[140px] rounded-lg bg-gray-900 border border-white/10 shadow-xl z-50">
           {routing.locales.map((l) => (
-            <button
+            <Link
               key={l}
-              onClick={() => handleSwitch(l)}
+              href={pathname}
+              locale={l}
+              onClick={() => setOpen(false)}
               className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
                 l === locale
                   ? 'bg-purple-500/20 text-purple-300'
@@ -92,7 +89,7 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Props
             >
               <span>{LOCALE_FLAGS[l]}</span>
               <span>{LOCALE_LABELS[l]}</span>
-            </button>
+            </Link>
           ))}
         </div>
       )}
