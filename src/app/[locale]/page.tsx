@@ -15,6 +15,7 @@ import {
   ReviewGlyph,
 } from '@/components/home/pillar-card'
 import { McpDemo } from '@/components/home/mcp-demo'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 const PixelBlast = dynamic(() => import('@/components/pixel-blast'), { ssr: false })
 
@@ -34,6 +35,11 @@ export default function Home() {
 
   return (
     <>
+      {/* Language Switcher - fixed top left */}
+      <div className="fixed top-5 left-5 z-40">
+        <LanguageSwitcher />
+      </div>
+
       <StaggeredMenu
         isFixed
         position="right"

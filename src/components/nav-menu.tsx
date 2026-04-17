@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, Menu } from 'lucide-react'
 import { useSession } from '@/lib/auth-client'
+import { LanguageSwitcher } from './language-switcher'
 
 const ITEMS = [
   { label: 'Opportunities', href: '/hack' },
@@ -88,14 +89,17 @@ export function NavMenu() {
             transition={{ duration: 0.25 }}
             className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-950/90 backdrop-blur-md"
           >
-            {/* Close */}
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close menu"
-              className="absolute top-5 right-5 flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            >
-              <X className="size-5" />
-            </button>
+            {/* Close + Language */}
+            <div className="absolute top-5 right-5 flex items-center gap-3">
+              <LanguageSwitcher />
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
 
             {/* Staggered items */}
             <motion.nav
