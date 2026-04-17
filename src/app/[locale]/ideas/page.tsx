@@ -1,5 +1,7 @@
 'use client'
 
+export const runtime = 'edge'
+
 import { Suspense, useState, useCallback } from 'react'
 import { parseAsString, parseAsInteger, useQueryStates } from 'nuqs'
 import { useIdeas, useVoteIdea } from '@/hooks/use-ideas'

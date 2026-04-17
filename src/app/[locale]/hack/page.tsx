@@ -1,5 +1,7 @@
 'use client'
 
+export const runtime = 'edge'
+
 import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useQueryStates, parseAsString, parseAsInteger } from 'nuqs'
 import type { SortingState } from '@tanstack/react-table'

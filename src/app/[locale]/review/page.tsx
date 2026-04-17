@@ -1,5 +1,7 @@
 'use client'
 
+export const runtime = 'edge'
+
 import { Suspense, useState, useCallback } from 'react'
 import { format, startOfWeek, addWeeks, subWeeks } from 'date-fns'
 import { useWeeklyReview, useGenerateWeeklyReview } from '@/hooks/use-weekly-review'

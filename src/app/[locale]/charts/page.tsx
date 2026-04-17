@@ -1,5 +1,7 @@
 'use client'
 
+export const runtime = 'edge'
+
 import { Suspense, useState, useEffect, useCallback } from 'react'
 import { useUpdatesPerDay, useOverview } from '@/hooks/use-stats'
 import { AreaChart, Area } from '@/components/charts/area-chart'

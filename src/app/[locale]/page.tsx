@@ -1,5 +1,7 @@
 'use client'
 
+export const runtime = 'edge'
+
 import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import dynamic from 'next/dynamic'
