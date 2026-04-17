@@ -8,6 +8,11 @@ type Options = {
   once?: boolean
 }
 
+const getReducedMotion = () => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 /**
  * Returns { ref, revealed } for the first time the element enters the viewport.
  * Honours prefers-reduced-motion by revealing immediately (no animation).
@@ -18,25 +23,25 @@ export function useRevealOnScroll<T extends HTMLElement>({
   once = true,
 }: Options = {}) {
   const ref = useRef<T>(null)
-  const [revealed, setRevealed] = useState(false)
-  const [reducedMotion, setReducedMotion] = useState(false)
+  // Initialize from media query to avoid synchronous setState in effect
+  const [reducedMotion, setReducedMotion] = useState(getReducedMotion)
+  const [revealed, setRevealed] = useState(getReducedMotion)
 
+  // Listen for changes to reduced motion preference
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mq.matches)
-    const onChange = () => setReducedMotion(mq.matches)
+    const onChange = () => {
+      setReducedMotion(mq.matches)
+      if (mq.matches) setRevealed(true)
+    }
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])
 
+  // Intersection Observer for scroll reveal
   useEffect(() => {
     const el = ref.current
-    if (!el) return
-
-    if (reducedMotion) {
-      setRevealed(true)
-      return
-    }
+    if (!el || reducedMotion) return
 
     const io = new IntersectionObserver(
       (entries) => {
